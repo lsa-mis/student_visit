@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Pre-commit hook to automatically fix common linting issues
+echo "Running pre-commit hook to fix common linting issues..."
+
+# Get a list of staged Ruby files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(rb|rake)$')
+
+if [ -n "$STAGED_FILES" ]; then
+  echo "Fixing common linting issues in staged Ruby files..."
+
+  # Fix common linting issues
+  bundle exec rubocop --only Style/StringLiterals,Layout/EmptyLinesAroundBlockBody,Layout/TrailingWhitespace,Layout/TrailingEmptyLines -a $STAGED_FILES
+
+  # Add the fixed files back to the staging area
+  git add $STAGED_FILES
+fi
+
+# Exit with success status
+exit 0
