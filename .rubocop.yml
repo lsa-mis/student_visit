@@ -1,5 +1,36 @@
+inherit_from: .rubocop_todo.yml
+
 # Omakase Ruby styling for Rails
 inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+
+# Exclude certain files and directories from RuboCop checks
+AllCops:
+  Exclude:
+    - 'db/schema.rb'
+    - 'bin/**/*'
+    - 'vendor/**/*'
+    - 'node_modules/**/*'
+    - 'tmp/**/*'
+    - 'log/**/*'
+    - 'public/**/*'
+    - 'storage/**/*'
+    - 'config/environments/*'
+    - 'lib/tasks/auto_annotate_models.rake'
+
+# Explicitly configure rules for the specific linting errors
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+  ConsistentQuotesInMultiline: true
+
+Layout/EmptyLinesAroundBlockBody:
+  EnforcedStyle: no_empty_lines
+
+Layout/TrailingWhitespace:
+  Enabled: true
+  AllowInHeredoc: false
+
+Layout/TrailingEmptyLines:
+  EnforcedStyle: final_newline
 
 # Overwrite or add rules to create your own house style
 #
