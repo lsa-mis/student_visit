@@ -1,4 +1,29 @@
 @import "tailwindcss";
+@theme {
+    --color-um-blue: #00274C;
+    --color-maize: #FFCB05;
+    --color-lsa-cyan: #00AEEF;
+    --color-web-cyan: #007CBA;
+    --color-michigan-summer-blue: #005499;
+    --color-transformational-teal: #008B9A;
+    --color-celebratory-celeste: #09B582;
+    --color-spring-bloom-magenta: #DA4097;
+    --color-impactful-pink: #EF4350;
+    --color-rigorous-red: #C61A1D;
+    --color-exploratory-orange: #F57E20;
+    --color-autumnal-umber: #B67110;
+    --color-puma-black: #111B23;
+    --color-primary: #00274C;
+    --color-secondary: #005499;
+    --color-success: #00664D;
+    --color-warning: #FFCB05;
+    --color-danger: #C61A1D;
+    --color-info: #00AEEF;
+    --color-light: #FFF;
+    --color-dark: #212529;
+    --color-body: #212529;
+    --color-mint-500: oklch(0.72 0.11 178);
+}
 
 @layer components {
   .btn-primary {
@@ -6,15 +31,103 @@
     padding-bottom: 0.5rem;
     padding-left: 1rem;
     padding-right: 1rem;
-    background-color: rgb(191 219 254);
+    background-color: var(--color-primary);
   }
 
   .nav {
     display: flex;
+    height: 5.625rem;
+    padding: 1rem 5.125rem;
     align-items: center;
-    justify-content: space-between;
-    padding: 1rem;
-    background-color: rgb(15 23 42);
-    color: white;
+    gap: 1rem;
+    flex-shrink: 0;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.15);
+    background-color: var(--color-um-blue);
+  }
+
+  .logo-title {
+    display: flex;
+    width: 69.75rem;
+    flex-direction: column;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    align-self: stretch;
+    color: var(--color-light);
+    font-family: "Noto Sans";
+    font-size: 3rem;
+    font-style: normal;
+    font-weight: 200;
+    line-height: 80%;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    align-self: stretch;
+    color: var(--color-body);
+    font-family: "Roboto";
+    font-size: 2.8125rem;
+    font-style: normal;
+    font-weight: 900;
+    line-height: 120%;
+  }
+
+  h2 {
+    align-self: stretch;
+    color: var(--color-body);
+    font-family: Roboto;
+    font-size: 2rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+  }
+
+  h3 {
+    align-self: stretch;
+    color: var(--color-body);
+    font-family: Roboto;
+    font-size: 1.75rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+  }
+
+  h4 {
+    align-self: stretch;
+    color: var(--color-body);
+    font-family: Roboto;
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+  h5 {
+    align-self: stretch;
+    color: var(--color-body);
+    font-family: Roboto;
+    font-size: 1.25rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+  }
+
+  h6 {
+    align-self: stretch;
+    color: var(--color-body);
+    font-family: Roboto;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+  }
+
+  p {
+    align-self: stretch;
+    color: var(--color-body);
+    font-family: "Noto Sans";
+    font-size: 0.875rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
   }
 }
