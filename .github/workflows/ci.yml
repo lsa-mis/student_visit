@@ -56,3 +56,35 @@ jobs:
       - name: Lint code for consistent style
         run: bin/rubocop -f github
 
+      - name: Annotate files with RuboCop offenses
+        if: ${{ failure() }}
+        run: bin/rubocop --format github
+
+      - name: Check for specific formatting issues
+        if: ${{ always() }}
+        run: |
+          echo "Checking for specific formatting issues..."
+          bin/rubocop --only Style/StringLiterals,Layout/EmptyLinesAroundBlockBody,Layout/TrailingWhitespace,Layout/TrailingEmptyLines --format github || true
+
+  test:
+    runs-on: ubuntu-latest
+    services:
+      sqlite:
+        image: sqlite:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Set up database
+        run: |
+          bin/rails db:create
+          bin/rails db:schema:load
+
+      - name: Run tests
+        run: bin/rspec
