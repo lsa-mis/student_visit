@@ -1,0 +1,34 @@
+# CODEOWNERS file for art_survey
+# Each line is a file pattern followed by one or more owners.
+# Order is important; the last matching pattern takes precedence.
+
+# Default owners for everything in the repo
+* @rsmoke
+
+# GitHub specific files and workflows
+/.github/ @rsmoke
+
+# Application code
+/app/ @rsmoke
+/app/models/ @rsmoke
+/app/controllers/ @rsmoke
+/app/views/ @rsmoke
+/app/assets/ @rsmoke
+/app/javascript/ @rsmoke
+
+# Database related files
+/db/ @rsmoke
+
+# Configuration files
+/config/ @rsmoke
+
+# Test files
+/spec/ @rsmoke
+
+# Documentation
+*.md @rsmoke
+/LICENSE @rsmoke
+
+# Dependency management
+/Gemfile @rsmoke
+/Gemfile.lock @rsmoke
