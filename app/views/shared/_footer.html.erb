@@ -1,0 +1,48 @@
+<footer class='fixed bottom-0 w-full inset-x-0 bg-white'>
+  <div class="container mx-auto px-5">
+    <div class="border-t border-slate-300 mb-2"></div>
+  </div>
+  <div class="container mx-auto px-5 pt-2 pb-4">
+    <!-- Mobile: Centered layout -->
+    <div class="lg:hidden text-center text-sm">
+      <div class="text-slate-700 font-semibold mb-0.5">
+        LSA Technology Services
+      </div>
+      <div class="text-gray-400 mb-2">
+        <a class="hover:underline" href="https://umich.edu/about/privacy/">Privacy Notice</a>
+        <span> | </span>
+        <span>734.615.0100</span>
+      </div>
+      <div class="text-gray-400 space-y-0.5">
+        <div>
+          <%= link_to 'The Regents of the University of Michigan', 'https://regents.umich.edu', class: 'hover:underline' %>
+        </div>
+        <div>
+          © <%= Time.now.year %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Desktop: Three-column layout -->
+    <div class="hidden lg:flex flex-row items-center justify-between gap-4 text-sm">
+      <!-- Left: Logo -->
+      <div class="flex-shrink-0">
+        <a href="https://lsa.umich.edu/technology-services/">
+          <%= image_tag 'LSA_Technology_logo.svg', alt: "LSA Technology Services Logo", class: "h-auto" %>
+        </a>
+      </div>
+
+      <!-- Center: Links and Phone -->
+      <div class="text-gray-400 flex items-center gap-2 flex-wrap justify-center">
+        <a class="hover:underline" href="https://umich.edu/about/privacy/">Privacy Notice</a>
+        <span>|</span>
+        <span>734.615.0100</span>
+      </div>
+
+      <!-- Right: Copyright -->
+      <div class="text-gray-400 flex-shrink-0">
+        © <%= Time.now.year %> | <%= link_to 'The Regents of the University of Michigan', 'https://regents.umich.edu', class: 'hover:underline' %>
+      </div>
+    </div>
+  </div>
+</footer>
