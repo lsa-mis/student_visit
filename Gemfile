@@ -4,6 +4,7 @@ gem "bootsnap", require: false
 gem "importmap-rails"
 gem "jbuilder"
 gem "kamal", require: false
+gem 'lsa_tdx_feedback'
 gem "propshaft"
 gem "puma", ">= 5.0"
 gem "rails", "~> 8.1.1"
