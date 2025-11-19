@@ -18,8 +18,9 @@
     <link rel="icon" href="/m-icon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+    <%# Optimized stylesheet loading: Tailwind first, then fonts, then app styles %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload", preload: true %>
+    <%= stylesheet_link_tag "inter-font", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
