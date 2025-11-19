@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <%= lsa_tdx_feedback_css %>
     <title><%= content_for(:title) || "Student Visit" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -31,5 +32,7 @@
       <%= yield %>
     </main>
     <%= render "shared/footer" %>
+    <%= lsa_tdx_feedback_modal %>
+    <%= lsa_tdx_feedback_js %>
   </body>
 </html>
