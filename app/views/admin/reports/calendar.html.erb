@@ -1,0 +1,31 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold">Calendar Export</h1>
+    <p class="text-gray-600 mt-1">
+      Program: <%= link_to @program.name, department_program_path(@department, @program), class: "text-blue-600 hover:text-blue-800" %>
+    </p>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <%= form_with url: calendar_admin_department_program_reports_path(@department, @program, format: :csv),
+        method: :get, class: "space-y-4" do |form| %>
+      <div>
+        <%= form.label :student_id, "Select Student", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= form.select :student_id,
+            options_from_collection_for_select(@students, :id, :email_address, @student&.id),
+            { prompt: "Choose a student" },
+            { class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" } %>
+      </div>
+
+      <div>
+        <%= form.label :date, "Date (optional)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= form.date_field :date, value: @date, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+        <p class="mt-1 text-sm text-gray-500">Leave blank to export entire program calendar</p>
+      </div>
+
+      <div>
+        <%= form.submit "Download CSV", class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
+      </div>
+    <% end %>
+  </div>
+</div>

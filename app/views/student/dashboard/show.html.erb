@@ -1,0 +1,57 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-6">Student Dashboard</h1>
+
+  <% if @enrolled_departments.count > 1 %>
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Select Department</h2>
+      <%= form_with url: select_department_student_dashboard_path, method: :post, class: "flex gap-4" do |form| %>
+        <%= form.select :department_id,
+            options_from_collection_for_select(@enrolled_departments, :id, :name, @selected_department_id),
+            { prompt: "Choose a department" },
+            { class: "flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500",
+              onchange: "this.form.submit()" } %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if @selected_department && @active_program %>
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-xl font-semibold mb-4"><%= @selected_department.name %></h2>
+      <p class="text-gray-600 mb-6">Active Program: <%= @active_program.name %></p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <%= link_to student_department_program_questionnaires_path(@selected_department, @active_program),
+            class: "bg-blue-100 hover:bg-blue-200 p-6 rounded-lg text-center" do %>
+          <div class="text-3xl mb-2">📝</div>
+          <div class="font-semibold">Questionnaires</div>
+        <% end %>
+
+        <%= link_to student_department_program_appointments_path(@selected_department, @active_program),
+            class: "bg-green-100 hover:bg-green-200 p-6 rounded-lg text-center" do %>
+          <div class="text-3xl mb-2">📅</div>
+          <div class="font-semibold">Appointments</div>
+        <% end %>
+
+        <%= link_to student_department_program_calendar_path(@selected_department, @active_program),
+            class: "bg-purple-100 hover:bg-purple-200 p-6 rounded-lg text-center" do %>
+          <div class="text-3xl mb-2">🗓️</div>
+          <div class="font-semibold">Calendar</div>
+        <% end %>
+
+        <%= link_to student_department_map_path(@selected_department),
+            class: "bg-yellow-100 hover:bg-yellow-200 p-6 rounded-lg text-center" do %>
+          <div class="text-3xl mb-2">🗺️</div>
+          <div class="font-semibold">Map</div>
+        <% end %>
+      </div>
+    </div>
+  <% elsif @selected_department %>
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+      <p class="text-yellow-800">No active program found for <%= @selected_department.name %>.</p>
+    </div>
+  <% else %>
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+      <p class="text-gray-600">Please select a department to continue.</p>
+    </div>
+  <% end %>
+</div>

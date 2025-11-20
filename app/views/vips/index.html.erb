@@ -1,0 +1,61 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-3xl font-bold">VIPs (Faculty/Staff)</h1>
+      <p class="text-gray-600 mt-1">Department: <%= link_to @department.name, department_path(@department), class: "text-blue-600 hover:text-blue-800" %></p>
+    </div>
+    <div class="flex gap-2">
+      <% if policy(Vip.new(department: @department)).create? %>
+        <%= link_to "Bulk Upload", bulk_upload_department_vips_path(@department), class: "bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" %>
+        <%= link_to "New VIP", new_department_vip_path(@department), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <% if @vips.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ranking</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profile URL</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @vips.each do |vip| %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= vip.ranking %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <%= link_to vip.name, department_vip_path(@department, vip), class: "text-blue-600 hover:text-blue-800" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <%= vip.title %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <% if vip.profile_url.present? %>
+                    <%= link_to "View", vip.profile_url, target: "_blank", class: "text-blue-600 hover:text-blue-800" %>
+                  <% else %>
+                    <span class="text-gray-400">—</span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <% if policy(vip).update? %>
+                    <%= link_to "Edit", edit_department_vip_path(@department, vip), class: "text-indigo-600 hover:text-indigo-800" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-gray-500">No VIPs found for this department.</p>
+    <% end %>
+  </div>
+</div>

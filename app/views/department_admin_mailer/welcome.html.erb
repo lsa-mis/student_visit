@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1>Welcome to Student Visit</h1>
+
+    <p>Hello,</p>
+
+    <p>You have been added as a Department Admin for <strong><%= @department.name %></strong>.</p>
+
+    <p>To get started, please set your password by clicking the link below:</p>
+
+    <p>
+      <%= link_to "Set Your Password", edit_password_url(@user.password_reset_token) %>
+    </p>
+
+    <p>This link will expire in <%= distance_of_time_in_words(0, @user.password_reset_token_expires_in) %>.</p>
+
+    <p>If you have any questions, please contact your system administrator.</p>
+
+    <p>Thank you,<br>The Student Visit Team</p>
+  </body>
+</html>

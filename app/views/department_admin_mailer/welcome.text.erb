@@ -1,0 +1,15 @@
+Welcome to Student Visit
+
+Hello,
+
+You have been added as a Department Admin for <%= @department.name %>.
+
+To get started, please set your password by visiting:
+<%= edit_password_url(@user.password_reset_token) %>
+
+This link will expire in <%= distance_of_time_in_words(0, @user.password_reset_token_expires_in) %>.
+
+If you have any questions, please contact your system administrator.
+
+Thank you,
+The Student Visit Team

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1>Appointment <%= @action == 'selected' ? 'Confirmed' : 'Cancelled' %></h1>
+
+    <p>Hello <%= @student.email_address %>,</p>
+
+    <p>Your appointment has been <%= @action == 'selected' ? 'confirmed' : 'cancelled' %>:</p>
+
+    <ul>
+      <li><strong>Faculty:</strong> <%= @vip.display_name %></li>
+      <li><strong>Date:</strong> <%= @appointment.start_time.strftime("%B %d, %Y") %></li>
+      <li><strong>Time:</strong> <%= @appointment.start_time.strftime("%I:%M %p") %> - <%= @appointment.end_time.strftime("%I:%M %p") %></li>
+      <li><strong>Program:</strong> <%= @program.name %></li>
+    </ul>
+
+    <% if @action == 'selected' %>
+      <p>Please make note of this appointment time.</p>
+    <% else %>
+      <p>This appointment slot is now available for other students.</p>
+    <% end %>
+
+    <p>Thank you,<br>The Student Visit Team</p>
+  </body>
+</html>

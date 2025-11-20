@@ -1,0 +1,74 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-3xl font-bold">Students</h1>
+      <p class="text-gray-600 mt-1">
+        Program: <%= link_to @program.name, department_program_path(@department, @program), class: "text-blue-600 hover:text-blue-800" %>
+      </p>
+    </div>
+    <% if policy(@program).update? %>
+      <%= link_to "Bulk Upload", bulk_upload_department_program_students_path(@department, @program), class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
+    <% end %>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <% if @students.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">First Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">UMID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enrolled</th>
+              <% if policy(@program).update? %>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @students.each do |student| %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= student.email_address %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= student.last_name || "-" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= student.first_name || "-" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= student.umid || "-" %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <%= student.student_programs.find_by(program: @program).created_at.strftime("%B %d, %Y") %>
+                </td>
+                <% if policy(@program).update? %>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <%= link_to "Edit", edit_department_program_student_path(@department, @program, student), class: "text-indigo-600 hover:text-indigo-800 mr-4" %>
+                    <%= button_to "Remove", department_program_student_path(@department, @program, student),
+                        method: :delete,
+                        class: "text-red-600 hover:text-red-800 bg-transparent border-0 cursor-pointer p-0",
+                        form: {
+                          class: "inline",
+                          data: {
+                            turbo_confirm: "Are you sure you want to remove #{student.email_address} from this program? This will not delete their account."
+                          }
+                        } %>
+                  </td>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4 text-sm text-gray-500">
+        Total: <%= @students.count %> student(s)
+      </div>
+    <% else %>
+      <p class="text-gray-500">No students enrolled in this program.</p>
+    <% end %>
+  </div>
+</div>
