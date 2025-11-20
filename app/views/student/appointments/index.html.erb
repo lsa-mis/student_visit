@@ -1,0 +1,45 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold">Appointments</h1>
+    <p class="text-gray-600 mt-1">
+      Program: <%= link_to @program.name, student_dashboard_path, class: "text-blue-600 hover:text-blue-800" %>
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <%= link_to available_student_department_program_appointments_path(@department, @program),
+        class: "bg-green-100 hover:bg-green-200 p-6 rounded-lg text-center" do %>
+      <div class="text-3xl mb-2">📅</div>
+      <div class="font-semibold">Available Appointments</div>
+    <% end %>
+
+    <%= link_to my_appointments_student_department_program_appointments_path(@department, @program),
+        class: "bg-blue-100 hover:bg-blue-200 p-6 rounded-lg text-center" do %>
+      <div class="text-3xl mb-2">✅</div>
+      <div class="font-semibold">My Appointments</div>
+    <% end %>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">My Upcoming Appointments</h2>
+    <% if @my_appointments.any? %>
+      <ul class="divide-y divide-gray-200">
+        <% @my_appointments.each do |appointment| %>
+          <li class="py-4">
+            <div class="flex justify-between items-center">
+              <div>
+                <p class="font-semibold"><%= appointment.vip.display_name %></p>
+                <p class="text-sm text-gray-500">
+                  <%= appointment.start_time.strftime("%B %d, %Y at %I:%M %p") %> -
+                  <%= appointment.end_time.strftime("%I:%M %p") %>
+                </p>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-gray-500">You have no upcoming appointments.</p>
+    <% end %>
+  </div>
+</div>

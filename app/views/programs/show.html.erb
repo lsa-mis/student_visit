@@ -1,0 +1,105 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-3xl font-bold"><%= @program.name %></h1>
+      <p class="text-gray-600 mt-1">
+        Department: <%= link_to @department.name, department_path(@department), class: "text-blue-600 hover:text-blue-800" %>
+        <% if @program.active? %>
+          <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+        <% end %>
+      </p>
+    </div>
+    <div>
+      <% if policy(@program).update? %>
+        <%= link_to "Edit", edit_department_program_path(@department, @program), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mr-2" %>
+      <% end %>
+      <%= link_to "Back to Programs", department_programs_path(@department), class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Open Date</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @program.open_date&.strftime("%B %d, %Y %I:%M %p") || "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Close Date</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @program.close_date&.strftime("%B %d, %Y %I:%M %p") || "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Questionnaire Due Date</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @program.questionnaire_due_date&.strftime("%B %d, %Y %I:%M %p") || "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Default Appointment Length</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @program.default_appointment_length %> minutes</dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Status</dt>
+        <dd class="mt-1 text-sm">
+          <% if @program.open? %>
+            <span class="text-green-600 font-medium">Open</span>
+          <% elsif @program.closed? %>
+            <span class="text-red-600 font-medium">Closed</span>
+          <% else %>
+            <span class="text-gray-600 font-medium">Not yet open</span>
+          <% end %>
+        </dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Questionnaire Due</dt>
+        <dd class="mt-1 text-sm">
+          <% if @program.questionnaire_due? %>
+            <span class="text-red-600 font-medium">Past Due</span>
+          <% else %>
+            <span class="text-green-600 font-medium">Open</span>
+          <% end %>
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  <% if policy(@program).show? %>
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Program Management</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <%= link_to department_program_students_path(@department, @program),
+            class: "bg-blue-100 hover:bg-blue-200 p-6 rounded-lg text-center transition-colors" do %>
+          <div class="text-3xl mb-2">👥</div>
+          <div class="font-semibold">Students</div>
+          <div class="text-sm text-gray-600 mt-1">
+            <%= pluralize(@program.students.count, 'student') %>
+          </div>
+        <% end %>
+
+        <%= link_to department_program_questionnaires_path(@department, @program),
+            class: "bg-green-100 hover:bg-green-200 p-6 rounded-lg text-center transition-colors" do %>
+          <div class="text-3xl mb-2">📝</div>
+          <div class="font-semibold">Questionnaires</div>
+          <div class="text-sm text-gray-600 mt-1">
+            <%= pluralize(@program.questionnaires.count, 'questionnaire') %>
+          </div>
+        <% end %>
+
+        <%= link_to department_program_calendar_events_path(@department, @program),
+            class: "bg-purple-100 hover:bg-purple-200 p-6 rounded-lg text-center transition-colors" do %>
+          <div class="text-3xl mb-2">🗓️</div>
+          <div class="font-semibold">Calendar Events</div>
+          <div class="text-sm text-gray-600 mt-1">
+            <%= pluralize(@program.calendar_events.count, 'event') %>
+          </div>
+        <% end %>
+
+        <%= link_to department_program_appointments_path(@department, @program),
+            class: "bg-yellow-100 hover:bg-yellow-200 p-6 rounded-lg text-center transition-colors" do %>
+          <div class="text-3xl mb-2">📅</div>
+          <div class="font-semibold">Appointments</div>
+          <div class="text-sm text-gray-600 mt-1">
+            <%= pluralize(@program.appointments.count, 'appointment') %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

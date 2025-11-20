@@ -1,6 +1,11 @@
 <p>
-  You can reset your password on
-  <%= link_to "this password reset page", edit_password_url(@user.password_reset_token) %>.
+  You can log into the Student Visit application using your email and UMID that you received when applying to the program. You are required to change your password during your first login.
+</p>
 
+<p>
+  <%= link_to "Click here to set your password", edit_password_url(@user.password_reset_token) %>.
+</p>
+
+<p>
   This link will expire in <%= distance_of_time_in_words(0, @user.password_reset_token_expires_in) %>.
 </p>

@@ -1,0 +1,17 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-3xl font-bold">Student Reports</h1>
+      <p class="text-gray-600 mt-1">
+        Program: <%= link_to @program.name, department_program_path(@department, @program), class: "text-blue-600 hover:text-blue-800" %>
+      </p>
+    </div>
+    <%= link_to "Download CSV", students_admin_department_program_reports_path(@department, @program, format: :csv),
+        class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <p class="text-gray-600 mb-4">Total students: <%= @students.count %></p>
+    <p class="text-sm text-gray-500">Use the Download CSV button to export student data including questionnaire answers and appointments.</p>
+  </div>
+</div>

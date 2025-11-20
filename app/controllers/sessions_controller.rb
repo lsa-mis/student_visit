@@ -6,9 +6,21 @@ class SessionsController < ApplicationController
   end
 
   def create
-    if user = User.authenticate_by(params.permit(:email_address, :password))
-      start_new_session_for user
-      redirect_to after_authentication_url
+    email_address = params[:email_address]
+    password = params[:password]
+
+    if user = User.authenticate_by(email_address: email_address, password: password)
+      # Check if user is logging in with their UMID (initial password)
+      # If so, require them to change their password
+      if user.umid.present? && password == user.umid
+        start_new_session_for user
+        # Redirect to password reset page to force password change
+        redirect_to edit_password_path(user.password_reset_token),
+                    notice: "Please change your password before continuing."
+      else
+        start_new_session_for user
+        redirect_to root_path
+      end
     else
       redirect_to new_session_path, alert: "Try another email address or password."
     end

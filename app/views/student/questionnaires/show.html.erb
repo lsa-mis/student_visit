@@ -1,0 +1,40 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold"><%= @questionnaire.name %></h1>
+    <p class="text-gray-600 mt-1">
+      Program: <%= link_to @program.name, student_dashboard_path, class: "text-blue-600 hover:text-blue-800" %>
+    </p>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <% if @program.questionnaire_due? %>
+      <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+        <p class="text-yellow-800">The questionnaire deadline has passed. You can view your answers but cannot edit them.</p>
+      </div>
+    <% end %>
+
+    <% @questions.each do |question| %>
+      <div class="mb-6 pb-6 border-b border-gray-200">
+        <h3 class="text-lg font-semibold mb-2"><%= question.text %></h3>
+        <% answer = @answers[question.id] %>
+        <% if answer %>
+          <div class="text-gray-700">
+            <% if question.question_type == "rich_text" %>
+              <%= answer.content.to_s.html_safe %>
+            <% else %>
+              <%= answer.content %>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="text-gray-400 italic">Not answered</p>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% unless @program.questionnaire_due? %>
+      <%= link_to "Edit Answers",
+          edit_student_department_program_questionnaire_path(@department, @program, @questionnaire),
+          class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+    <% end %>
+  </div>
+</div>
