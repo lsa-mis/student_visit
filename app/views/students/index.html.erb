@@ -11,6 +11,57 @@
     <% end %>
   </div>
 
+  <% if policy(@program).update? %>
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Add Student</h2>
+      <%= form_with url: department_program_students_path(@department, @program), method: :post, class: "space-y-4", data: { controller: "email-autocomplete", "email-autocomplete-search-url-value": search_department_program_students_path(@department, @program) } do |form| %>
+        <% if flash[:alert] || flash.now[:alert] %>
+          <div class="bg-red-50 border border-red-200 rounded-md p-4">
+            <p class="text-sm text-red-700"><%= flash[:alert] || flash.now[:alert] %></p>
+          </div>
+        <% end %>
+
+        <div class="space-y-4">
+          <div class="relative" data-email-autocomplete-target="container">
+            <%= form.label :email_address, "Email Address", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= form.email_field :email_address,
+                placeholder: "student@example.com",
+                required: true,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500",
+                data: { "email-autocomplete-target": "input", action: "input->email-autocomplete#search" } %>
+            <div class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto" data-email-autocomplete-target="suggestions"></div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <%= form.label :last_name, "Last Name", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= form.text_field :last_name,
+                  placeholder: "Last name",
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+            </div>
+            <div>
+              <%= form.label :first_name, "First Name", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= form.text_field :first_name,
+                  placeholder: "First name",
+                  class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+            </div>
+          </div>
+          <div>
+            <%= form.label :umid, "UMID", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <%= form.text_field :umid,
+                placeholder: "UMID",
+                required: true,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+            <p class="mt-1 text-sm text-gray-500">Required. This will be used as the initial password. The student will be required to change it on first login.</p>
+          </div>
+        </div>
+
+        <div>
+          <%= form.submit "Add Student", class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
   <div class="bg-white shadow rounded-lg p-6">
     <% if @students.any? %>
       <div class="overflow-x-auto">

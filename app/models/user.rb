@@ -6,6 +6,8 @@ class User < ApplicationRecord
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
+  validates :umid, uniqueness: { case_sensitive: false, allow_nil: true }
+
   # Alias for compatibility with gems that expect an email method
   def email
     email_address
