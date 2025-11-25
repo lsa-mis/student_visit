@@ -62,7 +62,12 @@ Rails.application.routes.draw do
           get :export_responses, format: :csv
         end
       end
-      resources :calendar_events
+      resources :calendar_events do
+        collection do
+          get :bulk_upload
+          post :process_bulk_upload
+        end
+      end
       resources :appointments, only: [:index, :show] do
         collection do
           get :bulk_upload

@@ -3,6 +3,10 @@ class CalendarEvent < ApplicationRecord
   has_many :calendar_event_faculties, dependent: :destroy
   has_many :participating_faculty, through: :calendar_event_faculties, source: :vip
 
+  has_rich_text :description
+  has_rich_text :location
+  has_rich_text :notes
+
   validates :title, :start_time, :end_time, presence: true
   validate :end_time_after_start_time
 
