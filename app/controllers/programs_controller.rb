@@ -58,6 +58,6 @@ class ProgramsController < ApplicationController
   end
 
   def program_params
-    params.require(:program).permit(:name, :open_date, :close_date, :questionnaire_due_date, :default_appointment_length, :active, :google_map_url)
+    params.require(:program).permit(:name, :open_date, :close_date, :questionnaire_due_date, :default_appointment_length, :active, :google_map_url, held_on_dates: [])
   end
 end

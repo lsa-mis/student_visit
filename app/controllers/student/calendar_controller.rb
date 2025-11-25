@@ -5,10 +5,27 @@ class Student::CalendarController < ApplicationController
   def show
     authorize :student_calendar, :show?
 
-    @date = params[:date] ? Date.parse(params[:date]) : Date.current
-    @view_mode = params[:view] || "single" # single or multi
+    @filter_mode = params[:filter] || "all" # date or all
+    @view_mode = params[:view] || (@filter_mode == "all" ? nil : "single") # single or multi (nil when showing all)
 
-    if @view_mode == "single"
+    # Set date: use provided date, or if switching to date filter mode, use first held-on date, otherwise current date
+    if params[:date]
+      @date = Date.parse(params[:date])
+    elsif @filter_mode == "date" && @program.held_on_dates.present? && @program.held_on_dates.is_a?(Array) && @program.held_on_dates.any?
+      @date = @program.held_on_dates_list.first
+    else
+      @date = Date.current
+    end
+
+    if @filter_mode == "all"
+      # Show all events for the program
+      @calendar_events = @program.calendar_events.order(:start_time)
+      @my_appointments = @program.appointments
+                                 .for_student(current_user)
+                                 .includes(:vip)
+                                 .order(:start_time)
+    elsif @view_mode == "single"
+      # Single day view
       @calendar_events = @program.calendar_events
                                   .where(start_time: @date.beginning_of_day..@date.end_of_day)
                                   .order(:start_time)
@@ -18,6 +35,7 @@ class Student::CalendarController < ApplicationController
                                  .includes(:vip)
                                  .order(:start_time)
     else
+      # Week view
       start_date = @date.beginning_of_week
       end_date = @date.end_of_week
       @calendar_events = @program.calendar_events
