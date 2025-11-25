@@ -47,10 +47,11 @@ Rails.application.routes.draw do
       patch :update_content
     end
     resources :programs do
-      resources :students, only: [:index, :edit, :update, :destroy] do
+      resources :students, only: [:index, :create, :edit, :update, :destroy] do
         collection do
           get :bulk_upload
           post :process_bulk_upload
+          get :search
         end
       end
       resources :questionnaires do

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_24_171320) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_25_184313) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -231,6 +231,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_24_171320) do
     t.string "umid"
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.index ["umid"], name: "index_users_on_umid", unique: true
   end
 
   create_table "vips", force: :cascade do |t|
