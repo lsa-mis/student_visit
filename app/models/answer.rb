@@ -12,12 +12,12 @@ class Answer < ApplicationRecord
   private
 
   def track_edit
-    return unless content_changed? || content_before_type_cast_changed?
+    return unless content_changed?
 
     answer_edits.build(
       edited_by: Current.user || student,
       edited_at: Time.current,
-      previous_content: content_was || content_before_type_cast_was
+      previous_content: content_was
     )
   end
 end

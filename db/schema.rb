@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_20_170403) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_24_171320) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -144,7 +144,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_20_170403) do
   create_table "departments", force: :cascade do |t|
     t.integer "active_program_id"
     t.datetime "created_at", null: false
-    t.text "google_map_url"
     t.text "mission_statement"
     t.string "name", null: false
     t.string "street_address"
@@ -158,6 +157,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_20_170403) do
     t.datetime "created_at", null: false
     t.integer "default_appointment_length", default: 30
     t.integer "department_id", null: false
+    t.text "google_map_url"
     t.string "name", null: false
     t.datetime "open_date"
     t.datetime "questionnaire_due_date"
@@ -226,6 +226,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_20_170403) do
     t.string "email_address", null: false
     t.string "first_name"
     t.string "last_name"
+    t.boolean "must_change_password"
     t.string "password_digest", null: false
     t.string "umid"
     t.datetime "updated_at", null: false

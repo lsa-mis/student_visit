@@ -55,6 +55,11 @@ Rails.application.routes.draw do
       end
       resources :questionnaires do
         resources :questions
+        member do
+          get :responses
+          get :student_response
+          get :export_responses, format: :csv
+        end
       end
       resources :calendar_events
       resources :appointments, only: [:index, :show] do

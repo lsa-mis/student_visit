@@ -34,16 +34,48 @@
               class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500",
               disabled: @program.questionnaire_due? %>
         <% when "checkbox" %>
+          <%
+            content = answer.content
+            # Extract plain text from ActionText if it's a RichText object
+            content_string = if content.respond_to?(:to_plain_text)
+                              content.to_plain_text
+                            else
+                              content.to_s
+                            end
+            checkbox_values = if content.nil? || content_string.blank?
+                              []
+                            elsif content.is_a?(Array)
+                              content.map(&:to_s)
+                            elsif content_string.start_with?("[") && content_string.end_with?("]")
+                              begin
+                                parsed = JSON.parse(content_string)
+                                parsed.is_a?(Array) ? parsed.map(&:to_s) : []
+                              rescue JSON::ParserError
+                                content_string.split(",").map(&:strip)
+                              end
+                            else
+                              content_string.split(",").map(&:strip)
+                            end
+          %>
           <% question.options_array.each do |option| %>
             <label class="flex items-center mb-2">
-              <%= form.check_box field_name, { multiple: true, checked: answer.content&.include?(option), disabled: @program.questionnaire_due? }, option, nil %>
+              <%= form.check_box field_name, { multiple: true, checked: checkbox_values.include?(option.to_s), disabled: @program.questionnaire_due? }, option, nil %>
               <span class="ml-2"><%= option %></span>
             </label>
           <% end %>
         <% when "radio" %>
+          <%
+            content = answer.content
+            # Extract plain text from ActionText if it's a RichText object
+            content_value = if content.respond_to?(:to_plain_text)
+                            content.to_plain_text
+                          else
+                            content.to_s
+                          end
+          %>
           <% question.options_array.each do |option| %>
             <label class="flex items-center mb-2">
-              <%= form.radio_button field_name, option, checked: answer.content == option, disabled: @program.questionnaire_due? %>
+              <%= form.radio_button field_name, option, checked: content_value&.to_s == option.to_s, disabled: @program.questionnaire_due? %>
               <span class="ml-2"><%= option %></span>
             </label>
           <% end %>

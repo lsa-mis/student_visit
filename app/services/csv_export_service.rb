@@ -109,4 +109,66 @@ class CsvExportService
       end
     end
   end
+
+  def self.export_questionnaire_responses(questionnaire, program)
+    CSV.generate(headers: true) do |csv|
+      questions = questionnaire.questions.order(:position)
+
+      # Build header row
+      headers = ["Student Email"]
+      questions.each do |question|
+        headers << "Q#{question.position}: #{question.text}"
+      end
+      csv << headers
+
+      # Get all students and their answers
+      students = program.students.order(:email_address)
+      question_ids = questions.pluck(:id)
+      all_answers = Answer.where(program: program, question_id: question_ids)
+                          .includes(:student, :question)
+                          .index_by { |a| [a.user_id, a.question_id] }
+
+      # Generate row for each student
+      students.each do |student|
+        row = [student.email_address]
+
+        questions.each do |question|
+          answer = all_answers[[student.id, question.id]]
+
+          if answer
+            content = answer.content
+            display_value = case question.question_type
+            when "checkbox"
+              # Extract plain text and parse checkbox values
+              content_string = if content.respond_to?(:to_plain_text)
+                                content.to_plain_text
+                              else
+                                content.to_s
+                              end
+              if content_string.start_with?("[") && content_string.end_with?("]")
+                begin
+                  parsed = JSON.parse(content_string)
+                  parsed.is_a?(Array) ? parsed.join("; ") : content_string
+                rescue JSON::ParserError
+                  content_string.split(",").map(&:strip).join("; ")
+                end
+              else
+                content_string.split(",").map(&:strip).join("; ")
+              end
+            when "rich_text"
+              content.respond_to?(:to_plain_text) ? content.to_plain_text : content.to_s
+            else
+              # radio, text, datetime, link
+              content.respond_to?(:to_plain_text) ? content.to_plain_text : content.to_s
+            end
+            row << display_value
+          else
+            row << "Not answered"
+          end
+        end
+
+        csv << row
+      end
+    end
+  end
 end
