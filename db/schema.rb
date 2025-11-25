@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_25_184313) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_25_190503) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -121,8 +121,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_184313) do
 
   create_table "calendar_events", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.text "description"
     t.datetime "end_time", null: false
+    t.boolean "mandatory", default: false, null: false
     t.integer "program_id", null: false
     t.datetime "start_time", null: false
     t.string "title", null: false

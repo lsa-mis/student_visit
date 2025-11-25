@@ -53,6 +53,30 @@ class CalendarEventsController < ApplicationController
     redirect_to department_program_calendar_events_path(@program.department, @program), notice: "Calendar event was successfully deleted."
   end
 
+  def bulk_upload
+    authorize CalendarEvent.new(program: @program), :create?
+  end
+
+  def process_bulk_upload
+    authorize CalendarEvent.new(program: @program), :create?
+
+    unless params[:file].present?
+      redirect_to bulk_upload_department_program_calendar_events_path(@program.department, @program), alert: "Please select a file."
+      return
+    end
+
+    service = BulkCalendarEventUploadService.new(@program, params[:file])
+    if service.call
+      flash[:notice] = "Successfully uploaded #{service.success_count} calendar event(s)."
+      flash[:alert] = "#{service.failure_count} failed." if service.failure_count > 0
+      flash[:errors] = service.errors if service.errors.any?
+    else
+      flash[:alert] = "Upload failed: #{service.errors.join(', ')}"
+    end
+
+    redirect_to department_program_calendar_events_path(@program.department, @program)
+  end
+
   private
 
   def set_program
@@ -65,11 +89,11 @@ class CalendarEventsController < ApplicationController
   end
 
   def calendar_event_params
-    params.require(:calendar_event).permit(:title, :description, :start_time, :end_time)
+    params.require(:calendar_event).permit(:title, :description, :location, :notes, :mandatory, :start_time, :end_time)
   end
 
   def update_participating_faculty
-    vip_ids = params[:calendar_event][:vip_ids]&.reject(&:blank?) || []
+    vip_ids = params.dig(:calendar_event, :vip_ids)&.reject(&:blank?) || []
     @calendar_event.participating_faculty = @program.department.vips.where(id: vip_ids)
   end
 end

@@ -1,4 +1,70 @@
-<div>
-  <h1 class="font-bold text-4xl">CalendarEvents#show</h1>
-  <p>Find me in app/views/calendar_events/show.html.erb</p>
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-3xl font-bold"><%= @calendar_event.title %></h1>
+      <p class="text-gray-600 mt-1">
+        Program: <%= link_to @program.name, department_program_path(@program.department, @program), class: "text-blue-600 hover:text-blue-800" %>
+      </p>
+    </div>
+    <div>
+      <% if policy(@calendar_event).update? %>
+        <%= link_to "Edit", edit_department_program_calendar_event_path(@program.department, @program, @calendar_event), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mr-2" %>
+      <% end %>
+      <%= link_to "Back to Events", department_program_calendar_events_path(@program.department, @program), class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Start Time</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @calendar_event.start_time.strftime("%B %d, %Y at %I:%M %p") %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">End Time</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @calendar_event.end_time.strftime("%B %d, %Y at %I:%M %p") %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Mandatory</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @calendar_event.mandatory? ? "Yes" : "No" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Participating Faculty</dt>
+        <dd class="mt-1 text-sm text-gray-900">
+          <% if @calendar_event.participating_faculty.any? %>
+            <%= @calendar_event.participating_faculty.map(&:name).join(", ") %>
+          <% else %>
+            <span class="text-gray-400">None</span>
+          <% end %>
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  <% if @calendar_event.description.present? %>
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Description</h2>
+      <div class="prose max-w-none">
+        <%= @calendar_event.description %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @calendar_event.location.present? %>
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Location</h2>
+      <div class="prose max-w-none">
+        <%= @calendar_event.location %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @calendar_event.notes.present? %>
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Notes</h2>
+      <div class="prose max-w-none">
+        <%= @calendar_event.notes %>
+      </div>
+    </div>
+  <% end %>
 </div>
