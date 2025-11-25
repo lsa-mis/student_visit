@@ -32,7 +32,7 @@
           <div class="font-semibold">Appointments</div>
         <% end %>
 
-        <%= link_to student_department_program_calendar_path(@selected_department, @active_program),
+        <%= link_to student_department_program_calendar_path(@selected_department, @active_program, filter: "all"),
             class: "bg-purple-100 hover:bg-purple-200 p-6 rounded-lg text-center" do %>
           <div class="text-3xl mb-2">🗓️</div>
           <div class="font-semibold">Calendar</div>
