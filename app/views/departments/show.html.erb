@@ -21,12 +21,6 @@
           <%= @department.active_program ? link_to(@department.active_program.name, department_program_path(@department, @department.active_program), class: "text-blue-600 hover:text-blue-800") : "None" %>
         </dd>
       </div>
-      <% if @department.google_map_url.present? %>
-        <div class="sm:col-span-2">
-          <dt class="text-sm font-medium text-gray-500">Google Map URL</dt>
-          <dd class="mt-1 text-sm text-gray-900 break-all"><%= @department.google_map_url %></dd>
-        </div>
-      <% end %>
     </dl>
   </div>
 

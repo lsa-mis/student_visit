@@ -57,6 +57,12 @@
           <% end %>
         </dd>
       </div>
+      <% if @program.google_map_url.present? %>
+        <div class="sm:col-span-2">
+          <dt class="text-sm font-medium text-gray-500">Google Map URL</dt>
+          <dd class="mt-1 text-sm text-gray-900 break-all"><%= @program.google_map_url %></dd>
+        </div>
+      <% end %>
     </dl>
   </div>
 

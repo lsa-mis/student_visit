@@ -1,6 +1,6 @@
 class Student::QuestionnairesController < ApplicationController
   before_action :set_program
-  before_action :set_questionnaire
+  before_action :set_questionnaire, only: [:show, :edit, :update]
   before_action :ensure_enrolled
 
   def index
@@ -24,7 +24,7 @@ class Student::QuestionnairesController < ApplicationController
     authorize :student_questionnaire, :update?
 
     if @program.questionnaire_due?
-      redirect_to student_questionnaire_path(@program.department, @program, @questionnaire),
+      redirect_to student_department_program_questionnaire_path(@program.department, @program, @questionnaire),
                   alert: "The questionnaire deadline has passed. You can no longer edit your answers."
       return
     end
@@ -42,7 +42,7 @@ class Student::QuestionnairesController < ApplicationController
       answer.save
     end
 
-    redirect_to student_questionnaire_path(@program.department, @program, @questionnaire),
+    redirect_to student_department_program_questionnaire_path(@program.department, @program, @questionnaire),
                 notice: "Your answers have been saved."
   end
 

@@ -1,0 +1,185 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold">Questionnaire Responses: <%= @questionnaire.name %></h1>
+    <p class="text-gray-600 mt-1">
+      Program: <%= link_to @program.name, department_program_path(@department, @program), class: "text-blue-600 hover:text-blue-800" %>
+    </p>
+    <div class="mt-4 flex items-center gap-4">
+      <%= link_to "← Back to Questionnaire", [@department, @program, @questionnaire], class: "text-blue-600 hover:text-blue-800" %>
+      <%= link_to export_responses_department_program_questionnaire_path(@department, @program, @questionnaire, format: :csv),
+                  class: "inline-flex items-center px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors" do %>
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        Download CSV
+      <% end %>
+    </div>
+  </div>
+
+  <% if @questions.any? %>
+    <div class="space-y-8">
+      <% @questions.each_with_index do |question, index| %>
+        <div class="bg-white shadow rounded-lg p-6">
+          <h2 class="text-xl font-semibold mb-4">
+            Question <%= index + 1 %>: <%= question.text %>
+          </h2>
+          <p class="text-sm text-gray-500 mb-4">Type: <%= question.question_type.humanize %></p>
+
+          <% chart_data = @chart_data[question.id] %>
+          <% if chart_data %>
+            <% if ["radio", "checkbox"].include?(question.question_type) %>
+              <div class="mb-6">
+                <div class="max-w-2xl">
+                  <canvas id="chart-<%= question.id %>"></canvas>
+                </div>
+                <p class="text-sm text-gray-600 mt-2">
+                  Total responses: <%= chart_data[:total_responses] %> out of <%= @students.count %> students
+                </p>
+              </div>
+
+              <div class="mt-4">
+                <h3 class="text-lg font-medium mb-2">Student Responses:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <% @students.each do |student| %>
+                    <% answer = @all_answers[[student.id, question.id]] %>
+                    <div class="border rounded p-3">
+                      <div class="font-medium text-sm">
+                        <%= link_to student.email_address,
+                            student_response_department_program_questionnaire_path(@department, @program, @questionnaire, student_id: student.id),
+                            class: "text-blue-600 hover:text-blue-800" %>
+                      </div>
+                      <div class="text-sm text-gray-600 mt-1">
+                        <% if answer %>
+                          <% if question.question_type == "checkbox" %>
+                            <%
+                              content = answer.content
+                              if content.is_a?(Array)
+                                display_content = content.join(", ")
+                              elsif content.to_s.start_with?("[") && content.to_s.end_with?("]")
+                                begin
+                                  parsed = JSON.parse(content.to_s)
+                                  display_content = parsed.is_a?(Array) ? parsed.join(", ") : content.to_s
+                                rescue JSON::ParserError
+                                  display_content = content.to_s
+                                end
+                              else
+                                display_content = content.to_s
+                              end
+                            %>
+                            <%= display_content %>
+                          <% else %>
+                            <%= answer.content %>
+                          <% end %>
+                        <% else %>
+                          <span class="text-gray-400 italic">Not answered</span>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% else %>
+              <div class="mb-4">
+                <p class="text-gray-700">
+                  <strong>Total responses:</strong> <%= chart_data[:answered_count] %> out of <%= chart_data[:total_students] %> students
+                </p>
+              </div>
+
+              <div class="mt-4">
+                <h3 class="text-lg font-medium mb-2">Student Responses:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <% @students.each do |student| %>
+                    <% answer = @all_answers[[student.id, question.id]] %>
+                    <div class="border rounded p-3">
+                      <div class="font-medium text-sm">
+                        <%= link_to student.email_address,
+                            student_response_department_program_questionnaire_path(@department, @program, @questionnaire, student_id: student.id),
+                            class: "text-blue-600 hover:text-blue-800" %>
+                      </div>
+                      <div class="text-sm text-gray-600 mt-1">
+                        <% if answer %>
+                          <% if question.question_type == "rich_text" %>
+                            <div class="prose prose-sm max-w-none">
+                              <%= answer.content.to_s.html_safe %>
+                            </div>
+                          <% else %>
+                            <%= answer.content %>
+                          <% end %>
+                        <% else %>
+                          <span class="text-gray-400 italic">Not answered</span>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="bg-white shadow rounded-lg p-6">
+      <p class="text-gray-500">No questions in this questionnaire yet.</p>
+    </div>
+  <% end %>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    <% @questions.each do |question| %>
+      <% chart_data = @chart_data[question.id] %>
+      <% if chart_data && ["radio", "checkbox"].include?(question.question_type) %>
+        const ctx<%= question.id %> = document.getElementById('chart-<%= question.id %>');
+        if (ctx<%= question.id %>) {
+          new Chart(ctx<%= question.id %>, {
+            type: '<%= question.question_type == "radio" ? "bar" : "bar" %>',
+            data: {
+              labels: <%= raw chart_data[:labels].to_json %>,
+              datasets: [{
+                label: 'Number of Responses',
+                data: <%= chart_data[:data].to_json %>,
+                backgroundColor: [
+                  'rgba(59, 130, 246, 0.5)',
+                  'rgba(16, 185, 129, 0.5)',
+                  'rgba(245, 158, 11, 0.5)',
+                  'rgba(239, 68, 68, 0.5)',
+                  'rgba(139, 92, 246, 0.5)',
+                  'rgba(236, 72, 153, 0.5)',
+                ],
+                borderColor: [
+                  'rgba(59, 130, 246, 1)',
+                  'rgba(16, 185, 129, 1)',
+                  'rgba(245, 158, 11, 1)',
+                  'rgba(239, 68, 68, 1)',
+                  'rgba(139, 92, 246, 1)',
+                  'rgba(236, 72, 153, 1)',
+                ],
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: true,
+              aspectRatio: 2,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    stepSize: 1
+                  }
+                }
+              },
+              plugins: {
+                legend: {
+                  display: false
+                }
+              }
+            }
+          });
+        }
+      <% end %>
+    <% end %>
+  });
+</script>

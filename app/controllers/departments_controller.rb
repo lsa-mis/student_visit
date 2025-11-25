@@ -70,7 +70,7 @@ class DepartmentsController < ApplicationController
   end
 
   def department_params
-    params.require(:department).permit(:name, :street_address, :google_map_url)
+    params.require(:department).permit(:name, :street_address)
   end
 
   def department_content_params

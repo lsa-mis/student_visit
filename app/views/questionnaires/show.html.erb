@@ -7,6 +7,9 @@
       </p>
     </div>
     <div>
+      <% if policy(@questionnaire).show? %>
+        <%= link_to "View Responses", responses_department_program_questionnaire_path(@department, @program, @questionnaire), class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mr-2" %>
+      <% end %>
       <% if policy(@questionnaire).update? %>
         <%= link_to "Edit", edit_department_program_questionnaire_path(@department, @program, @questionnaire), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mr-2" %>
         <%= link_to "Add Question", new_department_program_questionnaire_question_path(@department, @program, @questionnaire), class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>

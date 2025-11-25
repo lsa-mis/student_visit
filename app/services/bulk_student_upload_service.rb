@@ -56,19 +56,10 @@ class BulkStudentUploadService
   end
 
   def process_rows(spreadsheet)
-    new_users = []
-
     ActiveRecord::Base.transaction do
       (2..spreadsheet.last_row).each do |row|
-        user = process_row(spreadsheet.row(row))
-        new_users << user if user&.persisted?
+        process_row(spreadsheet.row(row))
       end
-    end
-
-    # Send emails after transaction commits to ensure all users are saved
-    # Using deliver_now ensures emails are sent immediately and all are processed
-    new_users.each do |user|
-      PasswordsMailer.reset(user).deliver_now
     end
   rescue => e
     errors << "Error processing file: #{e.message}"
@@ -91,6 +82,7 @@ class BulkStudentUploadService
       # Set initial password to UMID - user will be required to change it on first login
       umid_value = format_umid(row_data[3])
       user.password = umid_value.present? ? umid_value : SecureRandom.hex(16)
+      user.must_change_password = true
       unless user.save
         @failure_count += 1
         errors << "Row #{row_data}: #{user.errors.full_messages.join(', ')}"
@@ -120,7 +112,7 @@ class BulkStudentUploadService
       @success_count += 1 # Already enrolled, count as success
     end
 
-    # Return user if it was newly created (for email sending)
+    # Return user if it was newly created
     was_new_record ? user : nil
   end
 

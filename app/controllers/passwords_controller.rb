@@ -18,9 +18,25 @@ class PasswordsController < ApplicationController
   end
 
   def update
-    if @user.update(params.permit(:password, :password_confirmation))
-      @user.sessions.destroy_all
-      redirect_to new_session_path, notice: "Password has been reset."
+    if @user.update(params.permit(:password, :password_confirmation).merge(must_change_password: false))
+      # Check if this is a first login password change (user is already authenticated)
+      is_first_login = Current.user == @user
+
+      # Only destroy sessions if this is a manual password reset (not first login)
+      @user.sessions.destroy_all unless is_first_login
+
+      # Redirect to appropriate destination
+      if is_first_login && session[:return_to_after_password_change].present?
+        destination = session.delete(:return_to_after_password_change)
+        redirect_to destination, notice: "Password has been changed. Welcome!"
+      elsif is_first_login
+        # First login but no stored destination, go to student dashboard or root
+        destination = @user.student? ? student_dashboard_path : root_path
+        redirect_to destination, notice: "Password has been changed. Welcome!"
+      else
+        # Manual password reset
+        redirect_to new_session_path, notice: "Password has been reset."
+      end
     else
       redirect_to edit_password_path(params[:token]), alert: "Passwords did not match."
     end
