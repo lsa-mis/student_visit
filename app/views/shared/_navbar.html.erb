@@ -1,17 +1,17 @@
 <nav class="nav">
   <div class="container mx-auto px-4 py-2">
-    <div class="flex items-center justify-between">
-      <div id="LSAlogo" class="flex items-center shrink">
-        <%= link_to root_path, class: "mr-2" do %>
-          <%= image_tag 'LSA_Logo.svg', alt: 'LSA Logo', class: 'h-[3.09213rem] w-[9.375rem]' %>
+    <div class="flex items-center justify-between min-w-0">
+      <div id="LSAlogo" class="flex items-center shrink min-w-0 overflow-hidden">
+        <%= link_to root_path, class: "mr-2 shrink-0" do %>
+          <%= image_tag 'LSA_Logo.svg', alt: 'LSA Logo', class: 'h-[1.03rem] w-[3.125rem] sm:h-[1.546rem] sm:w-[4.6875rem] lg:h-[49.47px] lg:w-[150px] lg:max-w-none lg:shrink-0' %>
         <% end %>
-        <%= link_to root_path, class: "logo-title" do %>
+        <%= link_to root_path, class: "logo-title min-w-0" do %>
           Student Visit
         <% end %>
       </div>
 
       <% if authenticated? && Current.user %>
-        <div class="relative" data-controller="dropdown">
+        <div class="relative block shrink-0" data-controller="dropdown">
           <button type="button"
                   class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   data-action="click->dropdown#toggle"
@@ -23,17 +23,21 @@
                data-dropdown-target="menu">
             <div class="px-4 py-2 border-b border-gray-200">
               <p class="text-sm font-medium text-gray-900"><%= user_display_name(Current.user) %></p>
-              <p class="text-xs text-gray-500"><%= Current.user.email_address %></p>
+              <div class="mt-1">
+                <% if Current.user.super_admin? %>
+                  <span class="inline-block px-2 py-0.5 text-xs font-semibold uppercase rounded bg-red-600 text-white">Super Admin</span>
+                <% elsif Current.user.department_admin? %>
+                  <span class="inline-block px-2 py-0.5 text-xs font-semibold uppercase rounded" style="background-color: #FFCB05; color: black;">Department Admin</span>
+                <% elsif Current.user.student? %>
+                  <span class="inline-block px-2 py-0.5 text-xs font-semibold uppercase rounded" style="background-color: #00274C; color: #FFCB05;">Student</span>
+                <% end %>
+              </div>
+              <p class="text-xs text-gray-500 mt-1"><%= Current.user.email_address %></p>
             </div>
             <div class="py-1">
               <% if Current.user.super_admin? %>
-                <span class="block px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Super Admin</span>
                 <%= link_to "Page Content", admin_page_contents_path,
                     class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" %>
-              <% elsif Current.user.department_admin? %>
-                <span class="block px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Department Admin</span>
-              <% elsif Current.user.student? %>
-                <span class="block px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Student</span>
               <% end %>
             </div>
             <div class="py-1 border-t border-gray-200">
