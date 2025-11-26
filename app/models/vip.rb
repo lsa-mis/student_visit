@@ -9,6 +9,6 @@ class Vip < ApplicationRecord
   scope :ordered, -> { order(:ranking, :name) }
 
   def display_name
-    [title, name].compact.join(" ")
+    [title, name].compact.reject(&:blank?).join(" ")
   end
 end

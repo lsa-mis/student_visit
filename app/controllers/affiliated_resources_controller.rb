@@ -17,7 +17,7 @@ class AffiliatedResourcesController < ApplicationController
     authorize @affiliated_resource
 
     if @affiliated_resource.save
-      redirect_to department_affiliated_resources_path(@department), notice: "Affiliated resource was successfully created."
+      redirect_to department_affiliated_resource_path(@department, @affiliated_resource), notice: "Affiliated resource was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
@@ -31,7 +31,7 @@ class AffiliatedResourcesController < ApplicationController
     authorize @affiliated_resource
 
     if @affiliated_resource.update(affiliated_resource_params)
-      redirect_to department_affiliated_resources_path(@department), notice: "Affiliated resource was successfully updated."
+      redirect_to department_affiliated_resource_path(@department, @affiliated_resource), notice: "Affiliated resource was successfully updated."
     else
       render :edit, status: :unprocessable_entity
     end

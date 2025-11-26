@@ -1,4 +1,7 @@
 <div>
   <h1 class="font-bold text-4xl">Appointments#by_student</h1>
-  <p>Find me in app/views/appointments/by_student.html.erb</p>
+  <% @appointments.each do |appointment| %>
+    <p><%= @student.email_address %></p>
+    <p><%= appointment.vip.display_name %></p>
+  <% end %>
 </div>

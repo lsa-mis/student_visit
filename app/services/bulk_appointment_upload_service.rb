@@ -61,10 +61,10 @@ class BulkAppointmentUploadService
       (2..spreadsheet.last_row).each do |row|
         process_row(spreadsheet.row(row))
       end
+    rescue => e
+      errors << "Error processing file: #{e.message}"
+      raise ActiveRecord::Rollback
     end
-  rescue => e
-    errors << "Error processing file: #{e.message}"
-    raise ActiveRecord::Rollback
   end
 
   def process_row(row_data)

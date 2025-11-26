@@ -1,6 +1,7 @@
 class AppointmentPolicy < ApplicationPolicy
   def index?
-    user&.super_admin? || user&.department_admin?
+    return false unless user
+    user.super_admin? || user.department_admin?
   end
 
   def show?
