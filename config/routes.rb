@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   namespace :admin do
+    resources :page_contents
     resources :departments, only: [] do
       resources :programs, only: [] do
         resources :reports, only: [] do

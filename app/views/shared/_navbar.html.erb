@@ -28,6 +28,8 @@
             <div class="py-1">
               <% if Current.user.super_admin? %>
                 <span class="block px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Super Admin</span>
+                <%= link_to "Page Content", admin_page_contents_path,
+                    class: "block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" %>
               <% elsif Current.user.department_admin? %>
                 <span class="block px-4 py-2 text-xs font-semibold text-gray-500 uppercase">Department Admin</span>
               <% elsif Current.user.student? %>
