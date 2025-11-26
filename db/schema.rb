@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_25_205851) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_26_155334) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -149,6 +149,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_25_205851) do
     t.string "street_address"
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_departments_on_name", unique: true
+  end
+
+  create_table "page_contents", force: :cascade do |t|
+    t.string "area_name", null: false
+    t.datetime "created_at", null: false
+    t.string "page_path", null: false
+    t.datetime "updated_at", null: false
+    t.index ["page_path", "area_name"], name: "index_page_contents_on_page_and_area", unique: true
   end
 
   create_table "programs", force: :cascade do |t|

@@ -14,4 +14,16 @@ module ApplicationHelper
     return "Guest" unless user&.email_address
     user.email_address.split("@").first
   end
+
+  # Render page content for a specific page and area
+  # Usage: <%= render_page_content("home/index", "welcome_message") %>
+  def render_page_content(page_path, area_name, default: nil)
+    content = PageContent.for_page(page_path, area_name)
+
+    if content.persisted? && content.content.present?
+      content_tag(:div, content.content.to_s, class: "page-content", data: { page: page_path, area: area_name })
+    elsif default.present?
+      content_tag(:div, default.html_safe, class: "page-content", data: { page: page_path, area: area_name })
+    end
+  end
 end
