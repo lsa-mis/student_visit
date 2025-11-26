@@ -10,10 +10,35 @@
   </div>
 
   <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">Department Information</h2>
     <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div>
         <dt class="text-sm font-medium text-gray-500">Street Address</dt>
-        <dd class="mt-1 text-sm text-gray-900"><%= @department.street_address || "Not set" %></dd>
+        <dd class="mt-1 text-sm text-gray-900"><%= @department.street_address.present? ? @department.street_address : "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Building Name</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @department.building_name.present? ? @department.building_name : "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Main Office Room Number</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @department.main_office_room_number.present? ? @department.main_office_room_number : "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">City</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @department.city.present? ? @department.city : "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">State</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @department.state.present? ? @department.state : "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Zipcode</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @department.zipcode.present? ? @department.zipcode : "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Main Office Phone Number</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @department.main_office_phone_number.present? ? @department.main_office_phone_number : "Not set" %></dd>
       </div>
       <div>
         <dt class="text-sm font-medium text-gray-500">Active Program</dt>

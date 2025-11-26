@@ -24,7 +24,7 @@
                 <%= link_to department.name, department_path(department), class: "text-blue-600 hover:text-blue-800" %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <%= department.street_address %>
+                <%= format_department_address(department).presence || "Not set" %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 <%= department.active_program&.name || "None" %>
