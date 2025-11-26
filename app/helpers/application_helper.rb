@@ -12,7 +12,12 @@ module ApplicationHelper
 
   def user_display_name(user)
     return "Guest" unless user&.email_address
-    user.email_address.split("@").first
+
+    if user.first_name.present? && user.last_name.present?
+      "#{user.first_name} #{user.last_name}"
+    else
+      user.email_address.split("@").first
+    end
   end
 
   # Render page content for a specific page and area
