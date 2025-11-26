@@ -21,7 +21,7 @@ class VipsController < ApplicationController
     authorize @vip
 
     if @vip.save
-      redirect_to department_vips_path(@department), notice: "VIP was successfully created."
+      redirect_to department_vip_path(@department, @vip), notice: "VIP was successfully created."
     else
       render :new, status: :unprocessable_entity
     end

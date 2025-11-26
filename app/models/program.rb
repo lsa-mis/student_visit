@@ -19,7 +19,8 @@ class Program < ApplicationRecord
 
   def open?
     return false unless open_date && close_date
-    Time.current >= open_date && Time.current <= close_date
+    now = Time.current
+    now >= open_date && now <= close_date
   end
 
   def closed?

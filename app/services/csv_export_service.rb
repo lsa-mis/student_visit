@@ -3,8 +3,11 @@ require "csv"
 class CsvExportService
   def self.export_students(program)
     CSV.generate(headers: true) do |csv|
+      # Ensure questionnaires and questions are loaded
+      program = Program.includes(questionnaires: :questions).find(program.id)
+      questions = program.questionnaires.flat_map { |q| q.questions.order(:position) }
       csv << ["Email", "Name", "Enrolled Date"] +
-             program.questionnaires.flat_map { |q| q.questions.map { |qn| "Q: #{qn.text}" } } +
+             questions.map { |qn| "Q: #{qn.text}" } +
              ["Appointments"]
 
       program.students.includes(:answers, :appointments).each do |student|
@@ -18,7 +21,7 @@ class CsvExportService
         ]
 
         program.questionnaires.each do |questionnaire|
-          questionnaire.questions.each do |question|
+          questionnaire.questions.order(:position).each do |question|
             answer = answers[question.id]
             row << (answer&.content || "")
           end

@@ -23,6 +23,9 @@ RSpec.describe CsvExportService, type: :service do
     end
 
     it 'includes questionnaire questions in headers' do
+      # Ensure questionnaire and question are created
+      questionnaire
+      question
       csv = CsvExportService.export_students(program)
       expect(csv).to include('Q: Test Question')
     end

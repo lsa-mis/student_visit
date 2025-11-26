@@ -77,11 +77,7 @@ RSpec.describe BulkAppointmentUploadService, type: :service do
       let(:xlsx_file) { Tempfile.new(['appointments', '.xlsx']) }
 
       before do
-        # Create a simple Excel file using Roo
-        require 'roo'
-        workbook = Roo::Excelx.new(xlsx_file.path, file_warning: :ignore)
-        # Note: Roo::Excelx.new creates a new file, so we'll use a different approach
-        # For testing, we'll mock the Roo::Excelx behavior
+        # Mock the file and Roo::Excelx behavior
         allow(file).to receive(:original_filename).and_return('appointments.xlsx')
         allow(file).to receive(:path).and_return(xlsx_file.path)
       end

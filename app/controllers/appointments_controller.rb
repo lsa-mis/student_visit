@@ -20,7 +20,7 @@ class AppointmentsController < ApplicationController
     authorize Appointment.new(program: @program), :create?
 
     unless params[:file].present? && params[:vip_id].present?
-      redirect_to bulk_upload_program_appointments_path(@program.department, @program), alert: "Please select a file and VIP."
+      redirect_to bulk_upload_department_program_appointments_path(@program.department, @program), alert: "Please select a file and VIP."
       return
     end
 

@@ -11,9 +11,12 @@ class DepartmentAdminsController < ApplicationController
     authorize @department, :update?
 
     # Check if user_id is provided (existing user) or email_address (new user)
-    if params[:user_id].present?
-      user = User.find(params[:user_id])
-    elsif params[:email_address].present?
+    user_id = params[:user_id] || params.dig(:department_admin, :user_id)
+    email_address = params[:email_address] || params.dig(:department_admin, :email_address)
+
+    if user_id.present?
+      user = User.find(user_id)
+    elsif email_address.present?
       # Create new user if they don't exist
       user = User.find_or_initialize_by(email_address: params[:email_address].strip.downcase)
 

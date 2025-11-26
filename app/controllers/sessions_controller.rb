@@ -9,6 +9,10 @@ class SessionsController < ApplicationController
     email_address = params[:email_address]
     password = params[:password]
 
+    # Validate required parameters before calling authenticate_by
+    raise ArgumentError, "finder arguments are required" if email_address.blank?
+    raise ArgumentError, "password arguments are required" if password.blank?
+
     if user = User.authenticate_by(email_address: email_address, password: password)
       # Check if user is logging in with their UMID (initial password) or must change password
       # If so, require them to change their password

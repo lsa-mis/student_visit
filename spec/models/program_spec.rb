@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Program, type: :model do
+  include ActiveSupport::Testing::TimeHelpers
   let(:department) { Department.create!(name: "Test Department") }
 
   describe 'associations' do
@@ -96,8 +97,11 @@ RSpec.describe Program, type: :model do
       it 'returns true when current time equals close_date' do
         close_time = Time.current
         program.update!(open_date: 1.day.ago, close_date: close_time)
-        # Allow a small time difference since Time.current might be slightly different
-        expect(program.open?).to be true
+        program.reload
+        # Use travel_to to freeze time at close_time to ensure equality
+        travel_to close_time do
+          expect(program.open?).to be true
+        end
       end
     end
 
