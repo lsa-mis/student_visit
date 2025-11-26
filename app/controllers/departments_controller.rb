@@ -50,9 +50,18 @@ class DepartmentsController < ApplicationController
   def update
     authorize @department
 
+    Rails.logger.debug "Department update params: #{department_params.inspect}"
+    Rails.logger.debug "Department before update: #{@department.attributes.inspect}"
+
     if @department.update(department_params)
-      redirect_to @department, notice: "Department was successfully updated."
+      Rails.logger.debug "Department after update: #{@department.attributes.inspect}"
+      respond_to do |format|
+        format.html { redirect_to @department, notice: "Department was successfully updated." }
+        format.turbo_stream { redirect_to @department, notice: "Department was successfully updated." }
+      end
     else
+      Rails.logger.error "Department update failed: #{@department.errors.full_messages.inspect}"
+      flash.now[:alert] = "Failed to update department: #{@department.errors.full_messages.join(', ')}" if @department.errors.any?
       render :edit, status: :unprocessable_entity
     end
   end
@@ -70,7 +79,7 @@ class DepartmentsController < ApplicationController
   end
 
   def department_params
-    params.require(:department).permit(:name, :street_address)
+    params.require(:department).permit(:name, :street_address, :building_name, :main_office_room_number, :city, :state, :zipcode, :main_office_phone_number)
   end
 
   def department_content_params

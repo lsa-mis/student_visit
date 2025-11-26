@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_26_155334) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_26_171423) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -143,11 +143,17 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_155334) do
 
   create_table "departments", force: :cascade do |t|
     t.integer "active_program_id"
+    t.string "building_name"
+    t.string "city"
     t.datetime "created_at", null: false
+    t.string "main_office_phone_number"
+    t.string "main_office_room_number"
     t.text "mission_statement"
     t.string "name", null: false
+    t.string "state"
     t.string "street_address"
     t.datetime "updated_at", null: false
+    t.string "zipcode"
     t.index ["name"], name: "index_departments_on_name", unique: true
   end
 

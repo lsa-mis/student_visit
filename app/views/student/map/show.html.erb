@@ -9,15 +9,20 @@
   <div class="bg-white shadow rounded-lg p-6">
     <div id="map" style="height: 500px; width: 100%;" data-controller="map"
          data-map-api-key-value="<%= Rails.application.config.google_maps_api_key %>"
-         data-map-address-value="<%= @department.street_address %>"
+         data-map-address-value="<%= format_department_address_for_map(@department) %>"
          data-map-custom-url-value="<%= @program&.google_map_url %>"></div>
   </div>
 
-  <% if @department.street_address.present? %>
+  <% if format_department_address(@department).present? %>
     <div class="mt-4 bg-gray-50 rounded-lg p-4">
       <p class="text-sm text-gray-600">
-        <strong>Address:</strong> <%= @department.street_address %>
+        <strong>Address:</strong> <%= format_department_address(@department) %>
       </p>
+      <% if @department.main_office_phone_number.present? %>
+        <p class="text-sm text-gray-600 mt-2">
+          <strong>Phone:</strong> <%= @department.main_office_phone_number %>
+        </p>
+      <% end %>
     </div>
   <% end %>
 </div>
