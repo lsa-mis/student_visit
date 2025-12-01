@@ -1,17 +1,17 @@
 class Student::QuestionnairePolicy < ApplicationPolicy
   def index?
-    user&.student?
+    user&.student? || false
   end
 
   def show?
-    user&.student?
+    user&.student? || false
   end
 
   def edit?
-    user&.student?
+    user&.student? || false
   end
 
   def update?
-    user&.student?
+    user&.student? || false
   end
 end

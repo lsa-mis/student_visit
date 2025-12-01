@@ -1,5 +1,5 @@
 class Student::CalendarPolicy < ApplicationPolicy
   def show?
-    user&.student?
+    user&.student? || false
   end
 end
