@@ -1,5 +1,8 @@
-@import "tailwindcss";
-@theme {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
     --color-um-blue: #00274C;
     --color-maize: #FFCB05;
     --color-lsa-cyan: #00AEEF;
