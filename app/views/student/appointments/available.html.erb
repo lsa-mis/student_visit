@@ -1,0 +1,50 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold">Available Appointments</h1>
+    <p class="text-gray-600 mt-1">
+      Program: <%= link_to @program.name, student_dashboard_path, class: "text-blue-600 hover:text-blue-800" %>
+    </p>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">Filter by Faculty</h2>
+    <%= form_with url: available_student_department_program_appointments_path(@department, @program),
+        method: :get, class: "flex gap-4" do |form| %>
+      <%= form.select :vip_id,
+          options_from_collection_for_select(@vips, :id, :display_name, @selected_vip_id),
+          { include_blank: "All Faculty" },
+          { class: "flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500",
+            onchange: "this.form.submit()" } %>
+    <% end %>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <% if @appointments.any? %>
+      <ul class="divide-y divide-gray-200">
+        <% @appointments.group_by(&:vip).each do |vip, appointments| %>
+          <li class="py-4">
+            <h3 class="text-lg font-semibold mb-2"><%= vip.display_name %></h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+              <% appointments.each do |appointment| %>
+                <div class="border border-gray-200 rounded p-3 flex justify-between items-center">
+                  <div>
+                    <p class="text-sm">
+                      <%= appointment.start_time.strftime("%B %d, %Y") %><br>
+                      <%= appointment.start_time.strftime("%I:%M %p") %> - <%= appointment.end_time.strftime("%I:%M %p") %>
+                    </p>
+                  </div>
+                  <%= form_with url: select_student_department_program_appointment_path(@department, @program, appointment),
+                      method: :post, class: "inline" do |form| %>
+                    <%= form.submit "Select", class: "bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700" %>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-gray-500">No available appointments found.</p>
+    <% end %>
+  </div>
+</div>

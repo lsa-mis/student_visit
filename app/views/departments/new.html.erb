@@ -1,0 +1,62 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold mb-6">New Department</h1>
+
+  <%= form_with model: @department, class: "bg-white shadow rounded-lg p-6" do |form| %>
+    <% if @department.errors.any? %>
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+        <h2 class="font-bold"><%= pluralize(@department.errors.count, "error") %> prohibited this department from being saved:</h2>
+        <ul class="list-disc list-inside mt-2">
+          <% @department.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="mb-4">
+      <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.text_field :name, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :street_address, "Street Address", class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.text_field :street_address, placeholder: "e.g., 238 State Street", class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :building_name, "Building Name", class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.text_field :building_name, placeholder: "e.g., LSA Building", class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :main_office_room_number, "Main Office Room Number", class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.text_field :main_office_room_number, placeholder: "e.g., 3032", class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div>
+        <%= form.label :city, "City", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= form.text_field :city, placeholder: "e.g., Ann Arbor", class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+      </div>
+      <div>
+        <%= form.label :state, "State", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= form.text_field :state, placeholder: "e.g., Michigan", class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :zipcode, "Zipcode", class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.text_field :zipcode, placeholder: "e.g., 48104", class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+
+    <div class="mb-4">
+      <%= form.label :main_office_phone_number, "Main Office Phone Number", class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.text_field :main_office_phone_number, placeholder: "e.g., 734.665.0100", class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+
+    <div class="flex justify-end space-x-4">
+      <%= form.submit "Create Department", class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+      <%= link_to "Cancel", departments_path, class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+    </div>
+  <% end %>
+</div>

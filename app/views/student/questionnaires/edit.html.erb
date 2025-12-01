@@ -1,0 +1,102 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold">Edit Questionnaire: <%= @questionnaire.name %></h1>
+    <p class="text-gray-600 mt-1">
+      Program: <%= link_to @program.name, student_dashboard_path, class: "text-blue-600 hover:text-blue-800" %>
+    </p>
+  </div>
+
+  <%= form_with url: student_department_program_questionnaire_path(@department, @program, @questionnaire),
+      method: :patch, class: "bg-white shadow rounded-lg p-6" do |form| %>
+
+    <% if @program.questionnaire_due? %>
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <p class="text-red-800">The questionnaire deadline has passed. You can no longer edit your answers.</p>
+      </div>
+    <% end %>
+
+    <% @questions.each do |question| %>
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          <%= question.text %>
+        </label>
+
+        <% answer = @answers[question.id] || Answer.new %>
+        <% field_name = "answers[#{question.id}][content]" %>
+
+        <% case question.question_type %>
+        <% when "text" %>
+          <%= form.text_field field_name, value: answer.content,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500",
+              disabled: @program.questionnaire_due? %>
+        <% when "rich_text" %>
+          <%= form.rich_text_area field_name, value: answer.content,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500",
+              disabled: @program.questionnaire_due? %>
+        <% when "checkbox" %>
+          <%
+            content = answer.content
+            # Extract plain text from ActionText if it's a RichText object
+            content_string = if content.respond_to?(:to_plain_text)
+                              content.to_plain_text
+                            else
+                              content.to_s
+                            end
+            checkbox_values = if content.nil? || content_string.blank?
+                              []
+                            elsif content.is_a?(Array)
+                              content.map(&:to_s)
+                            elsif content_string.start_with?("[") && content_string.end_with?("]")
+                              begin
+                                parsed = JSON.parse(content_string)
+                                parsed.is_a?(Array) ? parsed.map(&:to_s) : []
+                              rescue JSON::ParserError
+                                content_string.split(",").map(&:strip)
+                              end
+                            else
+                              content_string.split(",").map(&:strip)
+                            end
+          %>
+          <% question.options_array.each do |option| %>
+            <label class="flex items-center mb-2">
+              <%= form.check_box field_name, { multiple: true, checked: checkbox_values.include?(option.to_s), disabled: @program.questionnaire_due? }, option, nil %>
+              <span class="ml-2"><%= option %></span>
+            </label>
+          <% end %>
+        <% when "radio" %>
+          <%
+            content = answer.content
+            # Extract plain text from ActionText if it's a RichText object
+            content_value = if content.respond_to?(:to_plain_text)
+                            content.to_plain_text
+                          else
+                            content.to_s
+                          end
+          %>
+          <% question.options_array.each do |option| %>
+            <label class="flex items-center mb-2">
+              <%= form.radio_button field_name, option, checked: content_value&.to_s == option.to_s, disabled: @program.questionnaire_due? %>
+              <span class="ml-2"><%= option %></span>
+            </label>
+          <% end %>
+        <% when "datetime" %>
+          <%= form.datetime_local_field field_name, value: answer.content,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500",
+              disabled: @program.questionnaire_due? %>
+        <% when "link" %>
+          <%= form.url_field field_name, value: answer.content,
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500",
+              disabled: @program.questionnaire_due? %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="flex justify-end space-x-4">
+      <% unless @program.questionnaire_due? %>
+        <%= form.submit "Save Answers", class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+      <% end %>
+      <%= link_to "Cancel", student_department_program_questionnaire_path(@department, @program, @questionnaire),
+          class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+    </div>
+  <% end %>
+</div>

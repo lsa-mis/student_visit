@@ -1,0 +1,129 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold">Student Response: <%= @student.email_address %></h1>
+    <p class="text-gray-600 mt-1">
+      Questionnaire: <%= link_to @questionnaire.name, [@department, @program, @questionnaire], class: "text-blue-600 hover:text-blue-800" %>
+      <span class="mx-2">|</span>
+      Program: <%= link_to @program.name, department_program_path(@department, @program), class: "text-blue-600 hover:text-blue-800" %>
+    </p>
+    <div class="mt-4">
+      <%= link_to "← Back to All Responses", responses_department_program_questionnaire_path(@department, @program, @questionnaire), class: "text-blue-600 hover:text-blue-800" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Answers Section -->
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-2xl font-semibold mb-4">Questionnaire Answers</h2>
+
+      <% if @questions.any? %>
+        <div class="space-y-6">
+          <% @questions.each_with_index do |question, index| %>
+            <div class="border-b border-gray-200 pb-4">
+              <h3 class="text-lg font-medium mb-2">
+                Question <%= index + 1 %>: <%= question.text %>
+              </h3>
+              <p class="text-sm text-gray-500 mb-2">Type: <%= question.question_type.humanize %></p>
+
+              <% answer = @answers[question.id] %>
+              <div class="mt-2">
+                <% if answer %>
+                  <div class="text-gray-700">
+                    <% case question.question_type %>
+                    <% when "rich_text" %>
+                      <div class="prose prose-sm max-w-none">
+                        <%= answer.content.to_s.html_safe %>
+                      </div>
+                    <% when "checkbox" %>
+                      <%
+                        content = answer.content
+                        if content.is_a?(Array)
+                          checkbox_values = content
+                        elsif content.to_s.start_with?("[") && content.to_s.end_with?("]")
+                          begin
+                            parsed = JSON.parse(content.to_s)
+                            checkbox_values = parsed.is_a?(Array) ? parsed : [content.to_s]
+                          rescue JSON::ParserError
+                            checkbox_values = [content.to_s]
+                          end
+                        else
+                          checkbox_values = content.to_s.split(",").map(&:strip)
+                        end
+                      %>
+                      <% if checkbox_values.length > 1 || (checkbox_values.length == 1 && checkbox_values.first.present?) %>
+                        <ul class="list-disc list-inside">
+                          <% checkbox_values.each do |item| %>
+                            <li><%= item %></li>
+                          <% end %>
+                        </ul>
+                      <% else %>
+                        <%= content.to_s %>
+                      <% end %>
+                    <% else %>
+                      <%= answer.content %>
+                    <% end %>
+                  </div>
+                  <% if answer.answer_edits.any? %>
+                    <p class="text-xs text-gray-500 mt-2">
+                      Edited <%= pluralize(answer.answer_edits.count, 'time') %>
+                    </p>
+                  <% end %>
+                <% else %>
+                  <p class="text-gray-400 italic">Not answered</p>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500">No questions in this questionnaire.</p>
+      <% end %>
+    </div>
+
+    <!-- Appointments Section -->
+    <div class="bg-white shadow rounded-lg p-6">
+      <h2 class="text-2xl font-semibold mb-4">Appointments with Faculty</h2>
+
+      <% if @appointments.any? %>
+        <div class="space-y-4">
+          <% @appointments.each do |appointment| %>
+            <div class="border rounded-lg p-4">
+              <div class="flex justify-between items-start mb-2">
+                <div>
+                  <h3 class="font-medium text-lg">
+                    <%= appointment.vip&.name || "Faculty Member" %>
+                  </h3>
+                  <% if appointment.vip&.title.present? %>
+                    <p class="text-sm text-gray-600"><%= appointment.vip.title %></p>
+                  <% end %>
+                </div>
+                <span class="px-2 py-1 text-xs rounded <%= appointment.start_time >= Time.current ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %>">
+                  <%= appointment.start_time >= Time.current ? 'Upcoming' : 'Past' %>
+                </span>
+              </div>
+
+              <div class="mt-3 space-y-1 text-sm">
+                <p>
+                  <strong>Date & Time:</strong>
+                  <%= appointment.start_time.strftime("%B %d, %Y at %I:%M %p") %>
+                </p>
+                <p>
+                  <strong>Duration:</strong>
+                  <%= distance_of_time_in_words(appointment.start_time, appointment.end_time) %>
+                </p>
+                <% if appointment.vip&.location.present? %>
+                  <p>
+                    <strong>Location:</strong>
+                    <%= appointment.vip.location %>
+                  </p>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500">No appointments scheduled with faculty members.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

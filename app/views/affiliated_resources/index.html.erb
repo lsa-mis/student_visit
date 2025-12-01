@@ -1,0 +1,37 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-3xl font-bold">Affiliated Resources</h1>
+      <p class="text-gray-600 mt-1">Department: <%= link_to @department.name, department_path(@department), class: "text-blue-600 hover:text-blue-800" %></p>
+    </div>
+    <% if policy(AffiliatedResource.new(department: @department)).create? %>
+      <%= link_to "New Resource", new_department_affiliated_resource_path(@department), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+    <% end %>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <% if @affiliated_resources.any? %>
+      <ul class="divide-y divide-gray-200">
+        <% @affiliated_resources.each do |resource| %>
+          <li class="py-4 flex justify-between items-center">
+            <div>
+              <h3 class="font-semibold"><%= resource.name %></h3>
+              <%= link_to resource.url, resource.url, target: "_blank", class: "text-blue-600 hover:text-blue-800 text-sm" %>
+            </div>
+            <div>
+              <% if policy(resource).update? %>
+                <%= link_to "Edit", edit_department_affiliated_resource_path(@department, resource), class: "text-indigo-600 hover:text-indigo-800 mr-4" %>
+              <% end %>
+              <% if policy(resource).destroy? %>
+                <%= link_to "Delete", department_affiliated_resource_path(@department, resource), method: :delete,
+                    data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-800" %>
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-gray-500">No affiliated resources found.</p>
+    <% end %>
+  </div>
+</div>
