@@ -57,7 +57,7 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: ENV.fetch("MAILER_HOST", "staging.example.com") }
+  config.action_mailer.default_url_options = { host: ENV.fetch("MAILER_HOST", "student-visit-staging.lsa.umich.edu") }
 
   # Use letter_opener to preview emails in the browser instead of sending them
   config.action_mailer.delivery_method = :letter_opener_web
@@ -74,10 +74,10 @@ Rails.application.configure do
   config.active_record.attributes_for_inspect = [ :id, :created_at, :updated_at ]
 
   # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "staging.example.com",     # Allow requests from staging.example.com
-  #   /.*\.staging\.example\.com/ # Allow requests from subdomains like `www.staging.example.com`
-  # ]
+  config.hosts = [
+    "student-visit-staging.lsa.umich.edu",     # Allow requests from staging.example.com
+    /.*\.student-visit-staging\.lsa\.umich\.edu/ # Allow requests from subdomains like `www.staging.example.com`
+  ]
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
