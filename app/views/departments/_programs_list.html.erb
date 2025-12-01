@@ -1,0 +1,50 @@
+<% if programs.any? %>
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Open Date</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Close Date</th>
+          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% programs.each do |program| %>
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <%= link_to program.name, department_program_path(program.department, program), class: "text-blue-600 hover:text-blue-800" %>
+              <% if program.active? %>
+                <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+              <% end %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <% if program.open? %>
+                <span class="text-green-600">Open</span>
+              <% elsif program.closed? %>
+                <span class="text-red-600">Closed</span>
+              <% else %>
+                <span class="text-gray-600">Not yet open</span>
+              <% end %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <%= program.open_date&.strftime("%B %d, %Y %I:%M %p") || "Not set" %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <%= program.close_date&.strftime("%B %d, %Y %I:%M %p") || "Not set" %>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+              <%= link_to "View", department_program_path(program.department, program), class: "text-blue-600 hover:text-blue-800 mr-4" %>
+              <% if policy(program).update? %>
+                <%= link_to "Edit", edit_department_program_path(program.department, program), class: "text-indigo-600 hover:text-indigo-800" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="text-gray-500">No programs found.</p>
+<% end %>

@@ -1,0 +1,19 @@
+Appointment <%= @action == 'selected' ? 'Confirmed' : 'Cancelled' %>
+
+Hello <%= @student.email_address %>,
+
+Your appointment has been <%= @action == 'selected' ? 'confirmed' : 'cancelled' %>:
+
+Faculty: <%= @vip.display_name %>
+Date: <%= @appointment.start_time.strftime("%B %d, %Y") %>
+Time: <%= @appointment.start_time.strftime("%I:%M %p") %> - <%= @appointment.end_time.strftime("%I:%M %p") %>
+Program: <%= @program.name %>
+
+<% if @action == 'selected' %>
+Please make note of this appointment time.
+<% else %>
+This appointment slot is now available for other students.
+<% end %>
+
+Thank you,
+The Student Visit Team

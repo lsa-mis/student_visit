@@ -4,6 +4,7 @@ gem "bootsnap", require: false
 gem "importmap-rails"
 gem "jbuilder"
 gem "kamal", require: false
+gem 'letter_opener_web', '~> 3.0'
 gem 'lsa_tdx_feedback'
 gem "propshaft"
 gem "puma", ">= 5.0"
@@ -40,3 +41,5 @@ group :test do
 end
 
 gem "bcrypt", "~> 3.1"
+gem "pundit"
+gem "roo"

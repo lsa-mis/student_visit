@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Session, type: :model do
   describe 'associations' do
+    let(:user) { User.create!(email_address: 'test@example.com', password: 'password123') }
+    subject { Session.new(user: user) }
     it { should belong_to(:user) }
   end
 

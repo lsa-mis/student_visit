@@ -1,0 +1,44 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-3xl font-bold">Questionnaires</h1>
+      <p class="text-gray-600 mt-1">
+        Program: <%= link_to @program.name, department_program_path(@department, @program), class: "text-blue-600 hover:text-blue-800" %>
+      </p>
+    </div>
+    <% if policy(Questionnaire.new(program: @program)).create? %>
+      <%= link_to "New Questionnaire", new_department_program_questionnaire_path(@department, @program), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+    <% end %>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <% if @questionnaires.any? %>
+      <ul class="divide-y divide-gray-200">
+        <% @questionnaires.each do |questionnaire| %>
+          <li class="py-4">
+            <div class="flex justify-between items-center">
+              <div>
+                <h3 class="text-lg font-semibold">
+                  <%= link_to questionnaire.name, [@department, @program, questionnaire], class: "text-blue-600 hover:text-blue-800" %>
+                </h3>
+                <p class="text-sm text-gray-500">
+                  <%= questionnaire.questions.count %> question(s)
+                </p>
+              </div>
+              <div class="flex gap-2">
+                <% if policy(questionnaire).show? %>
+                  <%= link_to "View Responses", responses_department_program_questionnaire_path(@department, @program, questionnaire), class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
+                <% end %>
+                <% if policy(questionnaire).update? %>
+                  <%= link_to "Edit", edit_department_program_questionnaire_path(@department, @program, questionnaire), class: "bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700" %>
+                <% end %>
+              </div>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="text-gray-500">No questionnaires found for this program.</p>
+    <% end %>
+  </div>
+</div>

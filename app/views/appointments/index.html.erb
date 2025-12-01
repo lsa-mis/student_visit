@@ -1,0 +1,8 @@
+<div>
+  <h1 class="font-bold text-4xl">Appointments#index</h1>
+  <% @appointments.each do |appointment| %>
+    <div>
+      <p><%= appointment.vip.display_name %></p>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,126 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold"><%= @department.name %></h1>
+    <div>
+      <% if policy(@department).update? %>
+        <%= link_to "Edit", edit_department_path(@department), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mr-2" %>
+      <% end %>
+      <%= link_to "Back to Departments", departments_path, class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+    </div>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-semibold mb-4">Department Information</h2>
+    <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Street Address</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @department.street_address.present? ? @department.street_address : "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Building Name</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @department.building_name.present? ? @department.building_name : "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Main Office Room Number</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @department.main_office_room_number.present? ? @department.main_office_room_number : "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">City</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @department.city.present? ? @department.city : "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">State</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @department.state.present? ? @department.state : "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Zipcode</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @department.zipcode.present? ? @department.zipcode : "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Main Office Phone Number</dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @department.main_office_phone_number.present? ? @department.main_office_phone_number : "Not set" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-gray-500">Active Program</dt>
+        <dd class="mt-1 text-sm text-gray-900">
+          <%= @department.active_program ? link_to(@department.active_program.name, department_program_path(@department, @department.active_program), class: "text-blue-600 hover:text-blue-800") : "None" %>
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">Programs</h2>
+      <% if policy(Program.new(department: @department)).create? %>
+        <%= link_to "New Program", new_department_program_path(@department), class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
+      <% end %>
+    </div>
+    <%= render partial: "programs_list", locals: { programs: @department.programs.order(active: :desc, created_at: :desc) } %>
+  </div>
+
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-semibold">VIPs (Faculty/Staff)</h2>
+      <%= link_to "View All", department_vips_path(@department), class: "text-blue-600 hover:text-blue-800" %>
+    </div>
+    <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <% @vips.limit(6).each do |vip| %>
+        <li class="border border-gray-200 rounded p-4">
+          <h3 class="font-semibold"><%= vip.display_name %></h3>
+          <% if vip.title.present? %>
+            <p class="text-sm text-gray-500"><%= vip.title %></p>
+          <% end %>
+          <% if vip.profile_url.present? %>
+            <%= link_to "View Profile", vip.profile_url, target: "_blank", class: "text-blue-600 hover:text-blue-800 text-sm" %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <% if @affiliated_resources.any? %>
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Affiliated Resources</h2>
+      <ul class="list-disc list-inside">
+        <% @affiliated_resources.each do |resource| %>
+          <li>
+            <%= link_to resource.name, resource.url, target: "_blank", class: "text-blue-600 hover:text-blue-800" %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if @department.mission_statement.present? %>
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <h2 class="text-xl font-semibold mb-4">Mission Statement</h2>
+      <div class="prose max-w-none">
+        <%= @department.mission_statement %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @department.image.attached? %>
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <%= image_tag @department.image, class: "max-w-full h-auto rounded" %>
+    </div>
+  <% end %>
+
+  <% if policy(@department).update? %>
+    <div class="bg-white shadow rounded-lg p-6 mt-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold">Department Admins</h2>
+        <%= link_to "Manage Admins", department_admins_path(@department), class: "bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" %>
+      </div>
+      <ul class="list-disc list-inside">
+        <% @department.admin_users.each do |admin| %>
+          <li><%= admin.email_address %></li>
+        <% end %>
+        <% if @department.admin_users.empty? %>
+          <li class="text-gray-500">No admins assigned</li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+</div>
