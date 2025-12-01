@@ -19,7 +19,7 @@ Rails.application.routes.draw do
   get "home/index"
 
   namespace :student do
-    resource :dashboard, only: [:show] do
+    resource :dashboard, only: [:show], controller: :dashboard do
       post :select_department, on: :collection
     end
 
