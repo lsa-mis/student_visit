@@ -76,7 +76,8 @@ Rails.application.configure do
   # Enable DNS rebinding protection and other `Host` header attacks.
   config.hosts = [
     "student-visit-staging.lsa.umich.edu",     # Allow requests from staging.example.com
-    /.*\.student-visit-staging\.lsa\.umich\.edu/ # Allow requests from subdomains like `www.staging.example.com`
+    /.*\.student-visit-staging\.lsa\.umich\.edu/, # Allow requests from subdomains like `www.staging.example.com`
+    "1gpp2.hatchboxapp.com"                    # Allow requests from Hatchbox staging server
   ]
   #
   # Skip DNS rebinding protection for the default health check endpoint.
