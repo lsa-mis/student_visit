@@ -1,6 +1,6 @@
 class ProgramsController < ApplicationController
   before_action :set_department
-  before_action :set_program, only: [:show, :edit, :update, :destroy]
+  before_action :set_program, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @programs = policy_scope(Program).where(department: @department).order(active: :desc, created_at: :desc)
@@ -21,7 +21,7 @@ class ProgramsController < ApplicationController
     authorize @program
 
     if @program.save
-      redirect_to [@department, @program], notice: "Program was successfully created."
+      redirect_to [ @department, @program ], notice: "Program was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
@@ -35,7 +35,7 @@ class ProgramsController < ApplicationController
     authorize @program
 
     if @program.update(program_params)
-      redirect_to [@department, @program], notice: "Program was successfully updated."
+      redirect_to [ @department, @program ], notice: "Program was successfully updated."
     else
       render :edit, status: :unprocessable_entity
     end

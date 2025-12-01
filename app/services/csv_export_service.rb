@@ -6,9 +6,9 @@ class CsvExportService
       # Ensure questionnaires and questions are loaded
       program = Program.includes(questionnaires: :questions).find(program.id)
       questions = program.questionnaires.flat_map { |q| q.questions.order(:position) }
-      csv << ["Email", "Name", "Enrolled Date"] +
+      csv << [ "Email", "Name", "Enrolled Date" ] +
              questions.map { |qn| "Q: #{qn.text}" } +
-             ["Appointments"]
+             [ "Appointments" ]
 
       program.students.includes(:answers, :appointments).each do |student|
         answers = student.answers.where(program: program).index_by(&:question_id)
@@ -39,7 +39,7 @@ class CsvExportService
 
   def self.export_appointments_by_faculty(program)
     CSV.generate(headers: true) do |csv|
-      csv << ["Faculty", "Date", "Start Time", "End Time", "Status", "Student"]
+      csv << [ "Faculty", "Date", "Start Time", "End Time", "Status", "Student" ]
 
       program.department.vips.ordered.each do |vip|
         program.appointments.for_vip(vip).order(:start_time).each do |appointment|
@@ -58,7 +58,7 @@ class CsvExportService
 
   def self.export_appointments_by_student(program)
     CSV.generate(headers: true) do |csv|
-      csv << ["Student Email", "Faculty", "Date", "Start Time", "End Time"]
+      csv << [ "Student Email", "Faculty", "Date", "Start Time", "End Time" ]
 
       program.students.order(:email_address).each do |student|
         student.appointments.where(program: program).includes(:vip).order(:start_time).each do |appointment|
@@ -76,7 +76,7 @@ class CsvExportService
 
   def self.export_calendar(student, program, date = nil)
     CSV.generate(headers: true) do |csv|
-      csv << ["Type", "Title", "Date", "Start Time", "End Time", "Details"]
+      csv << [ "Type", "Title", "Date", "Start Time", "End Time", "Details" ]
 
       if date
         start_date = date.beginning_of_day
@@ -118,7 +118,7 @@ class CsvExportService
       questions = questionnaire.questions.order(:position)
 
       # Build header row
-      headers = ["Student Email"]
+      headers = [ "Student Email" ]
       questions.each do |question|
         headers << "Q#{question.position}: #{question.text}"
       end
@@ -129,14 +129,14 @@ class CsvExportService
       question_ids = questions.pluck(:id)
       all_answers = Answer.where(program: program, question_id: question_ids)
                           .includes(:student, :question)
-                          .index_by { |a| [a.user_id, a.question_id] }
+                          .index_by { |a| [ a.user_id, a.question_id ] }
 
       # Generate row for each student
       students.each do |student|
-        row = [student.email_address]
+        row = [ student.email_address ]
 
         questions.each do |question|
-          answer = all_answers[[student.id, question.id]]
+          answer = all_answers[[ student.id, question.id ]]
 
           if answer
             content = answer.content

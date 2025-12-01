@@ -1,6 +1,6 @@
 class QuestionnairesController < ApplicationController
   before_action :set_program
-  before_action :set_questionnaire, only: [:show, :edit, :update, :responses, :student_response, :export_responses]
+  before_action :set_questionnaire, only: [ :show, :edit, :update, :responses, :student_response, :export_responses ]
 
   def index
     @questionnaires = @program.questionnaires.includes(:questions)
@@ -22,7 +22,7 @@ class QuestionnairesController < ApplicationController
     authorize @questionnaire
 
     if @questionnaire.save
-      redirect_to [@department, @program, @questionnaire], notice: "Questionnaire was successfully created."
+      redirect_to [ @department, @program, @questionnaire ], notice: "Questionnaire was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
@@ -37,7 +37,7 @@ class QuestionnairesController < ApplicationController
     authorize @questionnaire
 
     if @questionnaire.update(questionnaire_params)
-      redirect_to [@department, @program, @questionnaire], notice: "Questionnaire was successfully updated."
+      redirect_to [ @department, @program, @questionnaire ], notice: "Questionnaire was successfully updated."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -54,7 +54,7 @@ class QuestionnairesController < ApplicationController
     question_ids = @questions.pluck(:id)
     @all_answers = Answer.where(program: @program, question_id: question_ids)
                           .includes(:student, :question)
-                          .index_by { |a| [a.user_id, a.question_id] }
+                          .index_by { |a| [ a.user_id, a.question_id ] }
 
     # Prepare data for charts
     @chart_data = {}

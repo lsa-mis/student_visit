@@ -5,7 +5,7 @@ class Answer < ApplicationRecord
   has_many :answer_edits, dependent: :destroy
   has_rich_text :content if defined?(ActionText)
 
-  validates :question_id, uniqueness: { scope: [:user_id, :program_id] }
+  validates :question_id, uniqueness: { scope: [ :user_id, :program_id ] }
 
   before_update :track_edit
 

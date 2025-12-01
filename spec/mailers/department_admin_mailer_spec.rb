@@ -9,7 +9,7 @@ RSpec.describe DepartmentAdminMailer, type: :mailer do
 
     it 'renders the headers' do
       expect(mail.subject).to eq("Welcome as Department Admin for Test Department")
-      expect(mail.to).to eq([user.email_address])
+      expect(mail.to).to eq([ user.email_address ])
       expect(mail.from).to be_present
     end
 

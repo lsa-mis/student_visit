@@ -19,14 +19,14 @@ Rails.application.routes.draw do
   get "home/index"
 
   namespace :student do
-    resource :dashboard, only: [:show], controller: :dashboard do
+    resource :dashboard, only: [ :show ], controller: :dashboard do
       post :select_department, on: :collection
     end
 
     resources :departments, only: [] do
       resources :programs, only: [] do
-        resources :questionnaires, only: [:index, :show, :edit, :update]
-        resources :appointments, only: [:index] do
+        resources :questionnaires, only: [ :index, :show, :edit, :update ]
+        resources :appointments, only: [ :index ] do
           collection do
             get :available
             get :my_appointments
@@ -36,9 +36,9 @@ Rails.application.routes.draw do
             delete :delete
           end
         end
-        resource :calendar, only: [:show], controller: :calendar
+        resource :calendar, only: [ :show ], controller: :calendar
       end
-      resource :map, only: [:show], controller: :map
+      resource :map, only: [ :show ], controller: :map
     end
   end
 
@@ -48,7 +48,7 @@ Rails.application.routes.draw do
       patch :update_content
     end
     resources :programs do
-      resources :students, only: [:index, :create, :edit, :update, :destroy] do
+      resources :students, only: [ :index, :create, :edit, :update, :destroy ] do
         collection do
           get :bulk_upload
           post :process_bulk_upload
@@ -69,7 +69,7 @@ Rails.application.routes.draw do
           post :process_bulk_upload
         end
       end
-      resources :appointments, only: [:index, :show] do
+      resources :appointments, only: [ :index, :show ] do
         collection do
           get :bulk_upload
           post :process_bulk_upload
@@ -85,7 +85,7 @@ Rails.application.routes.draw do
       end
     end
     resources :affiliated_resources
-    resources :department_admins, only: [:index, :create, :destroy], as: :admins
+    resources :department_admins, only: [ :index, :create, :destroy ], as: :admins
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

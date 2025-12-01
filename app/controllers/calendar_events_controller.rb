@@ -1,6 +1,6 @@
 class CalendarEventsController < ApplicationController
   before_action :set_program
-  before_action :set_calendar_event, only: [:show, :edit, :update, :destroy]
+  before_action :set_calendar_event, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @calendar_events = @program.calendar_events.order(:start_time)

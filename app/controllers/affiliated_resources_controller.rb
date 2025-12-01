@@ -1,6 +1,6 @@
 class AffiliatedResourcesController < ApplicationController
   before_action :set_department
-  before_action :set_affiliated_resource, only: [:edit, :update, :destroy]
+  before_action :set_affiliated_resource, only: [ :edit, :update, :destroy ]
 
   def index
     @affiliated_resources = @department.affiliated_resources.ordered
