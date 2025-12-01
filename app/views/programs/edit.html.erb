@@ -90,10 +90,24 @@
       // Create a new row with the date and Remove button
       const newField = document.createElement('div');
       newField.className = 'flex gap-2 items-center';
-      newField.innerHTML = `
-        <input type="date" name="program[held_on_dates][]" value="${dateValue}" class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-        <button type="button" onclick="this.parentElement.remove()" class="bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 text-sm">Remove</button>
-      `;
+      
+      // Create the input element
+      const input = document.createElement('input');
+      input.type = 'date';
+      input.name = 'program[held_on_dates][]';
+      input.value = dateValue;
+      input.className = 'px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500';
+      
+      // Create the Remove button element
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 text-sm';
+      button.textContent = 'Remove';
+      button.onclick = function() { this.parentElement.remove(); };
+
+      // Append input and button to the newField div
+      newField.appendChild(input);
+      newField.appendChild(button);
 
       // Insert before the add-date-row
       container.insertBefore(newField, addDateRow);
