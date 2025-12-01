@@ -1,5 +1,5 @@
 class Admin::PageContentsController < ApplicationController
-  before_action :set_page_content, only: [:show, :edit, :update, :destroy]
+  before_action :set_page_content, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @page_contents = authorize policy_scope(PageContent).order(:page_path, :area_name)

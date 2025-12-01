@@ -29,6 +29,7 @@ Created `spec/support/shared_examples/authentication_examples.rb` with reusable 
 - `requires student`: Tests student-only endpoints
 
 **Usage Example:**
+
 ```ruby
 describe "GET /departments" do
   include_examples "requires department admin or super admin", :departments_path
@@ -38,6 +39,7 @@ end
 ### 4. New Test Coverage
 
 #### Student Dashboard
+
 - Added comprehensive request specs for `Student::DashboardController`
 - Tests department selection logic
 - Tests single vs multiple department scenarios
@@ -73,6 +75,7 @@ FactoryBot has been added for better test data management:
   - `Role`
 
 **Usage:**
+
 ```ruby
 # Create a user with student role
 user = create(:user, :with_student_role)
@@ -87,6 +90,7 @@ appointment = create(:appointment, :available, :upcoming)
 ### 2. Student Controller Tests Added ✅
 
 Comprehensive request specs have been added for:
+
 - `Student::AppointmentsController` - Full CRUD operations, filtering, VIP selection
 - `Student::CalendarController` - All filter modes (all, date single, date multi)
 - `Student::MapController` - Basic access and authorization
@@ -95,6 +99,7 @@ Comprehensive request specs have been added for:
 ### 3. Policy Specs Added ✅
 
 Complete policy specs have been added for:
+
 - `Student::AppointmentPolicy` - index?, create?, destroy?
 - `Student::CalendarPolicy` - show?
 - `Student::MapPolicy` - show?
@@ -114,6 +119,7 @@ SimpleCov has been configured for test coverage reporting:
 ### 5. System Specs Added ✅
 
 System specs have been added for critical user flows:
+
 - Student dashboard flow (login, department selection, navigation)
 - Student appointment flow (viewing, selecting, canceling, filtering)
 - Student questionnaire flow (viewing, editing, saving, deadline validation)
@@ -129,6 +135,7 @@ System specs have been added for critical user flows:
 ### 4. Improve View Specs
 
 Current view specs are very basic. Consider:
+
 - Testing conditional rendering
 - Testing form submissions
 - Testing error messages
@@ -137,6 +144,7 @@ Current view specs are very basic. Consider:
 ### 5. Add More System Specs
 
 Additional system specs could be added for:
+
 - Calendar view interactions (date selection, filter switching)
 - Map view interactions
 - Multi-step workflows (appointment selection → confirmation)
@@ -149,6 +157,7 @@ Consider using `database_cleaner` or `database_cleaner-active_record` for more c
 ### 8. Add Request Spec Helpers
 
 Create helpers for common request patterns:
+
 - Testing JSON responses
 - Testing file uploads
 - Testing pagination
@@ -184,7 +193,7 @@ open coverage/index.html
 
 ## Test Structure
 
-```
+```bash
 spec/
 ├── controllers/          # Controller specs (legacy, prefer request specs)
 ├── factories/            # FactoryBot factories

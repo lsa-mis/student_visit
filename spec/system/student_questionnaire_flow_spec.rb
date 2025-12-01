@@ -10,7 +10,7 @@ RSpec.describe "Student Questionnaire Flow", type: :system do
   let(:student_user) { create(:user, :with_student_role, email_address: "student@example.com", password: "password123") }
   let!(:questionnaire) { create(:questionnaire, program: program, name: "Pre-Visit Questionnaire") }
   let!(:question1) { create(:question, questionnaire: questionnaire, text: "What are your goals for this visit?", question_type: "text") }
-  let!(:question2) { create(:question, questionnaire: questionnaire, text: "Do you have any dietary restrictions?", question_type: "checkbox", options: ["Vegetarian", "Vegan", "Gluten-free", "None"]) }
+  let!(:question2) { create(:question, questionnaire: questionnaire, text: "Do you have any dietary restrictions?", question_type: "checkbox", options: [ "Vegetarian", "Vegan", "Gluten-free", "None" ]) }
 
   before do
     create(:student_program, user: student_user, program: program)

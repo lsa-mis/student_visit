@@ -16,12 +16,12 @@ FactoryBot.define do
 
     trait :checkbox_type do
       question_type { "checkbox" }
-      options { ["Option 1", "Option 2", "Option 3"] }
+      options { [ "Option 1", "Option 2", "Option 3" ] }
     end
 
     trait :radio_type do
       question_type { "radio" }
-      options { ["Option A", "Option B", "Option C"] }
+      options { [ "Option A", "Option B", "Option C" ] }
     end
 
     trait :datetime_type do

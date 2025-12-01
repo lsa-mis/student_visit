@@ -1,6 +1,6 @@
 class VipsController < ApplicationController
   before_action :set_department
-  before_action :set_vip, only: [:show, :edit, :update, :destroy]
+  before_action :set_vip, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @vips = policy_scope(Vip).where(department: @department).ordered

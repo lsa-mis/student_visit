@@ -1,6 +1,6 @@
 class QuestionsController < ApplicationController
   before_action :set_questionnaire
-  before_action :set_question, only: [:edit, :update, :destroy]
+  before_action :set_question, only: [ :edit, :update, :destroy ]
 
   def new
     @question = @questionnaire.questions.build
@@ -12,7 +12,7 @@ class QuestionsController < ApplicationController
     authorize @question
 
     if @question.save
-      redirect_to [@department, @program, @questionnaire], notice: "Question was successfully added."
+      redirect_to [ @department, @program, @questionnaire ], notice: "Question was successfully added."
     else
       render :new, status: :unprocessable_entity
     end
@@ -26,7 +26,7 @@ class QuestionsController < ApplicationController
     authorize @question
 
     if @question.update(question_params)
-      redirect_to [@department, @program, @questionnaire], notice: "Question was successfully updated."
+      redirect_to [ @department, @program, @questionnaire ], notice: "Question was successfully updated."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -35,7 +35,7 @@ class QuestionsController < ApplicationController
   def destroy
     authorize @question
     @question.destroy
-    redirect_to [@department, @program, @questionnaire], notice: "Question was successfully deleted."
+    redirect_to [ @department, @program, @questionnaire ], notice: "Question was successfully deleted."
   end
 
   private

@@ -1,6 +1,6 @@
 class Student::QuestionnairesController < ApplicationController
   before_action :set_program
-  before_action :set_questionnaire, only: [:show, :edit, :update]
+  before_action :set_questionnaire, only: [ :show, :edit, :update ]
   before_action :ensure_enrolled
 
   def index

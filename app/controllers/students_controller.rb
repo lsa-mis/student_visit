@@ -1,6 +1,6 @@
 class StudentsController < ApplicationController
   before_action :set_program
-  before_action :set_student, only: [:edit, :update, :destroy]
+  before_action :set_student, only: [ :edit, :update, :destroy ]
 
   def index
     @students = @program.students.order(:email_address)

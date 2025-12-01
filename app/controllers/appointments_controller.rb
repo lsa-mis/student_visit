@@ -1,6 +1,6 @@
 class AppointmentsController < ApplicationController
   before_action :set_program
-  before_action :set_appointment, only: [:show]
+  before_action :set_appointment, only: [ :show ]
 
   def index
     @appointments = @program.appointments.includes(:vip, :student).order(:start_time)
