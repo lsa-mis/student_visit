@@ -23,6 +23,7 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 # gem "image_processing", "~> 1.2"
 
 group :development, :test do
+  gem "factory_bot_rails"
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false
