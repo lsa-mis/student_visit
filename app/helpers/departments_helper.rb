@@ -24,4 +24,11 @@ module DepartmentsHelper
 
     parts.join(", ")
   end
+
+  def google_maps_url(department)
+    address = format_department_address_for_map(department)
+    return nil if address.blank?
+
+    "https://www.google.com/maps/search/?api=1&query=#{CGI.escape(address)}"
+  end
 end
