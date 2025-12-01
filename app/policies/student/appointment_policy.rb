@@ -1,13 +1,13 @@
 class Student::AppointmentPolicy < ApplicationPolicy
   def index?
-    user&.student?
+    user&.student? || false
   end
 
   def create?
-    user&.student?
+    user&.student? || false
   end
 
   def destroy?
-    user&.student?
+    user&.student? || false
   end
 end

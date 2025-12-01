@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Navigation", type: :system do
   before do
-    driven_by(:selenium_chrome_headless)
+    driven_by(:rack_test)
   end
 
   it "shows the navbar on the home page" do
@@ -27,4 +27,4 @@ RSpec.describe "Navigation", type: :system do
   #   end
   #   expect(current_path).to eq(about_path)
   # end
-end 
+end

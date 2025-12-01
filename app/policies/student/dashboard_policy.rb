@@ -1,5 +1,6 @@
 class Student::DashboardPolicy < ApplicationPolicy
   def show?
-    user&.student?
+    return false unless user
+    user.student?
   end
 end
