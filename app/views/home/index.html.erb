@@ -8,7 +8,7 @@
       <h1 class="text-4xl font-bold mb-4">Student Visit Application</h1>
     <% end %>
 
-  <div class="text-left">
+  <div class="max-w-2xl mx-auto text-left bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-4">
     <% if render_page_content("home/index", "welcome_message") %>
       <div class="mb-8">
         <%= render_page_content("home/index", "welcome_message") %>
@@ -17,7 +17,8 @@
       <p class="text-gray-600 mb-8">Please log in to continue</p>
     <% end %>
   </div>
-
+  <div class="text-center">
     <%= link_to "Log In", new_session_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 text-lg" %>
+  </div>
 
 </div>
