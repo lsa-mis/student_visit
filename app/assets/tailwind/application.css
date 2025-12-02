@@ -1,0 +1,146 @@
+@import 'tailwindcss';
+
+@config '../../../config/tailwind.config.js';
+
+@utility btn-primary {
+  /* Optimized button using Tailwind utilities */
+  @apply py-2 px-4;
+  background-color: var(--color-primary);
+}
+
+@utility nav {
+  /* Optimized nav using Tailwind utilities */
+  @apply flex items-center gap-4 shrink-0;
+  height: 5.625rem;
+  padding: 1rem 5.125rem;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.15);
+  background-color: var(--color-um-blue);
+
+  @media (max-width: 1023px) {
+    padding: 1rem 2rem;
+  }
+
+  @media (max-width: 640px) {
+    padding: 1rem 1rem;
+  }
+}
+
+@utility logo-title {
+  @apply flex flex-col justify-end self-stretch uppercase;
+  width: 69.75rem;
+  max-width: 100%;
+  min-width: 0;
+  color: var(--color-light);
+  font-family: 'Noto Sans';
+  font-size: 3rem;
+  font-weight: 200;
+  line-height: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @media (max-width: 1023px) {
+    width: auto;
+    font-size: 1.5rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  @media (max-width: 640px) {
+    font-size: 1rem;
+  }
+}
+
+@layer utilities {
+  :root {
+    --color-um-blue: #00274c;
+    --color-maize: #ffcb05;
+    --color-lsa-cyan: #00aeef;
+    --color-web-cyan: #007cba;
+    --color-michigan-summer-blue: #005499;
+    --color-transformational-teal: #008b9a;
+    --color-celebratory-celeste: #09b582;
+    --color-spring-bloom-magenta: #da4097;
+    --color-impactful-pink: #ef4350;
+    --color-rigorous-red: #c61a1d;
+    --color-exploratory-orange: #f57e20;
+    --color-autumnal-umber: #b67110;
+    --color-puma-black: #111b23;
+    --color-primary: #00274c;
+    --color-secondary: #005499;
+    --color-success: #00664d;
+    --color-warning: #ffcb05;
+    --color-danger: #c61a1d;
+    --color-info: #00aeef;
+    --color-light: #fff;
+    --color-dark: #212529;
+    --color-body: #212529;
+    --color-mint-500: oklch(0.72 0.11 178);
+  }
+}
+
+@layer components {
+
+  h1 {
+    @apply self-stretch;
+    color: var(--color-body);
+    font-family: "Roboto";
+    font-size: 2.8125rem;
+    font-weight: 900;
+    line-height: 120%;
+  }
+
+  h2 {
+    @apply self-stretch;
+    color: var(--color-body);
+    font-family: Roboto;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 120%;
+  }
+
+  h3 {
+    @apply self-stretch;
+    color: var(--color-body);
+    font-family: Roboto;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 120%;
+  }
+
+  h4 {
+    @apply self-stretch;
+    color: var(--color-body);
+    font-family: Roboto;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 120%;
+  }
+
+  h5 {
+    @apply self-stretch;
+    color: var(--color-body);
+    font-family: Roboto;
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 120%;
+  }
+
+  h6 {
+    @apply self-stretch;
+    color: var(--color-body);
+    font-family: Roboto;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 120%;
+  }
+
+  p {
+    @apply self-stretch;
+    color: var(--color-body);
+    font-family: "Noto Sans";
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 150%;
+  }
+}
