@@ -19,6 +19,14 @@ class ProgramPolicy < ApplicationPolicy
     user&.super_admin? || user&.department_admin_for?(record.department)
   end
 
+  def edit_content?
+    user&.super_admin? || user&.department_admin_for?(record.department)
+  end
+
+  def update_content?
+    user&.super_admin? || user&.department_admin_for?(record.department)
+  end
+
   class Scope < Scope
     def resolve
       if user&.super_admin?

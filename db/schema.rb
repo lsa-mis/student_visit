@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_26_171423) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_03_163201) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -157,6 +157,17 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_171423) do
     t.index ["name"], name: "index_departments_on_name", unique: true
   end
 
+  create_table "important_links", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "program_id", null: false
+    t.integer "ranking", default: 0
+    t.datetime "updated_at", null: false
+    t.string "url", null: false
+    t.index ["program_id", "ranking"], name: "index_important_links_on_program_id_and_ranking"
+    t.index ["program_id"], name: "index_important_links_on_program_id"
+  end
+
   create_table "page_contents", force: :cascade do |t|
     t.string "area_name", null: false
     t.datetime "created_at", null: false
@@ -251,14 +262,14 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_171423) do
 
   create_table "vips", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.integer "department_id", null: false
     t.string "name", null: false
     t.string "profile_url"
+    t.integer "program_id", null: false
     t.integer "ranking", default: 0
     t.string "title"
     t.datetime "updated_at", null: false
-    t.index ["department_id", "ranking"], name: "index_vips_on_department_id_and_ranking"
-    t.index ["department_id"], name: "index_vips_on_department_id"
+    t.index ["program_id", "ranking"], name: "index_vips_on_program_id_and_ranking"
+    t.index ["program_id"], name: "index_vips_on_program_id"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -280,6 +291,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_171423) do
   add_foreign_key "department_admins", "departments"
   add_foreign_key "department_admins", "users"
   add_foreign_key "departments", "programs", column: "active_program_id", on_delete: :nullify
+  add_foreign_key "important_links", "programs"
   add_foreign_key "programs", "departments"
   add_foreign_key "questionnaires", "programs"
   add_foreign_key "questions", "questionnaires"
@@ -288,5 +300,5 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_171423) do
   add_foreign_key "student_programs", "users"
   add_foreign_key "user_roles", "roles"
   add_foreign_key "user_roles", "users"
-  add_foreign_key "vips", "departments"
+  add_foreign_key "vips", "programs"
 end

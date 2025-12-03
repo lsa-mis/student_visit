@@ -42,6 +42,62 @@
       </div>
       <p class="text-gray-600 mb-6">Active Program: <%= @active_program.name %></p>
 
+      <!-- Top Section: Split vertically in half -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Left Half: RichText content area -->
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="text-lg font-semibold mb-3">About the Department and Program</h3>
+          <div class="prose max-w-none">
+            <% if @active_program.description.present? %>
+              <%= @active_program.description %>
+            <% else %>
+              <p class="text-gray-500 text-sm italic">No description available.</p>
+            <% end %>
+          </div>
+        </div>
+        <!-- Right Half: Split vertically in half -->
+        <div class="flex flex-col gap-6">
+          <!-- Top: VIP Faculty Staff items -->
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 flex-1">
+            <h3 class="text-lg font-semibold mb-3">Faculty/Staff</h3>
+            <% if @vips.any? %>
+              <div class="space-y-3 max-h-64 overflow-y-auto">
+                <% @vips.each do |vip| %>
+                  <div class="bg-white border border-gray-200 rounded-lg p-3">
+                    <p class="font-semibold text-gray-900"><%= vip.name %></p>
+                    <% if vip.title.present? %>
+                      <p class="text-sm text-gray-600 mt-1"><%= vip.title %></p>
+                    <% end %>
+                    <% if vip.profile_url.present? %>
+                      <%= link_to "View Profile", vip.profile_url, target: "_blank", rel: "noopener noreferrer", class: "text-blue-600 hover:text-blue-800 text-sm mt-2 inline-block" %>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <p class="text-gray-500 text-sm">No faculty/staff listed.</p>
+            <% end %>
+          </div>
+
+          <!-- Bottom: Important links -->
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 flex-1">
+            <h3 class="text-lg font-semibold mb-3">Useful Links</h3>
+            <% if @important_links.any? %>
+              <div class="space-y-2 max-h-64 overflow-y-auto">
+                <% @important_links.each do |link| %>
+                  <div>
+                    <%= link_to link.name, link.url, target: "_blank", rel: "noopener noreferrer", class: "text-blue-600 hover:text-blue-800 text-sm block" %>
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <p class="text-gray-500 text-sm">No important links available.</p>
+            <% end %>
+          </div>
+        </div>
+
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <%= link_to student_department_program_questionnaires_path(@selected_department, @active_program),
             class: "bg-blue-100 hover:bg-blue-200 p-6 rounded-lg text-center" do %>

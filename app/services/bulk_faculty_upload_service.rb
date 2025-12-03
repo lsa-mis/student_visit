@@ -2,10 +2,10 @@ require "csv"
 require "roo"
 
 class BulkFacultyUploadService
-  attr_reader :department, :file, :errors, :success_count, :failure_count
+  attr_reader :program, :file, :errors, :success_count, :failure_count
 
-  def initialize(department, file)
-    @department = department
+  def initialize(program, file)
+    @program = program
     @file = file
     @errors = []
     @success_count = 0
@@ -75,7 +75,7 @@ class BulkFacultyUploadService
     title = row_data[2]&.to_s&.strip
     ranking = row_data[3]&.to_i || 0
 
-    vip = Vip.find_or_initialize_by(department: department, name: name)
+    vip = Vip.find_or_initialize_by(program: program, name: name)
     vip.profile_url = profile_url if profile_url.present?
     vip.title = title if title.present?
     vip.ranking = ranking
