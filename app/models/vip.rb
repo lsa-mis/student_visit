@@ -1,5 +1,5 @@
 class Vip < ApplicationRecord
-  belongs_to :department
+  belongs_to :program
   has_many :calendar_event_faculty, dependent: :destroy
   has_many :calendar_events, through: :calendar_event_faculty
   has_many :appointments, dependent: :destroy

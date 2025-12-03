@@ -13,7 +13,7 @@ class AppointmentsController < ApplicationController
 
   def bulk_upload
     authorize Appointment.new(program: @program), :create?
-    @vips = @program.department.vips.ordered
+    @vips = @program.vips.ordered
   end
 
   def process_bulk_upload
@@ -24,7 +24,7 @@ class AppointmentsController < ApplicationController
       return
     end
 
-    vip = @program.department.vips.find(params[:vip_id])
+    vip = @program.vips.find(params[:vip_id])
     service = BulkAppointmentUploadService.new(@program, vip, params[:file])
     if service.call
       flash[:notice] = "Successfully uploaded #{service.success_count} appointment(s)."
@@ -39,7 +39,7 @@ class AppointmentsController < ApplicationController
 
   def by_faculty
     authorize Appointment.new(program: @program), :index?
-    @vip = @program.department.vips.find(params[:vip_id])
+    @vip = @program.vips.find(params[:vip_id])
     @appointments = @program.appointments.for_vip(@vip).includes(:student).order(:start_time)
   end
 

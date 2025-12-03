@@ -7,6 +7,10 @@ class Program < ApplicationRecord
   has_many :appointments, dependent: :destroy
   has_many :answers, dependent: :destroy
   has_many :appointment_selections, through: :appointments
+  has_many :vips, dependent: :destroy
+  has_many :important_links, dependent: :destroy
+  has_one_attached :image
+  has_rich_text :description if defined?(ActionText)
 
   validates :name, presence: true
   validates :default_appointment_length, presence: true, numericality: { greater_than: 0 }
