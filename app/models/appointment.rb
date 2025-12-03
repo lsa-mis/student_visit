@@ -4,8 +4,11 @@ class Appointment < ApplicationRecord
   belongs_to :student, class_name: "User", optional: true
   has_many :appointment_selections, dependent: :destroy
 
-  validates :start_time, :end_time, presence: true
+  validates :start_time, presence: true
+  validates :end_time, presence: true
   validate :end_time_after_start_time
+
+  before_validation :set_end_time_from_default_length, if: -> { end_time.blank? && start_time.present? && program.present? }
 
   scope :available, -> { where(student_id: nil) }
   scope :booked, -> { where.not(student_id: nil) }
@@ -44,6 +47,12 @@ class Appointment < ApplicationRecord
   end
 
   private
+
+  def set_end_time_from_default_length
+    return unless program&.default_appointment_length
+
+    self.end_time = start_time + program.default_appointment_length.minutes
+  end
 
   def end_time_after_start_time
     return unless start_time && end_time

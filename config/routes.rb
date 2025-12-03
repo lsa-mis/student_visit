@@ -79,6 +79,8 @@ Rails.application.routes.draw do
           post :process_bulk_upload
           get :by_faculty
           get :by_student
+          get :schedule_builder
+          post :create_schedule
         end
       end
       resources :vips do
