@@ -14,13 +14,13 @@ class CalendarEventsController < ApplicationController
   def new
     @calendar_event = @program.calendar_events.build
     authorize @calendar_event
-    @vips = @program.department.vips.ordered
+    @vips = @program.vips.ordered
   end
 
   def create
     @calendar_event = @program.calendar_events.build(calendar_event_params)
     authorize @calendar_event
-    @vips = @program.department.vips.ordered
+    @vips = @program.vips.ordered
 
     if @calendar_event.save
       update_participating_faculty
@@ -32,12 +32,12 @@ class CalendarEventsController < ApplicationController
 
   def edit
     authorize @calendar_event
-    @vips = @program.department.vips.ordered
+    @vips = @program.vips.ordered
   end
 
   def update
     authorize @calendar_event
-    @vips = @program.department.vips.ordered
+    @vips = @program.vips.ordered
 
     if @calendar_event.update(calendar_event_params)
       update_participating_faculty
@@ -94,6 +94,6 @@ class CalendarEventsController < ApplicationController
 
   def update_participating_faculty
     vip_ids = params.dig(:calendar_event, :vip_ids)&.reject(&:blank?) || []
-    @calendar_event.participating_faculty = @program.department.vips.where(id: vip_ids)
+    @calendar_event.participating_faculty = @program.vips.where(id: vip_ids)
   end
 end

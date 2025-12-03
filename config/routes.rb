@@ -48,6 +48,10 @@ Rails.application.routes.draw do
       patch :update_content
     end
     resources :programs do
+      member do
+        get :edit_content
+        patch :update_content
+      end
       resources :students, only: [ :index, :create, :edit, :update, :destroy ] do
         collection do
           get :bulk_upload
@@ -77,12 +81,13 @@ Rails.application.routes.draw do
           get :by_student
         end
       end
-    end
-    resources :vips do
-      collection do
-        get :bulk_upload
-        post :process_bulk_upload
+      resources :vips do
+        collection do
+          get :bulk_upload
+          post :process_bulk_upload
+        end
       end
+      resources :important_links
     end
     resources :affiliated_resources
     resources :department_admins, only: [ :index, :create, :destroy ], as: :admins

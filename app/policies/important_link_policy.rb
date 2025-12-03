@@ -1,4 +1,4 @@
-class VipPolicy < ApplicationPolicy
+class ImportantLinkPolicy < ApplicationPolicy
   def index?
     user&.super_admin? || user&.department_admin_for?(record.program.department)
   end

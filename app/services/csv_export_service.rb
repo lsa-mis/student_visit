@@ -41,7 +41,7 @@ class CsvExportService
     CSV.generate(headers: true) do |csv|
       csv << [ "Faculty", "Date", "Start Time", "End Time", "Status", "Student" ]
 
-      program.department.vips.ordered.each do |vip|
+      program.vips.ordered.each do |vip|
         program.appointments.for_vip(vip).order(:start_time).each do |appointment|
           csv << [
             vip.display_name,

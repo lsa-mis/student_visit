@@ -9,7 +9,6 @@ class DepartmentsController < ApplicationController
   def show
     authorize @department
     @programs = @department.programs.order(active: :desc, created_at: :desc)
-    @vips = @department.vips.ordered
     @affiliated_resources = @department.affiliated_resources.ordered
   end
 

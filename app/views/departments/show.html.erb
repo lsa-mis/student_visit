@@ -59,26 +59,6 @@
     <%= render partial: "programs_list", locals: { programs: @department.programs.order(active: :desc, created_at: :desc) } %>
   </div>
 
-  <div class="bg-white shadow rounded-lg p-6 mb-6">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold">VIPs (Faculty/Staff)</h2>
-      <%= link_to "View All", department_vips_path(@department), class: "text-blue-600 hover:text-blue-800" %>
-    </div>
-    <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <% @vips.limit(6).each do |vip| %>
-        <li class="border border-gray-200 rounded p-4">
-          <h3 class="font-semibold"><%= vip.display_name %></h3>
-          <% if vip.title.present? %>
-            <p class="text-sm text-gray-500"><%= vip.title %></p>
-          <% end %>
-          <% if vip.profile_url.present? %>
-            <%= link_to "View Profile", vip.profile_url, target: "_blank", class: "text-blue-600 hover:text-blue-800 text-sm" %>
-          <% end %>
-        </li>
-      <% end %>
-    </ul>
-  </div>
-
   <% if @affiliated_resources.any? %>
     <div class="bg-white shadow rounded-lg p-6 mb-6">
       <h2 class="text-xl font-semibold mb-4">Affiliated Resources</h2>

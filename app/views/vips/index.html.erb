@@ -2,12 +2,12 @@
   <div class="flex justify-between items-center mb-6">
     <div>
       <h1 class="text-3xl font-bold">VIPs (Faculty/Staff)</h1>
-      <p class="text-gray-600 mt-1">Department: <%= link_to @department.name, department_path(@department), class: "text-blue-600 hover:text-blue-800" %></p>
+      <p class="text-gray-600 mt-1">Program: <%= link_to @program.name, department_program_path(@department, @program), class: "text-blue-600 hover:text-blue-800" %></p>
     </div>
     <div class="flex gap-2">
-      <% if policy(Vip.new(department: @department)).create? %>
-        <%= link_to "Bulk Upload", bulk_upload_department_vips_path(@department), class: "bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" %>
-        <%= link_to "New VIP", new_department_vip_path(@department), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+      <% if policy(Vip.new(program: @program)).create? %>
+        <%= link_to "Bulk Upload", bulk_upload_department_program_vips_path(@department, @program), class: "bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" %>
+        <%= link_to "New VIP", new_department_program_vip_path(@department, @program), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
       <% end %>
     </div>
   </div>
@@ -32,7 +32,7 @@
                   <%= vip.ranking %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  <%= link_to vip.name, department_vip_path(@department, vip), class: "text-blue-600 hover:text-blue-800" %>
+                  <%= link_to vip.name, department_program_vip_path(@department, @program, vip), class: "text-blue-600 hover:text-blue-800" %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   <%= vip.title %>
@@ -46,7 +46,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <% if policy(vip).update? %>
-                    <%= link_to "Edit", edit_department_vip_path(@department, vip), class: "text-indigo-600 hover:text-indigo-800" %>
+                    <%= link_to "Edit", edit_department_program_vip_path(@department, @program, vip), class: "text-indigo-600 hover:text-indigo-800" %>
                   <% end %>
                 </td>
               </tr>
@@ -55,7 +55,7 @@
         </table>
       </div>
     <% else %>
-      <p class="text-gray-500">No VIPs found for this department.</p>
+      <p class="text-gray-500">No VIPs found for this program.</p>
     <% end %>
   </div>
 </div>

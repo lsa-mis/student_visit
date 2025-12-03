@@ -10,11 +10,11 @@ class Student::AppointmentsController < ApplicationController
 
   def available
     authorize :student_appointment, :index?
-    @vips = @program.department.vips.ordered
+    @vips = @program.vips.ordered
     @selected_vip_id = params[:vip_id]
 
     scope = @program.appointments.available.upcoming.includes(:vip)
-    scope = scope.for_vip(@program.department.vips.find(@selected_vip_id)) if @selected_vip_id.present?
+    scope = scope.for_vip(@program.vips.find(@selected_vip_id)) if @selected_vip_id.present?
     @appointments = scope.order(:start_time)
   end
 

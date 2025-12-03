@@ -19,7 +19,7 @@ class Admin::ReportsController < ApplicationController
     authorize @program, :show?
 
     @view = params[:view] || "faculty"
-    @vips = @program.department.vips.ordered
+    @vips = @program.vips.ordered
     @students = @program.students.order(:email_address)
 
     respond_to do |format|

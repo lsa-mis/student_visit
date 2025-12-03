@@ -1,10 +1,10 @@
 class VipsController < ApplicationController
-  before_action :set_department
+  before_action :set_program
   before_action :set_vip, only: [ :show, :edit, :update, :destroy ]
 
   def index
-    @vips = policy_scope(Vip).where(department: @department).ordered
-    authorize Vip.new(department: @department)
+    @vips = policy_scope(Vip).where(program: @program).ordered
+    authorize Vip.new(program: @program)
   end
 
   def show
@@ -12,16 +12,16 @@ class VipsController < ApplicationController
   end
 
   def new
-    @vip = @department.vips.build
+    @vip = @program.vips.build
     authorize @vip
   end
 
   def create
-    @vip = @department.vips.build(vip_params)
+    @vip = @program.vips.build(vip_params)
     authorize @vip
 
     if @vip.save
-      redirect_to department_vip_path(@department, @vip), notice: "VIP was successfully created."
+      redirect_to department_program_vip_path(@program.department, @program, @vip), notice: "VIP was successfully created."
     else
       render :new, status: :unprocessable_entity
     end
@@ -35,7 +35,7 @@ class VipsController < ApplicationController
     authorize @vip
 
     if @vip.update(vip_params)
-      redirect_to department_vip_path(@department, @vip), notice: "VIP was successfully updated."
+      redirect_to department_program_vip_path(@program.department, @program, @vip), notice: "VIP was successfully updated."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -44,22 +44,22 @@ class VipsController < ApplicationController
   def destroy
     authorize @vip
     @vip.destroy
-    redirect_to department_vips_path(@department), notice: "VIP was successfully deleted."
+    redirect_to department_program_vips_path(@program.department, @program), notice: "VIP was successfully deleted."
   end
 
   def bulk_upload
-    authorize Vip.new(department: @department), :create?
+    authorize Vip.new(program: @program), :create?
   end
 
   def process_bulk_upload
-    authorize Vip.new(department: @department), :create?
+    authorize Vip.new(program: @program), :create?
 
     unless params[:file].present?
-      redirect_to bulk_upload_department_vips_path(@department), alert: "Please select a file."
+      redirect_to bulk_upload_department_program_vips_path(@program.department, @program), alert: "Please select a file."
       return
     end
 
-    service = BulkFacultyUploadService.new(@department, params[:file])
+    service = BulkFacultyUploadService.new(@program, params[:file])
     if service.call
       flash[:notice] = "Successfully uploaded #{service.success_count} VIP(s)."
       flash[:alert] = "#{service.failure_count} failed." if service.failure_count > 0
@@ -68,17 +68,18 @@ class VipsController < ApplicationController
       flash[:alert] = "Upload failed: #{service.errors.join(', ')}"
     end
 
-    redirect_to department_vips_path(@department)
+    redirect_to department_program_vips_path(@program.department, @program)
   end
 
   private
 
-  def set_department
-    @department = Department.find(params[:department_id])
+  def set_program
+    @program = Program.find(params[:program_id])
+    @department = @program.department
   end
 
   def set_vip
-    @vip = @department.vips.find(params[:id])
+    @vip = @program.vips.find(params[:id])
   end
 
   def vip_params

@@ -1,6 +1,6 @@
 class ProgramsController < ApplicationController
   before_action :set_department
-  before_action :set_program, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_program, only: [ :show, :edit, :update, :destroy, :edit_content, :update_content ]
 
   def index
     @programs = policy_scope(Program).where(department: @department).order(active: :desc, created_at: :desc)
@@ -47,6 +47,20 @@ class ProgramsController < ApplicationController
     redirect_to department_programs_path(@department), notice: "Program was successfully deleted."
   end
 
+  def edit_content
+    authorize @program
+  end
+
+  def update_content
+    authorize @program
+
+    if @program.update(program_content_params)
+      redirect_to [ @department, @program ], notice: "Program content was successfully updated."
+    else
+      render :edit_content, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def set_department
@@ -59,5 +73,9 @@ class ProgramsController < ApplicationController
 
   def program_params
     params.require(:program).permit(:name, :open_date, :close_date, :questionnaire_due_date, :default_appointment_length, :active, :google_map_url, held_on_dates: [])
+  end
+
+  def program_content_params
+    params.require(:program).permit(:description)
   end
 end

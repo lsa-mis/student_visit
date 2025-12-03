@@ -3,7 +3,6 @@ class Department < ApplicationRecord
   has_many :programs, dependent: :destroy
   has_many :department_admins, dependent: :destroy
   has_many :admin_users, through: :department_admins, source: :user
-  has_many :vips, dependent: :destroy
   has_many :affiliated_resources, dependent: :destroy
   has_one_attached :image
 
