@@ -11,6 +11,24 @@ class AppointmentsController < ApplicationController
     authorize @appointment
   end
 
+  def new
+    @appointment = @program.appointments.build
+    authorize @appointment
+    @vips = @program.vips.ordered
+  end
+
+  def create
+    @appointment = @program.appointments.build(appointment_params)
+    authorize @appointment
+    @vips = @program.vips.ordered
+
+    if @appointment.save
+      redirect_to department_program_appointments_path(@program.department, @program), notice: "Appointment was successfully created."
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
   def bulk_upload
     authorize Appointment.new(program: @program), :create?
     @vips = @program.vips.ordered
@@ -58,5 +76,9 @@ class AppointmentsController < ApplicationController
 
   def set_appointment
     @appointment = @program.appointments.find(params[:id])
+  end
+
+  def appointment_params
+    params.require(:appointment).permit(:vip_id, :start_time, :end_time)
   end
 end

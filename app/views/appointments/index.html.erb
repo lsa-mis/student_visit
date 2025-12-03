@@ -1,8 +1,99 @@
-<div>
-  <h1 class="font-bold text-4xl">Appointments#index</h1>
-  <% @appointments.each do |appointment| %>
+<div class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
     <div>
-      <p><%= appointment.vip.display_name %></p>
+      <h1 class="text-3xl font-bold">Appointments</h1>
+      <p class="text-gray-600 mt-1">
+        Program: <%= link_to @program.name, department_program_path(@department, @program), class: "text-blue-600 hover:text-blue-800" %>
+      </p>
+    </div>
+    <div class="flex space-x-2">
+      <% if policy(Appointment.new(program: @program)).create? %>
+        <%= link_to "Bulk Upload", bulk_upload_department_program_appointments_path(@department, @program), class: "bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" %>
+        <%= link_to "New Appointment", new_department_program_appointment_path(@department, @program), class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
+      <% end %>
+    </div>
+  </div>
+
+  <% if flash[:notice] %>
+    <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
+      <%= flash[:notice] %>
     </div>
   <% end %>
+
+  <% if flash[:alert] %>
+    <div class="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded mb-4">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <% if flash[:errors] && flash[:errors].any? %>
+    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+      <h3 class="font-bold mb-2">Errors:</h3>
+      <ul class="list-disc list-inside">
+        <% flash[:errors].each do |error| %>
+          <li><%= error %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="bg-white shadow rounded-lg p-6">
+    <% if @appointments.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Faculty</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Time</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Time</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <% if policy(Appointment.new(program: @program)).show? %>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @appointments.each do |appointment| %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= appointment.vip.display_name %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= appointment.start_time.strftime("%B %d, %Y at %I:%M %p") %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= appointment.end_time.strftime("%B %d, %Y at %I:%M %p") %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <% if appointment.student %>
+                    <%= appointment.student.email_address %>
+                  <% else %>
+                    <span class="text-gray-400">Available</span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                  <% if appointment.available? %>
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">Available</span>
+                  <% else %>
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Booked</span>
+                  <% end %>
+                </td>
+                <% if policy(appointment).show? %>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <%= link_to "View", department_program_appointment_path(@department, @program, appointment), class: "text-indigo-600 hover:text-indigo-800" %>
+                  </td>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <div class="mt-4 text-sm text-gray-500">
+        Total: <%= @appointments.count %> appointment(s)
+      </div>
+    <% else %>
+      <p class="text-gray-500">No appointments for this program.</p>
+    <% end %>
+  </div>
 </div>
