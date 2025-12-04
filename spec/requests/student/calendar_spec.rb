@@ -4,7 +4,7 @@ RSpec.describe "Student::Calendar", type: :request do
   let(:department) { create(:department, :with_active_program) }
   let(:program) { department.active_program }
   let(:student_user) { create(:user, :with_student_role) }
-  let(:vip) { create(:vip, department: department) }
+  let(:vip) { create(:vip, program: program) }
 
   before do
     create(:student_program, user: student_user, program: program)

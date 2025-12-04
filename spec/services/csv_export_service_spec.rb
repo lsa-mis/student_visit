@@ -6,7 +6,7 @@ RSpec.describe CsvExportService, type: :service do
   let(:questionnaire) { Questionnaire.create!(name: "Test Questionnaire", program: program) }
   let(:question) { Question.create!(text: "Test Question", question_type: "text", questionnaire: questionnaire, position: 1) }
   let(:student) { User.create!(email_address: 'student@example.com', password: 'password123') }
-  let(:vip) { Vip.create!(name: "Dr. Smith", department: department) }
+  let(:vip) { Vip.create!(name: "Dr. Smith", program: program) }
 
   before do
     student.add_role('student')

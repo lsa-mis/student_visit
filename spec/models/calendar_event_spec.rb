@@ -177,8 +177,8 @@ RSpec.describe CalendarEvent, type: :model do
   end
 
   describe 'participating_faculty association' do
-    let(:vip1) { Vip.create!(name: "Dr. Smith", department: department) }
-    let(:vip2) { Vip.create!(name: "Dr. Jones", department: department) }
+    let(:vip1) { Vip.create!(name: "Dr. Smith", program: program) }
+    let(:vip2) { Vip.create!(name: "Dr. Jones", program: program) }
     let(:event) do
       CalendarEvent.create!(
         title: "Test Event",

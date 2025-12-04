@@ -4,7 +4,7 @@ RSpec.describe "Student::Appointments", type: :request do
   let(:department) { create(:department, :with_active_program) }
   let(:program) { department.active_program }
   let(:student_user) { create(:user, :with_student_role) }
-  let(:vip) { create(:vip, department: department) }
+  let(:vip) { create(:vip, program: program) }
 
   before do
     create(:student_program, user: student_user, program: program)
@@ -76,7 +76,7 @@ RSpec.describe "Student::Appointments", type: :request do
       end
 
       it "filters by VIP when vip_id is provided" do
-        vip2 = create(:vip, department: department, name: "Dr. Different")
+        vip2 = create(:vip, program: program, name: "Dr. Different")
         appointment1 = create(:appointment, :available, :upcoming, program: program, vip: vip,
                               start_time: 1.week.from_now, end_time: 1.week.from_now + 30.minutes)
         appointment2 = create(:appointment, :available, :upcoming, program: program, vip: vip2,
@@ -118,7 +118,7 @@ RSpec.describe "Student::Appointments", type: :request do
         my_appointment = create(:appointment, :booked, :upcoming, program: program, student: student_user, vip: vip,
                                start_time: 1.week.from_now, end_time: 1.week.from_now + 30.minutes)
         other_student = create(:user, :with_student_role)
-        other_vip = create(:vip, department: department, name: "Dr. Other")
+        other_vip = create(:vip, program: program, name: "Dr. Other")
         other_appointment = create(:appointment, :booked, :upcoming, program: program, student: other_student, vip: other_vip,
                                   start_time: 2.weeks.from_now, end_time: 2.weeks.from_now + 30.minutes)
 

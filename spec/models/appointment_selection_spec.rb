@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe AppointmentSelection, type: :model do
   let(:department) { Department.create!(name: "Test Department") }
   let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
-  let(:vip) { Vip.create!(name: "Dr. Smith", department: department) }
+  let(:vip) { Vip.create!(name: "Dr. Smith", program: program) }
   let(:appointment) do
     Appointment.create!(
       start_time: 1.hour.from_now,

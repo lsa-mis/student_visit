@@ -7,7 +7,6 @@ RSpec.describe Department, type: :model do
     it { should have_many(:programs).dependent(:destroy) }
     it { should have_many(:department_admins).dependent(:destroy) }
     it { should have_many(:admin_users).through(:department_admins).source(:user) }
-    it { should have_many(:vips).dependent(:destroy) }
     it { should have_many(:affiliated_resources).dependent(:destroy) }
     # Note: has_one_attached matcher may not be available in shoulda-matchers
     # it { should have_one_attached(:image) }
