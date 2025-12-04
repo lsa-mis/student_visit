@@ -113,7 +113,7 @@ RSpec.describe "Admin::PageContents", type: :request do
       it "renders new with errors when invalid" do
         invalid_params = { page_content: { page_path: "", area_name: "" } }
         post admin_page_contents_path, params: invalid_params
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("error") # Check for error messages in response
       end
     end
@@ -176,7 +176,7 @@ RSpec.describe "Admin::PageContents", type: :request do
         patch admin_page_content_path(page_content), params: {
           page_content: { page_path: "" }
         }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
         expect(response.body).to include("error") # Check for error messages in response
       end
     end
