@@ -127,7 +127,7 @@ RSpec.describe "Appointments", type: :request do
         it "processes the upload" do
           # Create a temporary CSV file
           csv_content = "Start Time,End Time\n#{(Time.current + 1.hour).strftime('%m/%d/%Y %H:%M')},#{(Time.current + 2.hours).strftime('%m/%d/%Y %H:%M')}\n"
-          file = Tempfile.new(['appointments', '.csv'])
+          file = Tempfile.new([ 'appointments', '.csv' ])
           file.write(csv_content)
           file.rewind
 
@@ -155,7 +155,7 @@ RSpec.describe "Appointments", type: :request do
       context "without VIP" do
         it "redirects with alert" do
           csv_content = "Start Time,End Time\n"
-          file = Tempfile.new(['appointments', '.csv'])
+          file = Tempfile.new([ 'appointments', '.csv' ])
           file.write(csv_content)
           file.rewind
 

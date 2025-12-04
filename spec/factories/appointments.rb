@@ -11,7 +11,7 @@ FactoryBot.define do
     end
 
     trait :booked do
-      association :student, factory: :user, traits: [:with_student_role]
+      association :student, factory: :user, traits: [ :with_student_role ]
     end
 
     trait :upcoming do

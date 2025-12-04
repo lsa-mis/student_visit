@@ -31,7 +31,7 @@ RSpec.describe Questionnaire, type: :model do
       question1 = Question.create!(text: "Question 1", question_type: "text", questionnaire: questionnaire, position: 2)
       question2 = Question.create!(text: "Question 2", question_type: "text", questionnaire: questionnaire, position: 1)
 
-      expect(questionnaire.questions.to_a).to eq([question2, question1])
+      expect(questionnaire.questions.to_a).to eq([ question2, question1 ])
     end
 
     it 'destroys questions when questionnaire is destroyed' do

@@ -8,6 +8,6 @@ class CreateAppointmentSelections < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :appointment_selections, [:appointment_id, :user_id]
+    add_index :appointment_selections, [ :appointment_id, :user_id ]
   end
 end

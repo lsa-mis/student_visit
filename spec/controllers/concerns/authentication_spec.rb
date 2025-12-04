@@ -57,7 +57,7 @@ RSpec.describe Authentication, type: :controller do
 
   describe 'allow_unauthenticated_access' do
     controller(ApplicationController) do
-      allow_unauthenticated_access only: [:index]
+      allow_unauthenticated_access only: [ :index ]
 
       def index
         render plain: 'success'

@@ -167,14 +167,14 @@ RSpec.describe Program, type: :model do
     end
 
     it 'converts date strings to Date objects' do
-      program.update!(held_on_dates: [Date.today.to_s, Date.tomorrow.to_s])
+      program.update!(held_on_dates: [ Date.today.to_s, Date.tomorrow.to_s ])
       dates = program.held_on_dates_as_dates
       expect(dates).to all(be_a(Date))
       expect(dates).to include(Date.today, Date.tomorrow)
     end
 
     it 'filters out invalid date strings' do
-      program.update!(held_on_dates: [Date.today.to_s, "invalid", Date.tomorrow.to_s])
+      program.update!(held_on_dates: [ Date.today.to_s, "invalid", Date.tomorrow.to_s ])
       dates = program.held_on_dates_as_dates
       expect(dates).to include(Date.today, Date.tomorrow)
       expect(dates.length).to eq(2)
@@ -190,22 +190,22 @@ RSpec.describe Program, type: :model do
     end
 
     it 'returns true when date is in held_on_dates' do
-      program.update!(held_on_dates: [Date.today.to_s])
+      program.update!(held_on_dates: [ Date.today.to_s ])
       expect(program.held_on_date?(Date.today)).to be true
     end
 
     it 'returns false when date is not in held_on_dates' do
-      program.update!(held_on_dates: [Date.tomorrow.to_s])
+      program.update!(held_on_dates: [ Date.tomorrow.to_s ])
       expect(program.held_on_date?(Date.today)).to be false
     end
 
     it 'handles Date objects' do
-      program.update!(held_on_dates: [Date.today.to_s])
+      program.update!(held_on_dates: [ Date.today.to_s ])
       expect(program.held_on_date?(Date.today)).to be true
     end
 
     it 'handles Time objects' do
-      program.update!(held_on_dates: [Date.today.to_s])
+      program.update!(held_on_dates: [ Date.today.to_s ])
       expect(program.held_on_date?(Time.current)).to be true
     end
   end
@@ -214,8 +214,8 @@ RSpec.describe Program, type: :model do
     let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
 
     it 'returns sorted list of dates' do
-      program.update!(held_on_dates: [Date.tomorrow.to_s, Date.today.to_s])
-      expect(program.held_on_dates_list).to eq([Date.today, Date.tomorrow])
+      program.update!(held_on_dates: [ Date.tomorrow.to_s, Date.today.to_s ])
+      expect(program.held_on_dates_list).to eq([ Date.today, Date.tomorrow ])
     end
   end
 
@@ -240,23 +240,23 @@ RSpec.describe Program, type: :model do
     let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
 
     it 'normalizes date strings to YYYY-MM-DD format' do
-      program.update!(held_on_dates: ["01/15/2024", "2024-02-20"])
+      program.update!(held_on_dates: [ "01/15/2024", "2024-02-20" ])
       expect(program.held_on_dates).to all(match(/\d{4}-\d{2}-\d{2}/))
     end
 
     it 'removes duplicates' do
-      program.update!(held_on_dates: [Date.today.to_s, Date.today.to_s])
+      program.update!(held_on_dates: [ Date.today.to_s, Date.today.to_s ])
       expect(program.held_on_dates.length).to eq(1)
     end
 
     it 'sorts dates' do
-      program.update!(held_on_dates: [Date.tomorrow.to_s, Date.today.to_s])
+      program.update!(held_on_dates: [ Date.tomorrow.to_s, Date.today.to_s ])
       expect(program.held_on_dates.first).to eq(Date.today.to_s)
     end
 
     it 'filters out blank dates' do
-      program.update!(held_on_dates: [Date.today.to_s, "", "  "])
-      expect(program.held_on_dates).to eq([Date.today.to_s])
+      program.update!(held_on_dates: [ Date.today.to_s, "", "  " ])
+      expect(program.held_on_dates).to eq([ Date.today.to_s ])
     end
   end
 end

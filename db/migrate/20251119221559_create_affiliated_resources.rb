@@ -9,6 +9,6 @@ class CreateAffiliatedResources < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :affiliated_resources, [:department_id, :position]
+    add_index :affiliated_resources, [ :department_id, :position ]
   end
 end

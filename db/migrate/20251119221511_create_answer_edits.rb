@@ -9,6 +9,6 @@ class CreateAnswerEdits < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :answer_edits, [:answer_id, :edited_at]
+    add_index :answer_edits, [ :answer_id, :edited_at ]
   end
 end

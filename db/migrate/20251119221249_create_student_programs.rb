@@ -7,6 +7,6 @@ class CreateStudentPrograms < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :student_programs, [:user_id, :program_id], unique: true
+    add_index :student_programs, [ :user_id, :program_id ], unique: true
   end
 end

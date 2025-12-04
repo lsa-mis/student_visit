@@ -145,9 +145,9 @@ class CsvExportService
               # Extract plain text and parse checkbox values
               content_string = if content.respond_to?(:to_plain_text)
                                 content.to_plain_text
-                              else
+              else
                                 content.to_s
-                              end
+              end
               if content_string.start_with?("[") && content_string.end_with?("]")
                 begin
                   parsed = JSON.parse(content_string)

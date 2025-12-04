@@ -74,30 +74,30 @@ class QuestionnairesController < ApplicationController
             # Extract plain text from ActionText if it's a RichText object
             content_string = if content.respond_to?(:to_plain_text)
                                content.to_plain_text
-                             else
+            else
                                content.to_s
-                             end
+            end
             selected = if content.is_a?(Array)
                         content
-                      elsif content_string.start_with?("[") && content_string.end_with?("]")
+            elsif content_string.start_with?("[") && content_string.end_with?("]")
                         # Try to parse as JSON array string
                         begin
                           JSON.parse(content_string)
                         rescue JSON::ParserError
                           content_string.split(",").map(&:strip)
                         end
-                      else
+            else
                         content_string.split(",").map(&:strip)
-                      end
+            end
             selected.each { |opt| option_counts[opt] += 1 if option_counts.key?(opt) }
           else
             # For radio, content is a single value
             # Extract plain text from ActionText if it's a RichText object
             content_value = if answer.content.respond_to?(:to_plain_text)
                               answer.content.to_plain_text
-                            else
+            else
                               answer.content.to_s
-                            end
+            end
             option_counts[content_value] += 1 if option_counts.key?(content_value)
           end
         end

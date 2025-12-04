@@ -21,7 +21,7 @@ RSpec.describe AppointmentsMailer, type: :mailer do
 
       it 'renders the headers' do
         expect(mail.subject).to eq("Appointment Confirmed: Dr. Smith")
-        expect(mail.to).to eq([student.email_address])
+        expect(mail.to).to eq([ student.email_address ])
         expect(mail.from).to be_present
       end
 
@@ -41,7 +41,7 @@ RSpec.describe AppointmentsMailer, type: :mailer do
 
       it 'renders the headers' do
         expect(mail.subject).to eq("Appointment Cancelled: Dr. Smith")
-        expect(mail.to).to eq([student.email_address])
+        expect(mail.to).to eq([ student.email_address ])
       end
 
       it 'renders the body' do

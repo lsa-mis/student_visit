@@ -6,7 +6,7 @@ class CreatePageContents < ActiveRecord::Migration[8.1]
 
       t.timestamps
 
-      t.index [:page_path, :area_name], unique: true, name: "index_page_contents_on_page_and_area"
+      t.index [ :page_path, :area_name ], unique: true, name: "index_page_contents_on_page_and_area"
     end
   end
 end

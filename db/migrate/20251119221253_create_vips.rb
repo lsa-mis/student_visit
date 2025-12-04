@@ -10,6 +10,6 @@ class CreateVips < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :vips, [:department_id, :ranking]
+    add_index :vips, [ :department_id, :ranking ]
   end
 end

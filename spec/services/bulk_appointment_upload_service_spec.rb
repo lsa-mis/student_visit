@@ -44,7 +44,7 @@ RSpec.describe BulkAppointmentUploadService, type: :service do
         "#{(Time.current + 1.hour).strftime('%m/%d/%Y %H:%M')},#{(Time.current + 2.hours).strftime('%m/%d/%Y %H:%M')}\n" \
         "#{(Time.current + 3.hours).strftime('%m/%d/%Y %H:%M')},#{(Time.current + 4.hours).strftime('%m/%d/%Y %H:%M')}\n"
       end
-      let(:csv_file) { Tempfile.new(['appointments', '.csv']) }
+      let(:csv_file) { Tempfile.new([ 'appointments', '.csv' ]) }
 
       before do
         csv_file.write(csv_content)
@@ -74,7 +74,7 @@ RSpec.describe BulkAppointmentUploadService, type: :service do
     end
 
     context 'with valid Excel file' do
-      let(:xlsx_file) { Tempfile.new(['appointments', '.xlsx']) }
+      let(:xlsx_file) { Tempfile.new([ 'appointments', '.xlsx' ]) }
 
       before do
         # Mock the file and Roo::Excelx behavior
@@ -108,7 +108,7 @@ RSpec.describe BulkAppointmentUploadService, type: :service do
         "invalid,invalid\n" \
         ",#{(Time.current + 2.hours).strftime('%m/%d/%Y %H:%M')}\n"
       end
-      let(:csv_file) { Tempfile.new(['appointments', '.csv']) }
+      let(:csv_file) { Tempfile.new([ 'appointments', '.csv' ]) }
 
       before do
         csv_file.write(csv_content)

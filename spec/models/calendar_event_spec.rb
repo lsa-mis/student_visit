@@ -42,7 +42,7 @@ RSpec.describe CalendarEvent, type: :model do
     end
 
     it 'validates start_time is on a held_on_date when program has held_on_dates' do
-      program.update!(held_on_dates: [Date.tomorrow.to_s])
+      program.update!(held_on_dates: [ Date.tomorrow.to_s ])
       event = CalendarEvent.new(
         title: "Test Event",
         start_time: Date.today.beginning_of_day,

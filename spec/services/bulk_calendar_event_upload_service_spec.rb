@@ -42,7 +42,7 @@ RSpec.describe BulkCalendarEventUploadService, type: :service do
         "Event 1,#{(Time.current + 1.hour).strftime('%m/%d/%Y %H:%M')},#{(Time.current + 2.hours).strftime('%m/%d/%Y %H:%M')},Description 1,Location 1,Notes 1,true\n" \
         "Event 2,#{(Time.current + 3.hours).strftime('%m/%d/%Y %H:%M')},#{(Time.current + 4.hours).strftime('%m/%d/%Y %H:%M')},Description 2,Location 2,Notes 2,false\n"
       end
-      let(:csv_file) { Tempfile.new(['events', '.csv']) }
+      let(:csv_file) { Tempfile.new([ 'events', '.csv' ]) }
 
       before do
         csv_file.write(csv_content)
@@ -92,7 +92,7 @@ RSpec.describe BulkCalendarEventUploadService, type: :service do
         ",#{(Time.current + 1.hour).strftime('%m/%d/%Y %H:%M')},#{(Time.current + 2.hours).strftime('%m/%d/%Y %H:%M')},Description,Location,Notes,true\n" \
         "Event,invalid,invalid,Description,Location,Notes,true\n"
       end
-      let(:csv_file) { Tempfile.new(['events', '.csv']) }
+      let(:csv_file) { Tempfile.new([ 'events', '.csv' ]) }
 
       before do
         csv_file.write(csv_content)

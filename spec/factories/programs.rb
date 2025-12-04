@@ -19,7 +19,7 @@ FactoryBot.define do
     end
 
     trait :with_held_on_dates do
-      held_on_dates { [Date.current.to_s, 1.week.from_now.to_date.to_s] }
+      held_on_dates { [ Date.current.to_s, 1.week.from_now.to_date.to_s ] }
     end
   end
 end

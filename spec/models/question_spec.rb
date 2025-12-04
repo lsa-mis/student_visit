@@ -55,9 +55,9 @@ RSpec.describe Question, type: :model do
         text: "Test Question",
         question_type: "radio",
         questionnaire: questionnaire,
-        options: ["Option 1", "Option 2", "Option 3"]
+        options: [ "Option 1", "Option 2", "Option 3" ]
       )
-      expect(question.reload.options).to eq(["Option 1", "Option 2", "Option 3"])
+      expect(question.reload.options).to eq([ "Option 1", "Option 2", "Option 3" ])
     end
 
     it 'serializes hash options' do
@@ -73,8 +73,8 @@ RSpec.describe Question, type: :model do
 
   describe '#options_array' do
     it 'returns options when options is an array' do
-      question = Question.new(options: ["Option 1", "Option 2"])
-      expect(question.options_array).to eq(["Option 1", "Option 2"])
+      question = Question.new(options: [ "Option 1", "Option 2" ])
+      expect(question.options_array).to eq([ "Option 1", "Option 2" ])
     end
 
     it 'returns empty array when options is not an array' do
@@ -95,7 +95,7 @@ RSpec.describe Question, type: :model do
     end
 
     it 'returns empty hash when options is not a hash' do
-      question = Question.new(options: ["Option 1"])
+      question = Question.new(options: [ "Option 1" ])
       expect(question.options_hash).to eq({})
     end
 

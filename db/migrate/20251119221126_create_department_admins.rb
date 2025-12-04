@@ -7,6 +7,6 @@ class CreateDepartmentAdmins < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :department_admins, [:user_id, :department_id], unique: true
+    add_index :department_admins, [ :user_id, :department_id ], unique: true
   end
 end

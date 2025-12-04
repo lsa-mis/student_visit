@@ -78,7 +78,7 @@ RSpec.describe "Student::Calendar", type: :request do
       end
 
       it "uses first held_on_date when switching to date filter mode" do
-        program.update!(held_on_dates: [Date.current.to_s, 1.week.from_now.to_date.to_s])
+        program.update!(held_on_dates: [ Date.current.to_s, 1.week.from_now.to_date.to_s ])
         get student_department_program_calendar_path(department, program), params: { filter: "date" }
         expect(response).to have_http_status(:success)
       end

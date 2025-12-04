@@ -42,7 +42,7 @@ RSpec.describe BulkFacultyUploadService, type: :service do
         "Dr. Smith,http://example.com/smith,Professor,1\n" \
         "Dr. Jones,http://example.com/jones,Associate Professor,2\n"
       end
-      let(:csv_file) { Tempfile.new(['faculty', '.csv']) }
+      let(:csv_file) { Tempfile.new([ 'faculty', '.csv' ]) }
 
       before do
         csv_file.write(csv_content)
@@ -86,7 +86,7 @@ RSpec.describe BulkFacultyUploadService, type: :service do
         "Dr. Smith,http://example.com/smith,Updated Title,5\n" \
         "Dr. New,http://example.com/new,Professor,1\n"
       end
-      let(:csv_file) { Tempfile.new(['faculty', '.csv']) }
+      let(:csv_file) { Tempfile.new([ 'faculty', '.csv' ]) }
 
       before do
         csv_file.write(csv_content)
@@ -120,7 +120,7 @@ RSpec.describe BulkFacultyUploadService, type: :service do
         "Name,Profile URL,Title,Ranking\n" \
         ",http://example.com/smith,Professor,1\n"
       end
-      let(:csv_file) { Tempfile.new(['faculty', '.csv']) }
+      let(:csv_file) { Tempfile.new([ 'faculty', '.csv' ]) }
 
       before do
         csv_file.write(csv_content)
@@ -147,7 +147,7 @@ RSpec.describe BulkFacultyUploadService, type: :service do
         "Dr. Smith,http://example.com/smith,Professor,\n" \
         "Dr. Jones,http://example.com/jones,Professor,abc\n"
       end
-      let(:csv_file) { Tempfile.new(['faculty', '.csv']) }
+      let(:csv_file) { Tempfile.new([ 'faculty', '.csv' ]) }
 
       before do
         csv_file.write(csv_content)

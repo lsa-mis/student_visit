@@ -9,6 +9,6 @@ class CreateImportantLinks < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :important_links, [:program_id, :ranking]
+    add_index :important_links, [ :program_id, :ranking ]
   end
 end

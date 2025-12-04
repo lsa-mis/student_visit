@@ -8,7 +8,7 @@ RSpec.describe PasswordsMailer, type: :mailer do
 
     it 'renders the headers' do
       expect(mail.subject).to eq('Reset your password')
-      expect(mail.to).to eq([user.email_address])
+      expect(mail.to).to eq([ user.email_address ])
       expect(mail.from).to be_present
     end
 
@@ -40,7 +40,7 @@ RSpec.describe PasswordsMailer, type: :mailer do
     it 'sets the correct user' do
       # The user is set as an instance variable in the mailer
       # Check via the email address instead
-      expect(mail.to).to eq([user.email_address])
+      expect(mail.to).to eq([ user.email_address ])
     end
 
     context 'when delivered' do
@@ -61,14 +61,14 @@ RSpec.describe PasswordsMailer, type: :mailer do
       it 'handles lowercase email' do
         user.update!(email_address: 'lowercase@example.com')
         mail = PasswordsMailer.reset(user)
-        expect(mail.to).to eq(['lowercase@example.com'])
+        expect(mail.to).to eq([ 'lowercase@example.com' ])
       end
 
       it 'handles mixed case email' do
         user.update!(email_address: 'MixedCase@Example.COM')
         mail = PasswordsMailer.reset(user)
         # Email should be normalized
-        expect(mail.to).to eq(['mixedcase@example.com'])
+        expect(mail.to).to eq([ 'mixedcase@example.com' ])
       end
     end
   end

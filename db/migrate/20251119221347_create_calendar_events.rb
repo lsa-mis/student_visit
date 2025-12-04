@@ -10,6 +10,6 @@ class CreateCalendarEvents < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :calendar_events, [:program_id, :start_time]
+    add_index :calendar_events, [ :program_id, :start_time ]
   end
 end

@@ -12,6 +12,6 @@ class CreatePrograms < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :programs, [:department_id, :active]
+    add_index :programs, [ :department_id, :active ]
   end
 end

@@ -42,7 +42,7 @@ RSpec.describe BulkStudentUploadService, type: :service do
         "student1@example.com,Smith,John,12345678\n" \
         "student2@example.com,Jones,Jane,87654321\n"
       end
-      let(:csv_file) { Tempfile.new(['students', '.csv']) }
+      let(:csv_file) { Tempfile.new([ 'students', '.csv' ]) }
 
       before do
         csv_file.write(csv_content)
@@ -68,7 +68,7 @@ RSpec.describe BulkStudentUploadService, type: :service do
       it 'adds student role to new users' do
         service = BulkStudentUploadService.new(program, file)
         service.call
-        users = User.where(email_address: ['student1@example.com', 'student2@example.com'])
+        users = User.where(email_address: [ 'student1@example.com', 'student2@example.com' ])
         users.each do |user|
           expect(user.student?).to be true
         end
@@ -94,7 +94,7 @@ RSpec.describe BulkStudentUploadService, type: :service do
         "existing@example.com,Updated,Name,12345678\n" \
         "new@example.com,New,User,87654321\n"
       end
-      let(:csv_file) { Tempfile.new(['students', '.csv']) }
+      let(:csv_file) { Tempfile.new([ 'students', '.csv' ]) }
 
       before do
         csv_file.write(csv_content)
@@ -129,7 +129,7 @@ RSpec.describe BulkStudentUploadService, type: :service do
         ",Smith,John,12345678\n" \
         "invalid-email,Jones,Jane,87654321\n"
       end
-      let(:csv_file) { Tempfile.new(['students', '.csv']) }
+      let(:csv_file) { Tempfile.new([ 'students', '.csv' ]) }
 
       before do
         csv_file.write(csv_content)
