@@ -164,6 +164,10 @@ class AppointmentScheduleCreatorService
     # Parse "HH:MM" or "HH:MM AM/PM" format
     time_parts = time_str.to_s.strip.upcase
 
+    # Validate basic time format before parsing
+    # Must contain ":" for time format
+    return nil unless time_parts.include?(":")
+
     # Handle 12-hour format
     if time_parts.include?("AM") || time_parts.include?("PM")
       # Extract AM/PM marker and normalize spacing to avoid ReDoS vulnerability
@@ -172,10 +176,14 @@ class AppointmentScheduleCreatorService
       # Split on AM/PM, take first part, then strip whitespace
       time_without_am_pm = time_parts.split(am_pm, 2).first.strip
       time_str_clean = "#{time_without_am_pm} #{am_pm}"
-      Time.zone.parse("#{date} #{time_str_clean}")
+      parsed_time = Time.zone.parse("#{date} #{time_str_clean}")
+      # Verify the parse was successful by checking if it's actually a Time object
+      parsed_time.is_a?(Time) ? parsed_time : nil
     else
       # 24-hour format (HH:MM)
-      Time.zone.parse("#{date} #{time_parts}")
+      parsed_time = Time.zone.parse("#{date} #{time_parts}")
+      # Verify the parse was successful by checking if it's actually a Time object
+      parsed_time.is_a?(Time) ? parsed_time : nil
     end
   rescue
     nil

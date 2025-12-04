@@ -42,7 +42,8 @@ class Admin::PageContentsController < ApplicationController
   private
 
   def set_page_content
-    @page_content = authorize policy_scope(PageContent).find(params[:id])
+    @page_content = PageContent.find(params[:id])
+    authorize @page_content
   end
 
   def page_content_params

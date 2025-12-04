@@ -1,6 +1,6 @@
 class PageContentPolicy < ApplicationPolicy
   def index?
-    user&.super_admin?
+    user&.super_admin? || false
   end
 
   def show?
