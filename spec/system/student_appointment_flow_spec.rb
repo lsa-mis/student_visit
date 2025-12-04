@@ -8,7 +8,7 @@ RSpec.describe "Student Appointment Flow", type: :system do
   let(:department) { create(:department, :with_active_program) }
   let(:program) { department.active_program }
   let(:student_user) { create(:user, :with_student_role, email_address: "student@example.com", password: "password123") }
-  let(:vip) { create(:vip, department: department, name: "Dr. Smith") }
+  let(:vip) { create(:vip, program: program, name: "Dr. Smith") }
 
   before do
     create(:student_program, user: student_user, program: program)
@@ -56,7 +56,7 @@ RSpec.describe "Student Appointment Flow", type: :system do
   end
 
   it "filters appointments by VIP" do
-    vip2 = create(:vip, department: department, name: "Dr. Jones")
+    vip2 = create(:vip, program: program, name: "Dr. Jones")
     appointment1 = create(:appointment, :available, :upcoming, program: program, vip: vip,
                           start_time: 1.week.from_now, end_time: 1.week.from_now + 30.minutes)
     appointment2 = create(:appointment, :available, :upcoming, program: program, vip: vip2,

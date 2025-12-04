@@ -7,7 +7,7 @@ RSpec.describe "Admin Management Flow", type: :system do
 
   let(:department) { create(:department, :with_active_program, name: "Physics Department") }
   let(:program) { department.active_program }
-  let!(:vip) { create(:vip, department: department, name: "Dr. Ada Lovelace") }
+  let!(:vip) { create(:vip, program: program, name: "Dr. Ada Lovelace") }
   let!(:questionnaire) { create(:questionnaire, program: program, name: "Campus Experience Survey") }
   let!(:question) { create(:question, questionnaire: questionnaire, text: "How was your visit?") }
   let!(:calendar_event) { create(:calendar_event, :upcoming, program: program, title: "Campus Tour") }
@@ -26,11 +26,11 @@ RSpec.describe "Admin Management Flow", type: :system do
 
     click_link department.name, match: :first
     expect(page).to have_content("Programs")
-    expect(page).to have_content("VIPs (Faculty/Staff)")
 
     click_link program.name, match: :first
     expect(page).to have_content(program.name)
     expect(page).to have_content("Program Management")
+    expect(page).to have_content("VIPs (Faculty/Staff)")
 
     click_link "Questionnaires"
     expect(page).to have_content("Questionnaires")
@@ -48,7 +48,7 @@ RSpec.describe "Admin Management Flow", type: :system do
     expect(page).to have_content("Students")
     expect(page).to have_content(student.email_address)
 
-    visit department_vips_path(department)
+    visit department_program_vips_path(department, program)
     expect(page).to have_content("VIPs (Faculty/Staff)")
     expect(page).to have_content(vip.name)
   end

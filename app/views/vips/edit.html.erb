@@ -35,6 +35,14 @@
       <p class="mt-1 text-sm text-gray-500">Lower numbers appear first in listings</p>
     </div>
 
+    <div class="mb-4">
+      <%= form.label :display_on_student_dashboard, class: "flex items-center" do %>
+        <%= form.check_box :display_on_student_dashboard, class: "mr-2" %>
+        <span class="text-sm font-medium text-gray-700">Display on student dashboard</span>
+      <% end %>
+      <p class="mt-1 text-sm text-gray-500">When checked, this faculty/staff member will be shown in the "Contact Us" section on the student dashboard.</p>
+    </div>
+
     <div class="flex justify-end space-x-4">
       <%= form.submit "Update VIP", class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
       <%= link_to "Cancel", department_program_vip_path(@department, @program, @vip), class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>

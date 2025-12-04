@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_03_163201) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_03_194250) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -262,6 +262,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_03_163201) do
 
   create_table "vips", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.boolean "display_on_student_dashboard", default: false, null: false
     t.string "name", null: false
     t.string "profile_url"
     t.integer "program_id", null: false

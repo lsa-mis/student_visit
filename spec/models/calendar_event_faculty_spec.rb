@@ -11,7 +11,7 @@ RSpec.describe CalendarEventFaculty, type: :model do
       program: program
     )
   end
-  let(:vip) { Vip.create!(name: "Dr. Smith", department: department) }
+  let(:vip) { Vip.create!(name: "Dr. Smith", program: program) }
 
   describe 'associations' do
     subject { CalendarEventFaculty.new(calendar_event: event, vip: vip) }
@@ -29,7 +29,7 @@ RSpec.describe CalendarEventFaculty, type: :model do
 
     it 'allows same event with different vips' do
       CalendarEventFaculty.create!(calendar_event: event, vip: vip)
-      other_vip = Vip.create!(name: "Dr. Jones", department: department)
+      other_vip = Vip.create!(name: "Dr. Jones", program: program)
       other_association = CalendarEventFaculty.new(calendar_event: event, vip: other_vip)
       expect(other_association).to be_valid
     end

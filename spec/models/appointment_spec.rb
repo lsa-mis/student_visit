@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Appointment, type: :model do
   let(:department) { Department.create!(name: "Test Department") }
   let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
-  let(:vip) { Vip.create!(name: "Dr. Smith", department: department) }
+  let(:vip) { Vip.create!(name: "Dr. Smith", program: program) }
   let(:student) { User.create!(email_address: 'student@example.com', password: 'password123') }
 
   describe 'associations' do
@@ -22,7 +22,9 @@ RSpec.describe Appointment, type: :model do
     end
 
     it 'requires end_time' do
-      appointment = Appointment.new(start_time: Time.current, program: program, vip: vip)
+      # Create appointment without program to test end_time requirement
+      # (The before_validation callback only sets end_time if program is present)
+      appointment = Appointment.new(start_time: Time.current, program: nil, vip: vip)
       expect(appointment).not_to be_valid
       expect(appointment.errors[:end_time]).to be_present
     end
@@ -95,7 +97,7 @@ RSpec.describe Appointment, type: :model do
     end
 
     describe '.for_vip' do
-      let(:other_vip) { Vip.create!(name: "Dr. Jones", department: department) }
+      let(:other_vip) { Vip.create!(name: "Dr. Jones", program: program) }
       let!(:other_appointment) do
         Appointment.create!(
           start_time: 5.hours.from_now,

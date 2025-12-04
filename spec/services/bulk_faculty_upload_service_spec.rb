@@ -2,17 +2,18 @@ require 'rails_helper'
 
 RSpec.describe BulkFacultyUploadService, type: :service do
   let(:department) { Department.create!(name: "Test Department") }
+  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
   let(:file) { double('file', original_filename: 'faculty.csv', path: '/tmp/faculty.csv') }
 
   describe '#initialize' do
-    it 'sets department and file' do
-      service = BulkFacultyUploadService.new(department, file)
-      expect(service.department).to eq(department)
+    it 'sets program and file' do
+      service = BulkFacultyUploadService.new(program, file)
+      expect(service.program).to eq(program)
       expect(service.file).to eq(file)
     end
 
     it 'initializes errors, success_count, and failure_count' do
-      service = BulkFacultyUploadService.new(department, file)
+      service = BulkFacultyUploadService.new(program, file)
       expect(service.errors).to eq([])
       expect(service.success_count).to eq(0)
       expect(service.failure_count).to eq(0)
@@ -22,14 +23,14 @@ RSpec.describe BulkFacultyUploadService, type: :service do
   describe '#call' do
     context 'with invalid file' do
       it 'returns false when file is nil' do
-        service = BulkFacultyUploadService.new(department, nil)
+        service = BulkFacultyUploadService.new(program, nil)
         expect(service.call).to be false
         expect(service.errors).to include("No file provided")
       end
 
       it 'returns false when file type is invalid' do
         invalid_file = double('file', original_filename: 'faculty.txt')
-        service = BulkFacultyUploadService.new(department, invalid_file)
+        service = BulkFacultyUploadService.new(program, invalid_file)
         expect(service.call).to be false
         expect(service.errors).to include("Invalid file type. Please upload a CSV or Excel file.")
       end
@@ -56,7 +57,7 @@ RSpec.describe BulkFacultyUploadService, type: :service do
       end
 
       it 'creates new VIPs' do
-        service = BulkFacultyUploadService.new(department, file)
+        service = BulkFacultyUploadService.new(program, file)
         expect {
           service.call
         }.to change { Vip.count }.by(2)
@@ -64,7 +65,7 @@ RSpec.describe BulkFacultyUploadService, type: :service do
       end
 
       it 'sets VIP attributes correctly' do
-        service = BulkFacultyUploadService.new(department, file)
+        service = BulkFacultyUploadService.new(program, file)
         service.call
         vip = Vip.find_by(name: "Dr. Smith")
         expect(vip.profile_url).to eq("http://example.com/smith")
@@ -73,13 +74,13 @@ RSpec.describe BulkFacultyUploadService, type: :service do
       end
 
       it 'returns true when at least one VIP is created' do
-        service = BulkFacultyUploadService.new(department, file)
+        service = BulkFacultyUploadService.new(program, file)
         expect(service.call).to be true
       end
     end
 
     context 'with existing VIPs' do
-      let!(:existing_vip) { Vip.create!(name: "Dr. Smith", department: department) }
+      let!(:existing_vip) { Vip.create!(name: "Dr. Smith", program: program) }
       let(:csv_content) do
         "Name,Profile URL,Title,Ranking\n" \
         "Dr. Smith,http://example.com/smith,Updated Title,5\n" \
@@ -100,14 +101,14 @@ RSpec.describe BulkFacultyUploadService, type: :service do
       end
 
       it 'updates existing VIPs' do
-        service = BulkFacultyUploadService.new(department, file)
+        service = BulkFacultyUploadService.new(program, file)
         service.call
         expect(existing_vip.reload.title).to eq("Updated Title")
         expect(existing_vip.ranking).to eq(5)
       end
 
       it 'creates new VIPs' do
-        service = BulkFacultyUploadService.new(department, file)
+        service = BulkFacultyUploadService.new(program, file)
         expect {
           service.call
         }.to change { Vip.count }.by(1) # Only creates the new VIP
@@ -134,7 +135,7 @@ RSpec.describe BulkFacultyUploadService, type: :service do
       end
 
       it 'skips rows with blank names' do
-        service = BulkFacultyUploadService.new(department, file)
+        service = BulkFacultyUploadService.new(program, file)
         service.call
         expect(Vip.where(name: '')).to be_empty
       end
@@ -161,7 +162,7 @@ RSpec.describe BulkFacultyUploadService, type: :service do
       end
 
       it 'defaults ranking to 0 when blank or invalid' do
-        service = BulkFacultyUploadService.new(department, file)
+        service = BulkFacultyUploadService.new(program, file)
         service.call
         vip1 = Vip.find_by(name: "Dr. Smith")
         vip2 = Vip.find_by(name: "Dr. Jones")

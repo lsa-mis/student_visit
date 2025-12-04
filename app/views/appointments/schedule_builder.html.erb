@@ -1,0 +1,164 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold">Schedule Builder</h1>
+    <p class="text-gray-600 mt-1">
+      Program: <%= link_to @program.name, department_program_path(@program.department, @program), class: "text-blue-600 hover:text-blue-800" %>
+    </p>
+    <p class="text-sm text-gray-500 mt-2">
+      Create multiple appointments across multiple days. Each day can have multiple time blocks.
+    </p>
+  </div>
+
+  <%= form_with url: create_schedule_department_program_appointments_path(@program.department, @program), method: :post, class: "bg-white shadow rounded-lg p-6" do |form| %>
+    <div class="mb-6">
+      <%= form.label :vip_id, "Faculty Member", class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.select :vip_id,
+          options_from_collection_for_select(@vips, :id, :display_name),
+          { prompt: "Select a faculty member" },
+          { required: true, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" } %>
+    </div>
+
+    <div class="mb-4">
+      <h2 class="text-lg font-semibold mb-2">Schedule Days</h2>
+      <div id="schedule-days" class="space-y-4">
+        <!-- Days will be added here dynamically -->
+      </div>
+      <button type="button" onclick="addDay()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        + Add Day
+      </button>
+    </div>
+
+    <div class="flex justify-end space-x-4 mt-6">
+      <%= form.submit "Create All Appointments", class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
+      <%= link_to "Cancel", department_program_appointments_path(@program.department, @program), class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  let dayCount = 0;
+  const heldOnDates = <%= @held_on_dates.map { |d| d.strftime('%Y-%m-%d') }.to_json.html_safe %>;
+
+  function addDay() {
+    dayCount++;
+    const container = document.getElementById('schedule-days');
+    const dayDiv = document.createElement('div');
+    dayDiv.className = 'border border-gray-300 p-4 rounded-lg bg-gray-50';
+    dayDiv.id = `day-${dayCount}`;
+    dayDiv.innerHTML = `
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-md font-semibold">Day ${dayCount}</h3>
+        <button type="button" onclick="removeDay(${dayCount})" class="text-red-600 hover:text-red-800 text-sm">Remove Day</button>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
+        <input type="date"
+               name="schedule[days][${dayCount}][date]"
+               id="date-${dayCount}"
+               required
+               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+               onchange="validateDate(${dayCount})">
+        <p class="text-xs text-gray-500 mt-1" id="date-hint-${dayCount}"></p>
+      </div>
+      <div class="time-blocks-${dayCount} space-y-2 mb-2">
+        <!-- Time blocks will be added here -->
+      </div>
+      <button type="button" onclick="addTimeBlock(${dayCount})" class="bg-gray-600 text-white px-3 py-2 rounded hover:bg-gray-700 text-sm">
+        + Add Time Block
+      </button>
+    `;
+    container.appendChild(dayDiv);
+    addTimeBlock(dayCount);
+  }
+
+  function removeDay(dayIndex) {
+    const dayDiv = document.getElementById(`day-${dayIndex}`);
+    if (dayDiv) {
+      dayDiv.remove();
+    }
+  }
+
+  function addTimeBlock(dayIndex) {
+    const container = document.querySelector(`.time-blocks-${dayIndex}`);
+    if (!container) return;
+
+    const blockCount = container.children.length;
+    const blockDiv = document.createElement('div');
+    blockDiv.className = 'flex gap-2 items-end border-b border-gray-200 pb-2';
+    blockDiv.innerHTML = `
+      <div class="flex-1">
+        <label class="block text-xs font-medium text-gray-700 mb-1">Type</label>
+        <select name="schedule[days][${dayIndex}][blocks][${blockCount}][type]"
+                onchange="toggleBlockType(this, ${dayIndex}, ${blockCount})"
+                class="w-full px-2 py-1 border border-gray-300 rounded text-sm">
+          <option value="range">Time Range</option>
+          <option value="single">Single Appointment</option>
+        </select>
+      </div>
+      <div class="flex-1">
+        <label class="block text-xs font-medium text-gray-700 mb-1">Start Time</label>
+        <input type="time"
+               name="schedule[days][${dayIndex}][blocks][${blockCount}][start_time]"
+               required
+               class="w-full px-2 py-1 border border-gray-300 rounded text-sm">
+      </div>
+      <div class="flex-1 end-time-container-${dayIndex}-${blockCount}">
+        <label class="block text-xs font-medium text-gray-700 mb-1">End Time</label>
+        <input type="time"
+               name="schedule[days][${dayIndex}][blocks][${blockCount}][end_time]"
+               class="w-full px-2 py-1 border border-gray-300 rounded text-sm">
+      </div>
+      <div class="flex items-end">
+        <button type="button" onclick="this.closest('.flex').remove()" class="text-red-600 hover:text-red-800 text-sm px-2">Remove</button>
+      </div>
+    `;
+    container.appendChild(blockDiv);
+  }
+
+  function toggleBlockType(select, dayIndex, blockIndex) {
+    const endTimeContainer = document.querySelector(`.end-time-container-${dayIndex}-${blockIndex}`);
+    const endTimeInput = endTimeContainer?.querySelector('input[type="time"]');
+
+    if (select.value === 'single') {
+      if (endTimeContainer) endTimeContainer.style.display = 'none';
+      if (endTimeInput) {
+        endTimeInput.removeAttribute('required');
+        endTimeInput.value = '';
+      }
+    } else {
+      if (endTimeContainer) endTimeContainer.style.display = 'block';
+      if (endTimeInput) endTimeInput.setAttribute('required', 'required');
+    }
+  }
+
+  function validateDate(dayIndex) {
+    const dateInput = document.getElementById(`date-${dayIndex}`);
+    const hint = document.getElementById(`date-hint-${dayIndex}`);
+
+    if (!dateInput || !hint) return;
+
+    const selectedDate = dateInput.value;
+    if (!selectedDate) {
+      hint.textContent = '';
+      return;
+    }
+
+    const isHeldOnDate = heldOnDates.includes(selectedDate);
+    if (heldOnDates.length > 0) {
+      if (isHeldOnDate) {
+        hint.textContent = '✓ This date is in the program\'s held-on dates';
+        hint.className = 'text-xs text-green-600 mt-1';
+      } else {
+        hint.textContent = '⚠ This date is not in the program\'s held-on dates';
+        hint.className = 'text-xs text-yellow-600 mt-1';
+      }
+    } else {
+      hint.textContent = '';
+    }
+  }
+
+  // Initialize with one day on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    addDay();
+  });
+</script>

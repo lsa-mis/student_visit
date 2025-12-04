@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :vip do
-    association :department
+    association :program
     name { "Dr. #{SecureRandom.hex(4)}" }
     title { "Professor" }
     ranking { 0 }

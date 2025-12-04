@@ -83,6 +83,6 @@ class VipsController < ApplicationController
   end
 
   def vip_params
-    params.require(:vip).permit(:name, :profile_url, :title, :ranking)
+    params.require(:vip).permit(:name, :profile_url, :title, :ranking, :display_on_student_dashboard)
   end
 end
