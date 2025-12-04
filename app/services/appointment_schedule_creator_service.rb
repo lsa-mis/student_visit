@@ -166,7 +166,12 @@ class AppointmentScheduleCreatorService
 
     # Handle 12-hour format
     if time_parts.include?("AM") || time_parts.include?("PM")
-      time_str_clean = time_parts.gsub(/\s*(AM|PM)\s*/, " \\1")
+      # Extract AM/PM marker and normalize spacing to avoid ReDoS vulnerability
+      # Use string methods instead of regex to prevent catastrophic backtracking
+      am_pm = time_parts.include?("AM") ? "AM" : "PM"
+      # Split on AM/PM, take first part, then strip whitespace
+      time_without_am_pm = time_parts.split(am_pm, 2).first.strip
+      time_str_clean = "#{time_without_am_pm} #{am_pm}"
       Time.zone.parse("#{date} #{time_str_clean}")
     else
       # 24-hour format (HH:MM)
