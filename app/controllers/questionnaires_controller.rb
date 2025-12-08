@@ -65,7 +65,7 @@ class QuestionnairesController < ApplicationController
       when "radio", "checkbox"
         # Count responses for each option
         option_counts = {}
-        question.options_array.each { |opt| option_counts[opt] = 0 }
+        question.options_array.each { |opt| option_counts[opt.to_s] = 0 }
 
         answers_for_question.each do |answer|
           if question.question_type == "checkbox"
@@ -78,18 +78,19 @@ class QuestionnairesController < ApplicationController
                                content.to_s
             end
             selected = if content.is_a?(Array)
-                        content
+                        content.map(&:to_s)
             elsif content_string.start_with?("[") && content_string.end_with?("]")
                         # Try to parse as JSON array string
                         begin
-                          JSON.parse(content_string)
+                          parsed = JSON.parse(content_string)
+                          parsed.is_a?(Array) ? parsed.map(&:to_s) : [content_string]
                         rescue JSON::ParserError
                           content_string.split(",").map(&:strip)
                         end
             else
                         content_string.split(",").map(&:strip)
             end
-            selected.each { |opt| option_counts[opt] += 1 if option_counts.key?(opt) }
+            selected.each { |opt| option_counts[opt.to_s] += 1 if option_counts.key?(opt.to_s) }
           else
             # For radio, content is a single value
             # Extract plain text from ActionText if it's a RichText object
@@ -98,16 +99,28 @@ class QuestionnairesController < ApplicationController
             else
                               answer.content.to_s
             end
-            option_counts[content_value] += 1 if option_counts.key?(content_value)
+            content_value_str = content_value.to_s
+            option_counts[content_value_str] += 1 if option_counts.key?(content_value_str)
           end
         end
 
-        @chart_data[question.id] = {
-          type: question.question_type,
-          labels: option_counts.keys,
-          data: option_counts.values,
-          total_responses: answers_for_question.count
-        }
+        # Ensure we have at least some data to display
+        if option_counts.any?
+          @chart_data[question.id] = {
+            type: question.question_type,
+            labels: option_counts.keys,
+            data: option_counts.values,
+            total_responses: answers_for_question.count
+          }
+        else
+          # Even if no options, still create chart data structure
+          @chart_data[question.id] = {
+            type: question.question_type,
+            labels: [],
+            data: [],
+            total_responses: answers_for_question.count
+          }
+        end
       else
         # For text/rich_text/datetime/link, just show count of responses
         @chart_data[question.id] = {
