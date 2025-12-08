@@ -1,2 +1,3 @@
-web: bin/rails server
+web: bundle exec rails_server_safe
 css: bin/rails tailwindcss:watch
+a11y: bundle exec a11y_static_scanner

@@ -14,6 +14,16 @@ require "action_view/railtie"
 require "action_cable/engine"
 # require "rails/test_unit/railtie"
 
+# Require RSpec before Bundler.require so that rails_accessibility_testing
+# can load its shared examples when the gem is required in development/test
+if ENV["RAILS_ENV"].nil? || ENV["RAILS_ENV"] == "development" || ENV["RAILS_ENV"] == "test"
+  begin
+    require "rspec/core"
+  rescue LoadError
+    # RSpec not available, skip
+  end
+end
+
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)

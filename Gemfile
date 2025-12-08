@@ -29,6 +29,10 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
   gem "rspec-rails"
   gem "shoulda-matchers", "~> 7.0"
+  gem 'capybara'
+  gem 'rails_accessibility_testing'
+  gem 'selenium-webdriver'
+  gem 'webdrivers', '~> 5.0'
 end
 
 group :development do
@@ -36,11 +40,10 @@ group :development do
 end
 
 group :test do
-  gem 'capybara'
-  gem 'selenium-webdriver'
   gem 'simplecov', require: false
 end
 
 gem "bcrypt", "~> 3.1"
+gem "csv"
 gem "pundit"
 gem "roo"
