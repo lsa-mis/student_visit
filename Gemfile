@@ -5,7 +5,7 @@ gem "importmap-rails"
 gem "jbuilder"
 gem "kamal", require: false
 gem 'letter_opener_web', '~> 3.0'
-gem 'lsa_tdx_feedback'
+gem 'lsa_tdx_feedback', '~> 1.0', '>= 1.0.3'
 gem "propshaft"
 gem "puma", ">= 5.0"
 gem "rails", "~> 8.1.1"

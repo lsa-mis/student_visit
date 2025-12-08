@@ -173,7 +173,7 @@ GEM
     loofah (2.24.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
-    lsa_tdx_feedback (1.0.2)
+    lsa_tdx_feedback (1.0.3)
       httparty (~> 0.22)
       rails (>= 6.0)
       redis (>= 4.0)
@@ -471,7 +471,7 @@ DEPENDENCIES
   jbuilder
   kamal
   letter_opener_web (~> 3.0)
-  lsa_tdx_feedback
+  lsa_tdx_feedback (~> 1.0, >= 1.0.3)
   propshaft
   puma (>= 5.0)
   pundit
@@ -494,4 +494,4 @@ DEPENDENCIES
   web-console
 
 BUNDLED WITH
-   4.0.0
+  4.0.0
