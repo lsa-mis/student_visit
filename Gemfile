@@ -2,6 +2,7 @@ source "https://rubygems.org"
 
 gem "bcrypt", "~> 3.1"
 gem "bootsnap", require: false
+gem "image_processing", "~> 1.2"
 gem "importmap-rails"
 gem "jbuilder"
 gem "kamal", require: false
@@ -19,9 +20,6 @@ gem "tailwindcss-rails", "~> 4.4.0"
 gem "thruster", require: false
 gem "turbo-rails"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
-
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-# gem "image_processing", "~> 1.2"
 
 group :development, :test do
   gem "factory_bot_rails"
