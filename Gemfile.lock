@@ -232,6 +232,13 @@ GEM
     parser (3.3.7.1)
       ast (~> 2.4.1)
       racc
+    pg (1.6.2)
+    pg (1.6.2-aarch64-linux)
+    pg (1.6.2-aarch64-linux-musl)
+    pg (1.6.2-arm64-darwin)
+    pg (1.6.2-x86_64-darwin)
+    pg (1.6.2-x86_64-linux)
+    pg (1.6.2-x86_64-linux-musl)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -474,6 +481,7 @@ DEPENDENCIES
   kamal
   letter_opener_web (~> 3.0)
   lsa_tdx_feedback (~> 1.0, >= 1.0.3)
+  pg
   propshaft
   puma (>= 5.0)
   pundit
