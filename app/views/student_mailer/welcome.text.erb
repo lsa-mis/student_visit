@@ -1,4 +1,4 @@
-Welcome to Student Visit
+Welcome to the <%= @program.department.name.titleize %> <%= @program.name.titleize %> Student Visit
 
 Hello <%= @user.first_name.present? ? @user.first_name : "there" %>,
 
@@ -12,7 +12,7 @@ Password: <%= @user.umid %>
 
 Log in at: <%= new_session_url %>
 
-Important: You will be required to change your password on your first login.
+IMPORTANT: You will be required to change your password on your first login.
 <% else %>
 Log in at: <%= new_session_url %> to access your new program.
 <% end %>
@@ -21,3 +21,7 @@ If you have any questions, please contact your program administrator.
 
 Thank you,
 The Student Visit Team
+
+<% if @program.information_email_address.present? %>
+For questions, please contact: <%= @program.information_email_address %>
+<% end %>

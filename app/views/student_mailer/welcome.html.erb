@@ -1,36 +1,32 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
-  </head>
-  <body>
-    <h1>Welcome to Student Visit</h1>
+<h1>Welcome to the <%= @program.department.name.titleize %> <%= @program.name.titleize %> Student Visit</h1>
 
-    <p>Hello <%= @user.first_name.present? ? @user.first_name : "there" %>,</p>
+<p>Hello <%= @user.first_name.present? ? @user.first_name : "there" %>,</p>
 
-    <p>You have been added to <strong><%= @program.name %></strong>.</p>
+<p>You have been added to <strong><%= @program.name %></strong>.</p>
 
-    <% if @is_new_student %>
-      <p>To get started, please log in using the following credentials:</p>
+<% if @is_new_student %>
+  <p>To get started, please log in using the following credentials:</p>
 
-      <ul>
-        <li><strong>Email:</strong> <%= @user.email_address %></li>
-        <li><strong>Password:</strong> <%= @user.umid %></li>
-      </ul>
+  <div class="credentials-box">
+    <ul>
+      <li><strong>Email:</strong> <%= @user.email_address %></li>
+      <li><strong>Password:</strong> <%= @user.umid %></li>
+    </ul>
+  </div>
 
-      <p>
-        <%= link_to "Log in to Student Visit", new_session_url %>
-      </p>
+  <p style="text-align: center;">
+    <%= link_to "Log in to Student Visit", new_session_url, class: "button" %>
+  </p>
 
-      <p><strong>Important:</strong> You will be required to change your password on your first login.</p>
-    <% else %>
-      <p>
-        <%= link_to "Log in to Student Visit", new_session_url %> to access your new program.
-      </p>
-    <% end %>
+  <div class="important-notice">
+    <p><strong>Important:</strong> You will be required to change your password on your first login.</p>
+  </div>
+<% else %>
+  <p style="text-align: center;">
+    <%= link_to "Log in to Student Visit", new_session_url, class: "button" %> to access your new program.
+  </p>
+<% end %>
 
-    <p>If you have any questions, please contact your program administrator.</p>
+<p>If you have any questions, please contact your program administrator.</p>
 
-    <p>Thank you,<br>The Student Visit Team</p>
-  </body>
-</html>
+<p>Thank you,<br>The Student Visit Team</p>
