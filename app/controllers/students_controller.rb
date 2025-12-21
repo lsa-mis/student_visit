@@ -75,6 +75,7 @@ class StudentsController < ApplicationController
     # Find or initialize user
     user = User.find_or_initialize_by(email_address: email)
     formatted_umid = format_umid(params[:umid])
+    was_new_record = user.new_record?
 
     # Check if UMID is already taken by another user
     if formatted_umid.present? && User.where.not(id: user.id).exists?(umid: formatted_umid)
@@ -84,7 +85,7 @@ class StudentsController < ApplicationController
       return
     end
 
-    if user.new_record?
+    if was_new_record
       # Create new user - UMID is required
       user.last_name = params[:last_name]&.strip if params[:last_name].present?
       user.first_name = params[:first_name]&.strip if params[:first_name].present?
@@ -120,6 +121,8 @@ class StudentsController < ApplicationController
 
     if student_program.new_record?
       if student_program.save
+        # Send welcome email to newly created students
+        StudentMailer.welcome(user, @program).deliver_later if was_new_record
         redirect_to department_program_students_path(@department, @program), notice: "Student was successfully added to the program."
       else
         @students = @program.students.order(:email_address)

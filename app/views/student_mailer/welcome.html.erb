@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body>
+    <h1>Welcome to Student Visit</h1>
+
+    <p>Hello <%= @user.first_name.present? ? @user.first_name : "there" %>,</p>
+
+    <p>You have been added to <strong><%= @program.name %></strong>.</p>
+
+    <p>To get started, please log in using the following credentials:</p>
+
+    <ul>
+      <li><strong>Email:</strong> <%= @user.email_address %></li>
+      <li><strong>Password:</strong> <%= @user.umid %></li>
+    </ul>
+
+    <p>
+      <%= link_to "Log in to Student Visit", new_session_url %>
+    </p>
+
+    <p><strong>Important:</strong> You will be required to change your password on your first login.</p>
+
+    <p>If you have any questions, please contact your program administrator.</p>
+
+    <p>Thank you,<br>The Student Visit Team</p>
+  </body>
+</html>
