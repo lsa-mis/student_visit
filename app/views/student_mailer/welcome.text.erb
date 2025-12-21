@@ -4,6 +4,7 @@ Hello <%= @user.first_name.present? ? @user.first_name : "there" %>,
 
 You have been added to <%= @program.name %>.
 
+<% if @is_new_student %>
 To get started, please log in using the following credentials:
 
 Email: <%= @user.email_address %>
@@ -12,6 +13,9 @@ Password: <%= @user.umid %>
 Log in at: <%= new_session_url %>
 
 Important: You will be required to change your password on your first login.
+<% else %>
+Log in at: <%= new_session_url %> to access your new program.
+<% end %>
 
 If you have any questions, please contact your program administrator.
 

@@ -121,8 +121,8 @@ class StudentsController < ApplicationController
 
     if student_program.new_record?
       if student_program.save
-        # Send welcome email to newly created students
-        StudentMailer.welcome(user, @program).deliver_later if was_new_record
+        # Send welcome email when student is added to a program (new or existing student)
+        StudentMailer.welcome(user, @program, is_new_student: was_new_record).deliver_later
         redirect_to department_program_students_path(@department, @program), notice: "Student was successfully added to the program."
       else
         @students = @program.students.order(:email_address)
