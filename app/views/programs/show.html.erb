@@ -64,6 +64,14 @@
           <dd class="mt-1 text-sm text-gray-900 break-all"><%= @program.google_map_url %></dd>
         </div>
       <% end %>
+      <% if @program.information_email_address.present? %>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Information Email Address</dt>
+          <dd class="mt-1 text-sm text-gray-900">
+            <%= mail_to @program.information_email_address, @program.information_email_address, class: "text-blue-600 hover:text-blue-800" %>
+          </dd>
+        </div>
+      <% end %>
     </dl>
   </div>
 
