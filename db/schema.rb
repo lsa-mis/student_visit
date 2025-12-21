@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_03_194250) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_21_104401) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -184,6 +184,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_03_194250) do
     t.integer "department_id", null: false
     t.text "google_map_url"
     t.json "held_on_dates"
+    t.string "information_email_address"
     t.string "name", null: false
     t.datetime "open_date"
     t.datetime "questionnaire_due_date"
