@@ -14,6 +14,7 @@ class Program < ApplicationRecord
 
   validates :name, presence: true
   validates :default_appointment_length, presence: true, numericality: { greater_than: 0 }
+  validates :information_email_address, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
 
   scope :active, -> { where(active: true) }
   scope :inactive, -> { where(active: false) }
