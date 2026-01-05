@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Programs", type: :request do
   let(:department) { Department.create!(name: "Test Department") }
-  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
 
   describe "GET /departments/:department_id/programs" do
     context "when authenticated as super admin" do
@@ -74,7 +74,7 @@ RSpec.describe "Programs", type: :request do
       it "creates a program" do
         expect {
           post department_programs_path(department), params: {
-            program: { name: "New Program", default_appointment_length: 30 }
+            program: { name: "New Program", default_appointment_length: 30, information_email_address: "new@example.com" }
           }
         }.to change { Program.count }.by(1)
         expect(response).to redirect_to(department_program_path(department, Program.last))
@@ -137,7 +137,7 @@ RSpec.describe "Programs", type: :request do
       before { sign_in_as_super_admin }
 
       it "deletes the program" do
-        program_to_delete = Program.create!(name: "To Delete", department: department, default_appointment_length: 30)
+        program_to_delete = Program.create!(name: "To Delete", department: department, default_appointment_length: 30, information_email_address: "test@example.com")
         expect {
           delete department_program_path(department, program_to_delete)
         }.to change { Program.count }.by(-1)

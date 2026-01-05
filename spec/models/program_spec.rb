@@ -5,7 +5,7 @@ RSpec.describe Program, type: :model do
   let(:department) { Department.create!(name: "Test Department") }
 
   describe 'associations' do
-    subject { Program.new(name: "Test", department: department, default_appointment_length: 30) }
+    subject { Program.new(name: "Test", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
     it { should belong_to(:department) }
     it { should have_many(:student_programs).dependent(:destroy) }
     it { should have_many(:students).through(:student_programs).source(:user) }
@@ -18,14 +18,14 @@ RSpec.describe Program, type: :model do
 
   describe 'validations' do
     it 'requires name' do
-      program = Program.new(department: department, default_appointment_length: 30)
+      program = Program.new(department: department, default_appointment_length: 30, information_email_address: "test@example.com")
       expect(program).not_to be_valid
       expect(program.errors[:name]).to be_present
     end
 
     it 'requires default_appointment_length to be present' do
       # Schema has default of 30, so we need to explicitly set nil to test validation
-      program = Program.new(name: "Test Program", department: department)
+      program = Program.new(name: "Test Program", department: department, information_email_address: "test@example.com")
       program.default_appointment_length = nil
       # Since there's a database default, validation might pass, but we can test the numericality
       program.default_appointment_length = 0
@@ -34,26 +34,26 @@ RSpec.describe Program, type: :model do
     end
 
     it 'requires default_appointment_length to be greater than 0' do
-      program = Program.new(name: "Test Program", department: department, default_appointment_length: 0)
+      program = Program.new(name: "Test Program", department: department, default_appointment_length: 0, information_email_address: "test@example.com")
       expect(program).not_to be_valid
       expect(program.errors[:default_appointment_length]).to be_present
     end
 
     it 'requires default_appointment_length to be greater than 0 (negative)' do
-      program = Program.new(name: "Test Program", department: department, default_appointment_length: -1)
+      program = Program.new(name: "Test Program", department: department, default_appointment_length: -1, information_email_address: "test@example.com")
       expect(program).not_to be_valid
       expect(program.errors[:default_appointment_length]).to be_present
     end
 
     it 'is valid with proper attributes' do
-      program = Program.new(name: "Test Program", department: department, default_appointment_length: 30)
+      program = Program.new(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com")
       expect(program).to be_valid
     end
   end
 
   describe 'scopes' do
-    let!(:active_program) { Program.create!(name: "Active Program", department: department, default_appointment_length: 30, active: true) }
-    let!(:inactive_program) { Program.create!(name: "Inactive Program", department: department, default_appointment_length: 30, active: false) }
+    let!(:active_program) { Program.create!(name: "Active Program", department: department, default_appointment_length: 30, active: true, information_email_address: "test@example.com") }
+    let!(:inactive_program) { Program.create!(name: "Inactive Program", department: department, default_appointment_length: 30, active: false, information_email_address: "test@example.com") }
 
     describe '.active' do
       it 'returns active programs' do
@@ -71,7 +71,7 @@ RSpec.describe Program, type: :model do
   end
 
   describe '#open?' do
-    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
 
     context 'when open_date and close_date are set' do
       it 'returns true when current time is between open_date and close_date' do
@@ -119,7 +119,7 @@ RSpec.describe Program, type: :model do
   end
 
   describe '#closed?' do
-    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
 
     it 'returns true when close_date is nil' do
       expect(program.closed?).to be true
@@ -137,7 +137,7 @@ RSpec.describe Program, type: :model do
   end
 
   describe '#questionnaire_due?' do
-    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
 
     it 'returns false when questionnaire_due_date is nil' do
       expect(program.questionnaire_due?).to be false
@@ -155,7 +155,7 @@ RSpec.describe Program, type: :model do
   end
 
   describe '#held_on_dates_as_dates' do
-    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
 
     it 'returns empty array when held_on_dates is nil' do
       expect(program.held_on_dates_as_dates).to eq([])
@@ -182,7 +182,7 @@ RSpec.describe Program, type: :model do
   end
 
   describe '#held_on_date?' do
-    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
 
     it 'returns false when held_on_dates is not an array' do
       program.update!(held_on_dates: nil)
@@ -211,7 +211,7 @@ RSpec.describe Program, type: :model do
   end
 
   describe '#held_on_dates_list' do
-    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
 
     it 'returns sorted list of dates' do
       program.update!(held_on_dates: [ Date.tomorrow.to_s, Date.today.to_s ])
@@ -220,8 +220,8 @@ RSpec.describe Program, type: :model do
   end
 
   describe 'ensure_single_active_program callback' do
-    let(:program1) { Program.create!(name: "Program 1", department: department, default_appointment_length: 30) }
-    let(:program2) { Program.create!(name: "Program 2", department: department, default_appointment_length: 30) }
+    let(:program1) { Program.create!(name: "Program 1", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
+    let(:program2) { Program.create!(name: "Program 2", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
 
     it 'deactivates other programs when a program is activated' do
       program1.update!(active: true)
@@ -237,7 +237,7 @@ RSpec.describe Program, type: :model do
   end
 
   describe 'normalize_held_on_dates callback' do
-    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
 
     it 'normalizes date strings to YYYY-MM-DD format' do
       program.update!(held_on_dates: [ "01/15/2024", "2024-02-20" ])

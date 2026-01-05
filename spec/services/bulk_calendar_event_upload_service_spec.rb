@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe BulkCalendarEventUploadService, type: :service do
   let(:department) { Department.create!(name: "Test Department") }
-  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
   let(:file) { double('file', original_filename: 'events.csv', path: '/tmp/events.csv') }
 
   describe '#initialize' do

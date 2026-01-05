@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe CsvExportService, type: :service do
   let(:department) { Department.create!(name: "Test Department") }
-  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
   let(:questionnaire) { Questionnaire.create!(name: "Test Questionnaire", program: program) }
   let(:question) { Question.create!(text: "Test Question", question_type: "text", questionnaire: questionnaire, position: 1) }
   let(:student) { User.create!(email_address: 'student@example.com', password: 'password123') }

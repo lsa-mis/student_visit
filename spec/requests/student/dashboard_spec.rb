@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Student::Dashboard", type: :request do
   let(:department) { Department.create!(name: "Test Department") }
-  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, active: true) }
+  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, active: true, information_email_address: "test@example.com") }
   let(:student_user) { User.create!(email_address: "student#{SecureRandom.hex(4)}@example.com", password: 'password123') }
 
   before do
@@ -29,7 +29,7 @@ RSpec.describe "Student::Dashboard", type: :request do
 
       context "with multiple enrolled departments" do
         let(:department2) { Department.create!(name: "Second Department") }
-        let(:program2) { Program.create!(name: "Second Program", department: department2, default_appointment_length: 30, active: true) }
+        let(:program2) { Program.create!(name: "Second Program", department: department2, default_appointment_length: 30, active: true, information_email_address: "test@example.com") }
 
         before do
           department2.update!(active_program: program2)
@@ -73,7 +73,7 @@ RSpec.describe "Student::Dashboard", type: :request do
       end
 
       context "with department but no active program" do
-        let(:inactive_program) { Program.create!(name: "Inactive Program", department: department, default_appointment_length: 30, active: false) }
+        let(:inactive_program) { Program.create!(name: "Inactive Program", department: department, default_appointment_length: 30, active: false, information_email_address: "test@example.com") }
 
         before do
           department.update!(active_program: nil)
@@ -89,7 +89,7 @@ RSpec.describe "Student::Dashboard", type: :request do
 
       context "without selected department" do
         let(:department2) { Department.create!(name: "Second Department") }
-        let(:program2) { Program.create!(name: "Second Program", department: department2, default_appointment_length: 30, active: true) }
+        let(:program2) { Program.create!(name: "Second Program", department: department2, default_appointment_length: 30, active: true, information_email_address: "test@example.com") }
 
         before do
           # Ensure session is cleared by having multiple departments
@@ -124,7 +124,7 @@ RSpec.describe "Student::Dashboard", type: :request do
 
   describe "POST /student/dashboard/select_department" do
     let(:department2) { Department.create!(name: "Second Department") }
-    let(:program2) { Program.create!(name: "Second Program", department: department2, default_appointment_length: 30, active: true) }
+    let(:program2) { Program.create!(name: "Second Program", department: department2, default_appointment_length: 30, active: true, information_email_address: "test@example.com") }
 
     before do
       department2.update!(active_program: program2)

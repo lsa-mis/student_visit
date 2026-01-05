@@ -76,7 +76,7 @@ RSpec.describe ProgramPolicy, type: :policy do
       let(:user) { create(:user, :with_super_admin_role) }
 
       it 'allows access' do
-        expect(subject.new(user, Program.new(department: department)).create?).to be true
+        expect(subject.new(user, Program.new(department: department, information_email_address: "test@example.com")).create?).to be true
       end
     end
 
@@ -88,7 +88,7 @@ RSpec.describe ProgramPolicy, type: :policy do
       end
 
       it 'allows access' do
-        expect(subject.new(user, Program.new(department: department)).create?).to be true
+        expect(subject.new(user, Program.new(department: department, information_email_address: "test@example.com")).create?).to be true
       end
     end
   end

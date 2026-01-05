@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe StudentProgram, type: :model do
   let(:user) { User.create!(email_address: 'student@example.com', password: 'password123') }
   let(:department) { Department.create!(name: "Test Department") }
-  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
 
   describe 'associations' do
     subject { StudentProgram.new(user: user, program: program) }
@@ -21,7 +21,7 @@ RSpec.describe StudentProgram, type: :model do
 
     it 'allows same user with different programs' do
       StudentProgram.create!(user: user, program: program)
-      other_program = Program.create!(name: "Other Program", department: department, default_appointment_length: 30)
+      other_program = Program.create!(name: "Other Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com")
       other_enrollment = StudentProgram.new(user: user, program: other_program)
       expect(other_enrollment).to be_valid
     end

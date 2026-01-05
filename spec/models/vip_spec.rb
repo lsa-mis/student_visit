@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Vip, type: :model do
   let(:department) { Department.create!(name: "Test Department") }
-  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
 
   describe 'associations' do
     subject { Vip.new(name: "Test", program: program) }
@@ -72,7 +72,7 @@ RSpec.describe Vip, type: :model do
 
   describe 'appointments association' do
     let(:vip) { Vip.create!(name: "Dr. Smith", program: program) }
-    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
     let!(:appointment) do
       Appointment.create!(
         start_time: 1.hour.from_now,
@@ -94,7 +94,7 @@ RSpec.describe Vip, type: :model do
 
   describe 'calendar_events association' do
     let(:vip) { Vip.create!(name: "Dr. Smith", program: program) }
-    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
     let(:event) do
       CalendarEvent.create!(
         title: "Test Event",

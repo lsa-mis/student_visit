@@ -105,5 +105,5 @@ Rails.application.routes.draw do
 
   # Mount the feedback gem engine
   mount LsaTdxFeedback::Engine => "/lsa_tdx_feedback", as: "lsa_tdx_feedback"
-  mount LetterOpenerWeb::Engine, at: "/letter_opener" unless Rails.env.production?
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if defined?(LetterOpenerWeb) && !Rails.env.production?
 end

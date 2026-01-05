@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Appointments", type: :request do
   let(:department) { Department.create!(name: "Test Department") }
-  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
   let(:vip) { Vip.create!(name: "Dr. Smith", program: program) }
   let(:student) { User.create!(email_address: 'student@example.com', password: 'password123') }
   let(:appointment) do

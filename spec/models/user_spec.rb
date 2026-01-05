@@ -313,7 +313,7 @@ RSpec.describe User, type: :model do
   describe 'student methods' do
     let(:user) { User.create!(email_address: 'student@example.com', password: 'password123') }
     let(:department) { Department.create!(name: "Test Department") }
-    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
 
     describe '#enrolled_in_program?' do
       it 'returns true when user is enrolled in the program' do
@@ -333,7 +333,7 @@ RSpec.describe User, type: :model do
       end
 
       it 'returns distinct departments' do
-        program2 = Program.create!(name: "Program 2", department: department, default_appointment_length: 30)
+        program2 = Program.create!(name: "Program 2", department: department, default_appointment_length: 30, information_email_address: "test@example.com")
         StudentProgram.create!(user: user, program: program)
         StudentProgram.create!(user: user, program: program2)
         expect(user.enrolled_departments.count).to eq(1)

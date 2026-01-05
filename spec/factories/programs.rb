@@ -9,6 +9,7 @@ FactoryBot.define do
     questionnaire_due_date { 2.weeks.from_now }
     held_on_dates { [] }
     google_map_url { nil }
+    information_email_address { "test@example.com" }
 
     trait :inactive do
       active { false }

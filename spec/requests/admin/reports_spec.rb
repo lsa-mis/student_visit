@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Admin::Reports", type: :request do
   let(:department) { Department.create!(name: "Test Department") }
-  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
 
   describe "GET /admin/departments/:department_id/programs/:program_id/reports/students" do
     context "when authenticated as super admin" do

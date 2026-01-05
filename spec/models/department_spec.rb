@@ -66,7 +66,7 @@ RSpec.describe Department, type: :model do
 
   describe 'programs association' do
     let(:department) { Department.create!(name: "Test Department") }
-    let!(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+    let!(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
 
     it 'has access to programs' do
       expect(department.programs).to include(program)
@@ -80,7 +80,7 @@ RSpec.describe Department, type: :model do
 
   describe 'active_program association' do
     let(:department) { Department.create!(name: "Test Department") }
-    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, active: true) }
+    let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, active: true, information_email_address: "test@example.com") }
 
     it 'can have an active_program' do
       department.update!(active_program: program)

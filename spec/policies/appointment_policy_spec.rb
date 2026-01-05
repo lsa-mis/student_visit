@@ -2,11 +2,11 @@ require 'rails_helper'
 
 RSpec.describe AppointmentPolicy, type: :policy do
   let(:department) { Department.create!(name: "Test Department") }
-  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
   let(:vip) { Vip.create!(name: "Dr. Smith", program: program) }
   let(:appointment) { Appointment.create!(start_time: 1.hour.from_now, end_time: 2.hours.from_now, program: program, vip: vip) }
   let(:other_department) { Department.create!(name: "Other Department") }
-  let(:other_program) { Program.create!(name: "Other Program", department: other_department, default_appointment_length: 30) }
+  let(:other_program) { Program.create!(name: "Other Program", department: other_department, default_appointment_length: 30, information_email_address: "test@example.com") }
   let(:other_appointment) { Appointment.create!(start_time: 1.hour.from_now, end_time: 2.hours.from_now, program: other_program, vip: Vip.create!(name: "Dr. Jones", program: other_program)) }
 
   subject { described_class }

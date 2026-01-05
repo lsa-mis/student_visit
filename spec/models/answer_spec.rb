@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Answer, type: :model do
   let(:department) { Department.create!(name: "Test Department") }
-  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30) }
+  let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
   let(:questionnaire) { Questionnaire.create!(name: "Test Questionnaire", program: program) }
   let(:question) { Question.create!(text: "Test Question", question_type: "text", questionnaire: questionnaire) }
   let(:student) { User.create!(email_address: 'student@example.com', password: 'password123') }
@@ -32,7 +32,7 @@ RSpec.describe Answer, type: :model do
 
     it 'allows same question for same student in different programs' do
       Answer.create!(question: question, student: student, program: program, content: "Answer")
-      other_program = Program.create!(name: "Other Program", department: department, default_appointment_length: 30)
+      other_program = Program.create!(name: "Other Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com")
       other_answer = Answer.new(question: question, student: student, program: other_program, content: "Answer")
       expect(other_answer).to be_valid
     end
