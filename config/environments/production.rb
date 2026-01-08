@@ -63,10 +63,11 @@ Rails.application.configure do
 
   # SendGrid SMTP configuration
   config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
   config.action_mailer.smtp_settings = {
     user_name: "apikey",
-    password: Rails.application.credentials.dig(:sendgrid, :api_key) || ENV["SENDGRID_API_KEY"],
-    domain: ENV.fetch("MAILER_DOMAIN", "example.com"),
+    password: Rails.application.credentials.dig(:sendgrid, :api_key),
+    domain: "student-visit.lsa.umich.edu",
     address: "smtp.sendgrid.net",
     port: 587,
     authentication: :plain,
