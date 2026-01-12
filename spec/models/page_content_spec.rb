@@ -62,7 +62,7 @@ RSpec.describe PageContent, type: :model do
       page_content3 = create(:page_content, page_path: "/test", area_name: "beta")
 
       results = PageContent.for_page_path("/test")
-      expect(results.map(&:area_name)).to eq(["alpha", "beta", "zebra"])
+      expect(results.map(&:area_name)).to eq([ "alpha", "beta", "zebra" ])
     end
 
     it 'returns empty relation when no content exists' do
