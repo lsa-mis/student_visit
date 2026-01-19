@@ -83,7 +83,7 @@ class QuestionnairesController < ApplicationController
                         # Try to parse as JSON array string
                         begin
                           parsed = JSON.parse(content_string)
-                          parsed.is_a?(Array) ? parsed.map(&:to_s) : [content_string]
+                          parsed.is_a?(Array) ? parsed.map(&:to_s) : [ content_string ]
                         rescue JSON::ParserError
                           content_string.split(",").map(&:strip)
                         end

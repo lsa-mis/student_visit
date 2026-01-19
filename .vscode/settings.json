@@ -1,0 +1,12 @@
+{
+  // Git status bar settings
+  "git.enabled": true,
+  "git.showStatusBarSync": true,
+
+  // Source Control settings - show changes count
+  "scm.showChangesCount": true,
+
+  // Git fetch/pull settings
+  "git.autofetch": true,
+  "git.autofetchPeriod": 180
+}

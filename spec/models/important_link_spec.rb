@@ -36,7 +36,7 @@ RSpec.describe ImportantLink, type: :model do
 
       it 'orders by ranking first, then by name' do
         ordered = ImportantLink.ordered
-        expect(ordered.to_a).to eq([link2, link3, link1])
+        expect(ordered.to_a).to eq([ link2, link3, link1 ])
       end
     end
   end
