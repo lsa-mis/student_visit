@@ -1,0 +1,24 @@
+{
+  // Git status bar settings
+  "git.enabled": true,
+  "git.autoRepositoryDetection": true,
+  "git.showStatusBarSync": true,
+  "git.showPushSuccessNotification": true,
+
+  // Source Control settings
+  "scm.showChangesCount": true,
+  "scm.defaultViewMode": "tree",
+
+  // Status bar visibility
+  "git.statusBar.enabled": true,
+  "scm.statusBar.enabled": true,
+
+  // Git fetch/pull settings
+  "git.autofetch": true,
+  "git.autofetchPeriod": 180,
+  "git.confirmSync": false,
+
+  // Status bar items
+  "git.statusBar.useEditor": true,
+  "git.statusBar.branchTracking": true
+}
