@@ -9,22 +9,26 @@ class Vip < ApplicationRecord
   scope :ordered, -> {
     # Order by last name (last word in the name field)
     # Extract last name by finding everything after the last space
-    # For SQLite, we use a subquery with a recursive CTE to find the last space position
+    # Use a subquery with a recursive CTE to find the last space position
+    # Database-agnostic: uses INSTR for SQLite, STRPOS for PostgreSQL
+    adapter = connection.adapter_name.downcase
+    instr_func = adapter.include?("postgres") ? "STRPOS" : "INSTR"
+
     sql = <<-SQL.squish
       SELECT vips.*,
         CASE
-          WHEN INSTR(vips.name, ' ') = 0 THEN vips.name
+          WHEN #{instr_func}(vips.name, ' ') = 0 THEN vips.name
           ELSE SUBSTR(vips.name, (
             WITH RECURSIVE last_space AS (
               SELECT vips.name as name, 0 as pos
               UNION ALL
               SELECT last_space.name,
-                CASE WHEN INSTR(SUBSTR(last_space.name, last_space.pos + 1), ' ') > 0
-                  THEN last_space.pos + INSTR(SUBSTR(last_space.name, last_space.pos + 1), ' ')
+                CASE WHEN #{instr_func}(SUBSTR(last_space.name, last_space.pos + 1), ' ') > 0
+                  THEN last_space.pos + #{instr_func}(SUBSTR(last_space.name, last_space.pos + 1), ' ')
                   ELSE last_space.pos
                 END
               FROM last_space
-              WHERE INSTR(SUBSTR(last_space.name, last_space.pos + 1), ' ') > 0
+              WHERE #{instr_func}(SUBSTR(last_space.name, last_space.pos + 1), ' ') > 0
             )
             SELECT MAX(pos) FROM last_space WHERE last_space.name = vips.name
           ) + 1)
