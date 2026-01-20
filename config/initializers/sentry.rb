@@ -33,10 +33,13 @@ Sentry.init do |config|
   config.profiles_sample_rate = Rails.env.production? ? 0.1 : 1.0
 
   # Metrics configuration
-  # Enable metrics collection
-  config.enable_metrics = true
-  # Set metrics sample rate (1.0 = 100% of metrics, 0.1 = 10%)
-  config.metrics_sample_rate = Rails.env.production? ? 1.0 : 1.0
+  # Enable metrics collection (if supported by your Sentry version)
+  # Note: Metrics API may be deprecated in newer versions, but the methods still work
+  if config.respond_to?(:enable_metrics)
+    config.enable_metrics = true
+  elsif config.respond_to?(:metrics) && config.metrics.respond_to?(:enabled=)
+    config.metrics.enabled = true
+  end
 
   # Custom sampling logic if needed
   config.traces_sampler = lambda do |context|
@@ -132,6 +135,7 @@ ActiveSupport::Notifications.subscribe("process_action.action_controller") do |*
   event = ActiveSupport::Notifications::Event.new(*args)
   next unless defined?(Sentry) && Sentry.initialized?
   next unless Sentry.configuration.enabled_environments.include?(Rails.env)
+  next unless defined?(Sentry::Metrics) && Sentry::Metrics.respond_to?(:distribution)
 
   controller = event.payload[:controller]
   action = event.payload[:action]
@@ -209,6 +213,7 @@ ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
   event = ActiveSupport::Notifications::Event.new(*args)
   next unless defined?(Sentry) && Sentry.initialized?
   next unless Sentry.configuration.enabled_environments.include?(Rails.env)
+  next unless defined?(Sentry::Metrics) && Sentry::Metrics.respond_to?(:distribution)
 
   name = event.payload[:name]
   sql = event.payload[:sql]
@@ -250,6 +255,7 @@ ActiveSupport::Notifications.subscribe("render_template.action_view") do |*args|
   event = ActiveSupport::Notifications::Event.new(*args)
   next unless defined?(Sentry) && Sentry.initialized?
   next unless Sentry.configuration.enabled_environments.include?(Rails.env)
+  next unless defined?(Sentry::Metrics) && Sentry::Metrics.respond_to?(:distribution)
 
   identifier = event.payload[:identifier]
   duration_ms = event.duration

@@ -105,8 +105,13 @@ module SentryMetrics
     end
   end
 
-  # Check if Sentry is enabled
+  # Check if Sentry is enabled and metrics API is available
   def sentry_enabled?
-    defined?(Sentry) && Sentry.initialized? && Sentry.configuration.enabled_environments.include?(Rails.env)
+    return false unless defined?(Sentry)
+    return false unless Sentry.initialized?
+    return false unless Sentry.configuration.enabled_environments.include?(Rails.env)
+    return false unless defined?(Sentry::Metrics)
+    return false unless Sentry::Metrics.respond_to?(:count)
+    true
   end
 end
