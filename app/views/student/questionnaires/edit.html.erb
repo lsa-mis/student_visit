@@ -6,6 +6,15 @@
     </p>
   </div>
 
+  <% if session[:preview_mode] && current_user&.department_admin_for?(@program.department) %>
+    <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded mb-4 flex items-center justify-between">
+      <span>You are viewing this program as a student.</span>
+      <%= link_to "Back to program admin view",
+                  department_program_path(@program.department, @program),
+                  class: "text-sm font-semibold text-blue-800 underline hover:text-blue-900" %>
+    </div>
+  <% end %>
+
   <%= form_with url: student_department_program_questionnaire_path(@department, @program, @questionnaire),
       method: :patch, class: "bg-white shadow rounded-lg p-6" do |form| %>
 
@@ -99,4 +108,6 @@
           class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
     </div>
   <% end %>
+
+  <%= render 'student/navigation', show_dashboard_link: true %>
 </div>

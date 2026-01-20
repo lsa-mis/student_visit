@@ -3,7 +3,7 @@ class Student::MapController < ApplicationController
   before_action :set_program
 
   def show
-    authorize :student_map, :show?
+    authorize [ :student, :map ], :show?
   end
 
   private

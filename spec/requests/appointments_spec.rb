@@ -238,4 +238,118 @@ RSpec.describe "Appointments", type: :request do
       end
     end
   end
+
+  describe "DELETE /departments/:department_id/programs/:program_id/appointments/:id" do
+    context "when authenticated as super admin" do
+      before { sign_in_as_super_admin }
+
+      it "deletes the appointment" do
+        appointment # create it
+        expect {
+          delete department_program_appointment_path(department, program, appointment)
+        }.to change { Appointment.count }.by(-1)
+        expect(response).to redirect_to(department_program_appointments_path(department, program))
+        expect(flash[:notice]).to include("successfully deleted")
+      end
+    end
+
+    context "when authenticated as department admin" do
+      before { sign_in_as_department_admin(department) }
+
+      it "deletes the appointment" do
+        appointment
+        expect {
+          delete department_program_appointment_path(department, program, appointment)
+        }.to change { Appointment.count }.by(-1)
+        expect(response).to redirect_to(department_program_appointments_path(department, program))
+      end
+    end
+
+    context "when unauthenticated" do
+      it "redirects to login" do
+        delete department_program_appointment_path(department, program, appointment)
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
+  describe "POST /departments/:department_id/programs/:program_id/appointments/:id/release" do
+    let!(:booked_appointment) do
+      Appointment.create!(
+        start_time: 3.hours.from_now,
+        end_time: 4.hours.from_now,
+        program: program,
+        vip: vip,
+        student: student
+      )
+    end
+
+    context "when authenticated as super admin" do
+      before { sign_in_as_super_admin }
+
+      it "releases the student reservation and keeps the appointment" do
+        expect {
+          post release_department_program_appointment_path(department, program, booked_appointment)
+        }.not_to change { Appointment.count }
+
+        expect(booked_appointment.reload.student).to be_nil
+        expect(response).to redirect_to(department_program_appointment_path(department, program, booked_appointment))
+        expect(flash[:notice]).to include("cancelled")
+      end
+    end
+
+    context "when authenticated as department admin" do
+      before { sign_in_as_department_admin(department) }
+
+      it "releases the student reservation" do
+        post release_department_program_appointment_path(department, program, booked_appointment)
+        expect(booked_appointment.reload.student).to be_nil
+        expect(response).to redirect_to(department_program_appointment_path(department, program, booked_appointment))
+      end
+    end
+
+    context "when appointment is already available" do
+      before { sign_in_as_department_admin(department) }
+
+      it "does not change the appointment and shows an alert" do
+        booked_appointment.update!(student: nil)
+
+        expect {
+          post release_department_program_appointment_path(department, program, booked_appointment)
+        }.not_to change { booked_appointment.reload.student }
+
+        expect(response).to redirect_to(department_program_appointment_path(department, program, booked_appointment))
+        expect(flash[:alert]).to include("Unable to cancel reservation")
+      end
+    end
+
+    context "when unauthenticated" do
+      it "redirects to login" do
+        post release_department_program_appointment_path(department, program, booked_appointment)
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
+  describe "Buttons on appointment show page" do
+    context "when authenticated as department admin" do
+      before { sign_in_as_department_admin(department) }
+
+      it "shows Delete Appointment button" do
+        get department_program_appointment_path(department, program, appointment)
+        expect(response.body).to include("Delete Appointment")
+      end
+
+      it "shows Cancel Reservation button when appointment is booked" do
+        appointment.update!(student: student)
+        get department_program_appointment_path(department, program, appointment)
+        expect(response.body).to include("Cancel Reservation")
+      end
+
+      it "does not show Cancel Reservation button when appointment is available" do
+        get department_program_appointment_path(department, program, appointment)
+        expect(response.body).not_to include("Cancel Reservation")
+      end
+    end
+  end
 end

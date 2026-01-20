@@ -82,6 +82,19 @@ RSpec.describe "Student::Calendar", type: :request do
         get student_department_program_calendar_path(department, program), params: { filter: "date" }
         expect(response).to have_http_status(:success)
       end
+
+      it "displays navigation buttons" do
+        get student_department_program_calendar_path(department, program)
+        expect(response.body).to include("Questionnaires")
+        expect(response.body).to include("Appointments")
+        expect(response.body).to include("Calendar")
+        expect(response.body).to include("Map")
+      end
+
+      it "displays Back to Dashboard button" do
+        get student_department_program_calendar_path(department, program)
+        expect(response.body).to include("Back to Dashboard")
+      end
     end
 
     context "when unauthenticated" do
