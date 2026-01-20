@@ -2,7 +2,7 @@
 # Check if SendGrid API key is configured
 # Usage: RAILS_ENV=production bin/rails runner lib/tasks/check_sendgrid.rb
 
-api_key = Rails.application.credentials.dig(:sendgrid, :api_key)
+api_key = Rails.application.credentials.dig(:sendgrid, :apikey)
 
 if api_key.present?
   puts "✓ SendGrid API key is set"
