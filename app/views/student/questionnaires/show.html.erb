@@ -29,7 +29,7 @@
         <% if answer %>
           <div class="text-gray-700">
             <% if question.question_type == "rich_text" %>
-              <%= answer.content.to_s.html_safe %>
+              <%= sanitize(answer.content.to_s) %>
             <% else %>
               <%= answer.content %>
             <% end %>

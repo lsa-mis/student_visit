@@ -88,7 +88,7 @@
                         <span class="text-sm text-gray-600 px-2"><%= vip.title %></span>
                       <% end %>
                       <% if vip.profile_url.present? %>
-                        <%= link_to "View Profile", vip.profile_url, target: "_blank", rel: "noopener noreferrer", class: "text-blue-600 hover:text-blue-800 text-sm mt-2 inline-block" %>
+                        <%= link_to "View Profile", safe_url(vip.profile_url), target: "_blank", rel: "noopener noreferrer", class: "text-blue-600 hover:text-blue-800 text-sm mt-2 inline-block" %>
                       <% end %>
                     </p>
 
@@ -107,7 +107,7 @@
               <div class="space-y-2 max-h-64 overflow-y-auto">
                 <% @important_links.each do |link| %>
                   <div>
-                    <%= link_to link.name, link.url, target: "_blank", rel: "noopener noreferrer", class: "text-blue-600 hover:text-blue-800 text-sm block" %>
+                    <%= link_to link.name, safe_url(link.url), target: "_blank", rel: "noopener noreferrer", class: "text-blue-600 hover:text-blue-800 text-sm block" %>
                   </div>
                 <% end %>
               </div>

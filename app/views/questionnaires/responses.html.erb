@@ -106,7 +106,7 @@
                         <% if answer %>
                           <% if question.question_type == "rich_text" %>
                             <div class="prose prose-sm max-w-none">
-                              <%= answer.content.to_s.html_safe %>
+                              <%= sanitize(answer.content.to_s) %>
                             </div>
                           <% else %>
                             <%= answer.content %>
