@@ -3,7 +3,7 @@ class Student::CalendarController < ApplicationController
   before_action :ensure_enrolled
 
   def show
-    authorize :student_calendar, :show?
+    authorize [:student, :calendar], :show?
 
     @filter_mode = params[:filter] || "all" # date or all
     @view_mode = params[:view] || (@filter_mode == "all" ? nil : "single") # single or multi (nil when showing all)
@@ -57,7 +57,11 @@ class Student::CalendarController < ApplicationController
   end
 
   def ensure_enrolled
-    unless current_user.enrolled_in_program?(@program)
+    # Allow department admins and super admins to preview student views
+    return if current_user&.super_admin?
+    return if current_user&.department_admin? && current_user.department_admin_for?(@program.department)
+
+    unless current_user&.enrolled_in_program?(@program)
       redirect_to student_dashboard_path, alert: "You are not enrolled in this program."
     end
   end

@@ -3,13 +3,13 @@ class Student::AppointmentsController < ApplicationController
   before_action :ensure_enrolled
 
   def index
-    authorize :student_appointment, :index?
+    authorize [:student, :appointment], :index?
     @my_appointments = @program.appointments.for_student(current_user).upcoming.includes(:vip).order(:start_time)
     @available_appointments = @program.appointments.available.upcoming.includes(:vip).order(:start_time)
   end
 
   def available
-    authorize :student_appointment, :index?
+    authorize [:student, :appointment], :index?
     @vips = @program.vips.ordered
     @selected_vip_id = params[:vip_id]
 
@@ -19,12 +19,12 @@ class Student::AppointmentsController < ApplicationController
   end
 
   def my_appointments
-    authorize :student_appointment, :index?
+    authorize [:student, :appointment], :index?
     @appointments = @program.appointments.for_student(current_user).includes(:vip).order(:start_time)
   end
 
   def select
-    authorize :student_appointment, :create?
+    authorize [:student, :appointment], :create?
 
     appointment = @program.appointments.find(params[:id])
 
@@ -44,7 +44,7 @@ class Student::AppointmentsController < ApplicationController
   end
 
   def delete
-    authorize :student_appointment, :destroy?
+    authorize [:student, :appointment], :destroy?
 
     appointment = @program.appointments.for_student(current_user).find(params[:id])
 
@@ -66,7 +66,11 @@ class Student::AppointmentsController < ApplicationController
   end
 
   def ensure_enrolled
-    unless current_user.enrolled_in_program?(@program)
+    # Allow department admins and super admins to preview student views
+    return if current_user&.super_admin?
+    return if current_user&.department_admin? && current_user.department_admin_for?(@program.department)
+
+    unless current_user&.enrolled_in_program?(@program)
       redirect_to student_dashboard_path, alert: "You are not enrolled in this program."
     end
   end

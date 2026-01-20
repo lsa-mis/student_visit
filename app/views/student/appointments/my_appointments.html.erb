@@ -6,6 +6,15 @@
     </p>
   </div>
 
+  <% if session[:preview_mode] && current_user&.department_admin_for?(@program.department) %>
+    <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded mb-4 flex items-center justify-between">
+      <span>You are viewing this program as a student.</span>
+      <%= link_to "Back to program admin view",
+                  department_program_path(@program.department, @program),
+                  class: "text-sm font-semibold text-blue-800 underline hover:text-blue-900" %>
+    </div>
+  <% end %>
+
   <div class="bg-white shadow rounded-lg p-6">
     <% if @appointments.any? %>
       <ul class="divide-y divide-gray-200">
@@ -19,11 +28,13 @@
                   <%= appointment.end_time.strftime("%I:%M %p") %>
                 </p>
               </div>
-              <%= form_with url: delete_student_department_program_appointment_path(@department, @program, appointment),
-                  method: :delete, class: "inline" do |form| %>
-                <%= form.submit "Cancel",
-                    data: { confirm: "Are you sure you want to cancel this appointment?" },
-                    class: "bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700" %>
+              <% if current_user&.student? %>
+                <%= form_with url: delete_student_department_program_appointment_path(@department, @program, appointment),
+                    method: :delete, class: "inline" do |form| %>
+                  <%= form.submit "Cancel",
+                      data: { confirm: "Are you sure you want to cancel this appointment?" },
+                      class: "bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700" %>
+                <% end %>
               <% end %>
             </div>
           </li>
@@ -33,4 +44,6 @@
       <p class="text-gray-500">You have no appointments scheduled.</p>
     <% end %>
   </div>
+
+  <%= render 'student/navigation', show_dashboard_link: true %>
 </div>

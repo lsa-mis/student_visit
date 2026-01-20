@@ -15,8 +15,8 @@ RSpec.describe Student::QuestionnairePolicy, type: :policy do
     context 'as super admin' do
       let(:user) { create(:user, :with_super_admin_role) }
 
-      it 'denies access' do
-        expect(subject.new(user, :student_questionnaire).index?).to be false
+      it 'allows access (for preview)' do
+        expect(subject.new(user, :student_questionnaire).index?).to be true
       end
     end
 
@@ -41,8 +41,8 @@ RSpec.describe Student::QuestionnairePolicy, type: :policy do
     context 'as super admin' do
       let(:user) { create(:user, :with_super_admin_role) }
 
-      it 'denies access' do
-        expect(subject.new(user, :student_questionnaire).show?).to be false
+      it 'allows access (for preview)' do
+        expect(subject.new(user, :student_questionnaire).show?).to be true
       end
     end
 
@@ -72,6 +72,14 @@ RSpec.describe Student::QuestionnairePolicy, type: :policy do
       end
     end
 
+    context 'as department admin' do
+      let(:user) { create(:user, :with_department_admin_role) }
+
+      it 'denies access' do
+        expect(subject.new(user, :student_questionnaire).edit?).to be false
+      end
+    end
+
     context 'as unauthenticated user' do
       let(:user) { nil }
 
@@ -92,6 +100,14 @@ RSpec.describe Student::QuestionnairePolicy, type: :policy do
 
     context 'as super admin' do
       let(:user) { create(:user, :with_super_admin_role) }
+
+      it 'denies access' do
+        expect(subject.new(user, :student_questionnaire).update?).to be false
+      end
+    end
+
+    context 'as department admin' do
+      let(:user) { create(:user, :with_department_admin_role) }
 
       it 'denies access' do
         expect(subject.new(user, :student_questionnaire).update?).to be false

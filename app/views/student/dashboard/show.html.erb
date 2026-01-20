@@ -1,6 +1,15 @@
 <div class="container mx-auto px-4 py-8">
   <h1 class="text-3xl font-bold mb-6">Student Dashboard</h1>
 
+  <% if !current_user&.student? && ((defined?(@preview_mode) && @preview_mode) || (session[:preview_mode] && defined?(@selected_department) && defined?(@active_program))) %>
+    <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded mb-4 flex items-center justify-between">
+      <span>You are viewing this program as a student.</span>
+      <%= link_to "Back to program admin view",
+                  department_program_path(@selected_department, @active_program),
+                  class: "text-sm font-semibold text-blue-800 underline hover:text-blue-900" %>
+    </div>
+  <% end %>
+
   <% if flash[:notice] %>
     <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
       <%= flash[:notice] %>

@@ -4,24 +4,24 @@ class Student::QuestionnairesController < ApplicationController
   before_action :ensure_enrolled
 
   def index
-    authorize :student_questionnaire, :index?
+    authorize [:student, :questionnaire], :index?
     @questionnaires = @program.questionnaires.includes(:questions)
   end
 
   def show
-    authorize :student_questionnaire, :show?
+    authorize [:student, :questionnaire], :show?
     @questions = @questionnaire.questions.includes(:answers)
     @answers = current_user.answers.where(program: @program, question: @questions).index_by(&:question_id)
   end
 
   def edit
-    authorize :student_questionnaire, :edit?
+    authorize [:student, :questionnaire], :edit?
     @questions = @questionnaire.questions.order(:position)
     @answers = current_user.answers.where(program: @program, question: @questions).index_by(&:question_id)
   end
 
   def update
-    authorize :student_questionnaire, :update?
+    authorize [:student, :questionnaire], :update?
 
     if @program.questionnaire_due?
       redirect_to student_department_program_questionnaire_path(@program.department, @program, @questionnaire),
@@ -58,7 +58,11 @@ class Student::QuestionnairesController < ApplicationController
   end
 
   def ensure_enrolled
-    unless current_user.enrolled_in_program?(@program)
+    # Allow department admins and super admins to preview student views
+    return if current_user&.super_admin?
+    return if current_user&.department_admin? && current_user.department_admin_for?(@program.department)
+
+    unless current_user&.enrolled_in_program?(@program)
       redirect_to student_dashboard_path, alert: "You are not enrolled in this program."
     end
   end
