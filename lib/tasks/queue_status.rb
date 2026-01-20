@@ -31,3 +31,14 @@ if failed > 0
   puts "  Job ID: #{job.id}"
   puts "  Error: #{failed_job.error&.lines&.first}"
 end
+
+# Check the most recent job details
+if total > 0
+  puts "\nMost recent job:"
+  job = SolidQueue::Job.order(:created_at).last
+  puts "  ID: #{job.id}"
+  puts "  Class: #{job.class_name}"
+  puts "  Created: #{job.created_at}"
+  puts "  Finished: #{job.finished_at || 'Not finished'}"
+  puts "  Scheduled: #{job.scheduled_at || 'Immediate'}"
+end
