@@ -3,13 +3,13 @@ class Student::AppointmentsController < ApplicationController
   before_action :ensure_enrolled
 
   def index
-    authorize [:student, :appointment], :index?
+    authorize [ :student, :appointment ], :index?
     @my_appointments = @program.appointments.for_student(current_user).upcoming.includes(:vip).order(:start_time)
     @available_appointments = @program.appointments.available.upcoming.includes(:vip).order(:start_time)
   end
 
   def available
-    authorize [:student, :appointment], :index?
+    authorize [ :student, :appointment ], :index?
     @vips = @program.vips.ordered
     @selected_vip_id = params[:vip_id]
 
@@ -19,12 +19,12 @@ class Student::AppointmentsController < ApplicationController
   end
 
   def my_appointments
-    authorize [:student, :appointment], :index?
+    authorize [ :student, :appointment ], :index?
     @appointments = @program.appointments.for_student(current_user).includes(:vip).order(:start_time)
   end
 
   def select
-    authorize [:student, :appointment], :create?
+    authorize [ :student, :appointment ], :create?
 
     appointment = @program.appointments.find(params[:id])
 
@@ -44,7 +44,7 @@ class Student::AppointmentsController < ApplicationController
   end
 
   def delete
-    authorize [:student, :appointment], :destroy?
+    authorize [ :student, :appointment ], :destroy?
 
     appointment = @program.appointments.for_student(current_user).find(params[:id])
 

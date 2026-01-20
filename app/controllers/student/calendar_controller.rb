@@ -3,7 +3,7 @@ class Student::CalendarController < ApplicationController
   before_action :ensure_enrolled
 
   def show
-    authorize [:student, :calendar], :show?
+    authorize [ :student, :calendar ], :show?
 
     @filter_mode = params[:filter] || "all" # date or all
     @view_mode = params[:view] || (@filter_mode == "all" ? nil : "single") # single or multi (nil when showing all)

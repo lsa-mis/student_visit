@@ -1,6 +1,6 @@
 class Student::DashboardController < ApplicationController
   def show
-    authorize [:student, :dashboard], :show?
+    authorize [ :student, :dashboard ], :show?
 
     @enrolled_departments = current_user.enrolled_departments
     @selected_department_id = session[:selected_department_id]
@@ -19,7 +19,7 @@ class Student::DashboardController < ApplicationController
   end
 
   def preview
-    authorize [:student, :dashboard], :preview?
+    authorize [ :student, :dashboard ], :preview?
 
     @selected_department = Department.find(params[:department_id])
     @active_program = @selected_department.programs.find(params[:program_id])
@@ -43,7 +43,7 @@ class Student::DashboardController < ApplicationController
   end
 
   def select_department
-    authorize [:student, :dashboard], :show?
+    authorize [ :student, :dashboard ], :show?
 
     department = current_user.enrolled_departments.find_by(id: params[:department_id])
     if department

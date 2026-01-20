@@ -4,24 +4,24 @@ class Student::QuestionnairesController < ApplicationController
   before_action :ensure_enrolled
 
   def index
-    authorize [:student, :questionnaire], :index?
+    authorize [ :student, :questionnaire ], :index?
     @questionnaires = @program.questionnaires.includes(:questions)
   end
 
   def show
-    authorize [:student, :questionnaire], :show?
+    authorize [ :student, :questionnaire ], :show?
     @questions = @questionnaire.questions.includes(:answers)
     @answers = current_user.answers.where(program: @program, question: @questions).index_by(&:question_id)
   end
 
   def edit
-    authorize [:student, :questionnaire], :edit?
+    authorize [ :student, :questionnaire ], :edit?
     @questions = @questionnaire.questions.order(:position)
     @answers = current_user.answers.where(program: @program, question: @questions).index_by(&:question_id)
   end
 
   def update
-    authorize [:student, :questionnaire], :update?
+    authorize [ :student, :questionnaire ], :update?
 
     if @program.questionnaire_due?
       redirect_to student_department_program_questionnaire_path(@program.department, @program, @questionnaire),
