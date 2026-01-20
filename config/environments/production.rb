@@ -57,7 +57,11 @@ Rails.application.configure do
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  # config.action_mailer.raise_delivery_errors = false
+  # Note: When using deliver_later, errors happen in background jobs, so this mainly affects deliver_now
+  # We log errors in ApplicationJob instead for deliver_later jobs
+  config.action_mailer.raise_delivery_errors = false
+  # Log mail delivery attempts for debugging
+  config.action_mailer.logger = Rails.logger
 
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "student-visit.lsa.umich.edu", protocol: "https" }
