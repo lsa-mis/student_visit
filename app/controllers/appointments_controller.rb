@@ -13,7 +13,9 @@ class AppointmentsController < ApplicationController
 
   def destroy
     authorize @appointment
+    program_id = @appointment.program_id
     @appointment.destroy
+    track_business_event("appointment.deleted", program_id: program_id.to_s, deleted_by: "admin")
     redirect_to department_program_appointments_path(@program.department, @program),
                 notice: "Appointment was successfully deleted."
   end
@@ -22,6 +24,7 @@ class AppointmentsController < ApplicationController
     authorize @appointment, :update?
 
     if @appointment.release!
+      track_business_event("appointment.released", program_id: @program.id.to_s, vip_id: @appointment.vip_id.to_s, released_by: "admin")
       redirect_to department_program_appointment_path(@program.department, @program, @appointment),
                   notice: "Student reservation has been cancelled. The appointment is now available."
     else
@@ -42,6 +45,7 @@ class AppointmentsController < ApplicationController
     @vips = @program.vips.ordered
 
     if @appointment.save
+      track_business_event("appointment.created", program_id: @program.id.to_s, vip_id: @appointment.vip_id.to_s)
       redirect_to department_program_appointments_path(@program.department, @program), notice: "Appointment was successfully created."
     else
       render :new, status: :unprocessable_entity
@@ -64,10 +68,12 @@ class AppointmentsController < ApplicationController
     vip = @program.vips.find(params[:vip_id])
     service = BulkAppointmentUploadService.new(@program, vip, params[:file])
     if service.call
+      track_business_event("appointment.bulk_upload", program_id: @program.id.to_s, vip_id: vip.id.to_s, success_count: service.success_count.to_s, failure_count: service.failure_count.to_s)
       flash[:notice] = "Successfully uploaded #{service.success_count} appointment(s)."
       flash[:alert] = "#{service.failure_count} failed." if service.failure_count > 0
       flash[:errors] = service.errors if service.errors.any?
     else
+      track_business_event("appointment.bulk_upload", program_id: @program.id.to_s, vip_id: vip.id.to_s, success: "false")
       flash[:alert] = "Upload failed: #{service.errors.join(', ')}"
     end
 
@@ -107,9 +113,11 @@ class AppointmentsController < ApplicationController
     service = AppointmentScheduleCreatorService.new(@program, vip, schedule_blocks)
 
     if service.call
+      track_business_event("appointment.schedule_created", program_id: @program.id.to_s, vip_id: vip.id.to_s, created_count: service.created_count.to_s)
       flash[:notice] = "Successfully created #{service.created_count} appointment(s)."
       flash[:alert] = "Some errors occurred: #{service.errors.join('; ')}" if service.errors.any?
     else
+      track_business_event("appointment.schedule_created", program_id: @program.id.to_s, vip_id: vip.id.to_s, success: "false")
       flash[:alert] = "Failed to create appointments: #{service.errors.join('; ')}"
     end
 

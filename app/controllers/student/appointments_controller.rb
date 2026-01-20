@@ -30,6 +30,7 @@ class Student::AppointmentsController < ApplicationController
 
     if appointment.available?
       if appointment.select_by!(current_user)
+        track_business_event("appointment.selected", program_id: @program.id.to_s, vip_id: appointment.vip_id.to_s, student_id: current_user.id.to_s)
         AppointmentsMailer.change_notification(current_user, appointment, "selected").deliver_later
         redirect_to available_student_department_program_appointments_path(@program.department, @program),
                     notice: "Appointment selected successfully."
@@ -49,6 +50,7 @@ class Student::AppointmentsController < ApplicationController
     appointment = @program.appointments.for_student(current_user).find(params[:id])
 
     if appointment.release!
+      track_business_event("appointment.cancelled", program_id: @program.id.to_s, vip_id: appointment.vip_id.to_s, student_id: current_user.id.to_s, cancelled_by: "student")
       AppointmentsMailer.change_notification(current_user, appointment, "deleted").deliver_later
       redirect_to my_appointments_student_department_program_appointments_path(@program.department, @program),
                   notice: "Appointment cancelled successfully."
