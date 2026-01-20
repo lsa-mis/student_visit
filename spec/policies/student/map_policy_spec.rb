@@ -15,16 +15,16 @@ RSpec.describe Student::MapPolicy, type: :policy do
     context 'as super admin' do
       let(:user) { create(:user, :with_super_admin_role) }
 
-      it 'denies access' do
-        expect(subject.new(user, :student_map).show?).to be false
+      it 'allows access (admin preview)' do
+        expect(subject.new(user, :student_map).show?).to be true
       end
     end
 
     context 'as department admin' do
       let(:user) { create(:user, :with_department_admin_role) }
 
-      it 'denies access' do
-        expect(subject.new(user, :student_map).show?).to be false
+      it 'allows access (admin preview)' do
+        expect(subject.new(user, :student_map).show?).to be true
       end
     end
 

@@ -31,4 +31,15 @@ module ApplicationHelper
       content_tag(:div, default.html_safe, class: "page-content", data: { page: page_path, area: area_name })
     end
   end
+
+  # Safely validate and return a URL for use in link_to
+  # Returns the URL if it's safe (starts with http:// or https://), otherwise returns "#"
+  def safe_url(url)
+    return "#" if url.blank?
+
+    url_string = url.to_s.strip
+    return "#" unless url_string.match?(/\Ahttps?:\/\//i)
+
+    url_string
+  end
 end

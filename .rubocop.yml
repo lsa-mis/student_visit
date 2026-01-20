@@ -1,5 +1,9 @@
 inherit_from: .rubocop_todo.yml
 
+# Load the rubocop-rails plugin
+plugins:
+  - rubocop-rails
+
 # Omakase Ruby styling for Rails
 inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 

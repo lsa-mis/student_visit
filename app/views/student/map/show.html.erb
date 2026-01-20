@@ -6,6 +6,15 @@
     </p>
   </div>
 
+  <% if session[:preview_mode] && current_user&.department_admin_for?(@department) && @program.present? %>
+    <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded mb-4 flex items-center justify-between">
+      <span>You are viewing this program as a student.</span>
+      <%= link_to "Back to program admin view",
+                  department_program_path(@program.department, @program),
+                  class: "text-sm font-semibold text-blue-800 underline hover:text-blue-900" %>
+    </div>
+  <% end %>
+
   <div class="bg-white shadow rounded-lg p-6">
     <div id="map" style="height: 500px; width: 100%;" data-controller="map"
          data-map-api-key-value="<%= Rails.application.config.google_maps_api_key %>"
@@ -24,5 +33,9 @@
         </p>
       <% end %>
     </div>
+  <% end %>
+
+  <% if @program.present? %>
+    <%= render 'student/navigation', show_dashboard_link: true %>
   <% end %>
 </div>

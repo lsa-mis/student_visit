@@ -1,6 +1,6 @@
 class AppointmentsController < ApplicationController
   before_action :set_program
-  before_action :set_appointment, only: [ :show ]
+  before_action :set_appointment, only: [ :show, :destroy, :release ]
 
   def index
     @appointments = @program.appointments.includes(:vip, :student).order(:start_time)
@@ -9,6 +9,25 @@ class AppointmentsController < ApplicationController
 
   def show
     authorize @appointment
+  end
+
+  def destroy
+    authorize @appointment
+    @appointment.destroy
+    redirect_to department_program_appointments_path(@program.department, @program),
+                notice: "Appointment was successfully deleted."
+  end
+
+  def release
+    authorize @appointment, :update?
+
+    if @appointment.release!
+      redirect_to department_program_appointment_path(@program.department, @program, @appointment),
+                  notice: "Student reservation has been cancelled. The appointment is now available."
+    else
+      redirect_to department_program_appointment_path(@program.department, @program, @appointment),
+                  alert: "Unable to cancel reservation. The appointment may already be available."
+    end
   end
 
   def new
@@ -105,7 +124,7 @@ class AppointmentsController < ApplicationController
   end
 
   def set_appointment
-    @appointment = @program.appointments.find(params[:id])
+    @appointment = @program.appointments.includes(:vip, :student, :appointment_selections).find(params[:id])
   end
 
   def appointment_params

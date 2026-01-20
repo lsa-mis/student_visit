@@ -70,6 +70,11 @@ RSpec.describe "Student::Dashboard", type: :request do
           expect(response.body).to include("Calendar")
           expect(response.body).to include("Map")
         end
+
+        it "does not show Back to Dashboard button on dashboard page" do
+          get student_dashboard_path
+          expect(response.body).not_to include("Back to Dashboard")
+        end
       end
 
       context "with department but no active program" do
@@ -164,6 +169,62 @@ RSpec.describe "Student::Dashboard", type: :request do
     context "when unauthenticated" do
       it "redirects to login" do
         post select_department_student_dashboard_path, params: { department_id: department.id }
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
+  describe "GET /student/dashboard/preview" do
+    before do
+      department.update!(active_program: program)
+    end
+
+    context "when authenticated as super admin" do
+      before { sign_in_as_super_admin }
+
+      it "allows previewing the program dashboard" do
+        get preview_student_dashboard_path(department_id: department.id, program_id: program.id)
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include("You are viewing this program as a student.")
+        expect(response.body).to include("Back to program admin view")
+      end
+    end
+
+    context "when authenticated as department admin for the department" do
+      before { sign_in_as_department_admin(department) }
+
+      it "allows previewing the program dashboard" do
+        get preview_student_dashboard_path(department_id: department.id, program_id: program.id)
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include("You are viewing this program as a student.")
+        expect(response.body).to include("Back to program admin view")
+      end
+    end
+
+    context "when authenticated as department admin for another department" do
+      let(:other_department) { Department.create!(name: "Other Department") }
+
+      it "redirects with not authorized message" do
+        sign_in_as_department_admin(other_department)
+        get preview_student_dashboard_path(department_id: department.id, program_id: program.id)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to include("not authorized")
+      end
+    end
+
+    context "when authenticated as student" do
+      before { sign_in_as(student_user) }
+
+      it "redirects with not authorized message" do
+        get preview_student_dashboard_path(department_id: department.id, program_id: program.id)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to include("not authorized")
+      end
+    end
+
+    context "when unauthenticated" do
+      it "redirects to login" do
+        get preview_student_dashboard_path(department_id: department.id, program_id: program.id)
         expect(response).to redirect_to(new_session_path)
       end
     end

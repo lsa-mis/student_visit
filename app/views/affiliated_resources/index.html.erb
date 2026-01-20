@@ -16,7 +16,7 @@
           <li class="py-4 flex justify-between items-center">
             <div>
               <h3 class="font-semibold"><%= resource.name %></h3>
-              <%= link_to resource.url, resource.url, target: "_blank", class: "text-blue-600 hover:text-blue-800 text-sm" %>
+              <%= link_to resource.url, safe_url(resource.url), target: "_blank", class: "text-blue-600 hover:text-blue-800 text-sm" %>
             </div>
             <div>
               <% if policy(resource).update? %>

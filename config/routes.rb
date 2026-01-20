@@ -21,6 +21,7 @@ Rails.application.routes.draw do
   namespace :student do
     resource :dashboard, only: [ :show ], controller: :dashboard do
       post :select_department, on: :collection
+      get :preview, on: :collection
     end
 
     resources :departments, only: [] do
@@ -73,7 +74,7 @@ Rails.application.routes.draw do
           post :process_bulk_upload
         end
       end
-      resources :appointments, only: [ :index, :show, :new, :create ] do
+      resources :appointments, only: [ :index, :show, :new, :create, :destroy ] do
         collection do
           get :bulk_upload
           post :process_bulk_upload
@@ -81,6 +82,9 @@ Rails.application.routes.draw do
           get :by_student
           get :schedule_builder
           post :create_schedule
+        end
+        member do
+          post :release
         end
       end
       resources :vips do

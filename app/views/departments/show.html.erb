@@ -65,7 +65,7 @@
       <ul class="list-disc list-inside">
         <% @affiliated_resources.each do |resource| %>
           <li>
-            <%= link_to resource.name, resource.url, target: "_blank", class: "text-blue-600 hover:text-blue-800" %>
+            <%= link_to resource.name, safe_url(resource.url), target: "_blank", class: "text-blue-600 hover:text-blue-800" %>
           </li>
         <% end %>
       </ul>

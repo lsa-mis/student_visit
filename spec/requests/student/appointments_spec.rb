@@ -31,6 +31,19 @@ RSpec.describe "Student::Appointments", type: :request do
         expect(response.body).to include("My Appointments")
       end
 
+      it "displays navigation buttons" do
+        get student_department_program_appointments_path(department, program)
+        expect(response.body).to include("Questionnaires")
+        expect(response.body).to include("Appointments")
+        expect(response.body).to include("Calendar")
+        expect(response.body).to include("Map")
+      end
+
+      it "displays Back to Dashboard button" do
+        get student_department_program_appointments_path(department, program)
+        expect(response.body).to include("Back to Dashboard")
+      end
+
       it "only shows appointments for the program" do
         other_program = create(:program, department: department)
         other_appointment = create(:appointment, :booked, :upcoming, program: other_program, student: student_user, vip: vip)
@@ -102,6 +115,19 @@ RSpec.describe "Student::Appointments", type: :request do
         expect(response.body).not_to include(past_appointment.start_time.strftime("%B %d, %Y"))
         expect(response.body).to include(upcoming_appointment.start_time.strftime("%B %d, %Y"))
       end
+
+      it "displays navigation buttons" do
+        get available_student_department_program_appointments_path(department, program)
+        expect(response.body).to include("Questionnaires")
+        expect(response.body).to include("Appointments")
+        expect(response.body).to include("Calendar")
+        expect(response.body).to include("Map")
+      end
+
+      it "displays Back to Dashboard button" do
+        get available_student_department_program_appointments_path(department, program)
+        expect(response.body).to include("Back to Dashboard")
+      end
     end
   end
 
@@ -125,6 +151,19 @@ RSpec.describe "Student::Appointments", type: :request do
         get my_appointments_student_department_program_appointments_path(department, program)
         expect(response.body).to include(my_appointment.vip.display_name)
         expect(response.body).not_to include(other_appointment.vip.display_name)
+      end
+
+      it "displays navigation buttons" do
+        get my_appointments_student_department_program_appointments_path(department, program)
+        expect(response.body).to include("Questionnaires")
+        expect(response.body).to include("Appointments")
+        expect(response.body).to include("Calendar")
+        expect(response.body).to include("Map")
+      end
+
+      it "displays Back to Dashboard button" do
+        get my_appointments_student_department_program_appointments_path(department, program)
+        expect(response.body).to include("Back to Dashboard")
       end
     end
   end

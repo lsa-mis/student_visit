@@ -27,6 +27,19 @@ RSpec.describe "Student::Map", type: :request do
         get student_department_map_path(department)
         expect(response.body).to include(department.street_address) if department.street_address.present?
       end
+
+      it "displays navigation buttons" do
+        get student_department_map_path(department)
+        expect(response.body).to include("Questionnaires")
+        expect(response.body).to include("Appointments")
+        expect(response.body).to include("Calendar")
+        expect(response.body).to include("Map")
+      end
+
+      it "displays Back to Dashboard button" do
+        get student_department_map_path(department)
+        expect(response.body).to include("Back to Dashboard")
+      end
     end
 
     context "when unauthenticated" do
@@ -36,12 +49,13 @@ RSpec.describe "Student::Map", type: :request do
       end
     end
 
-    context "when authenticated as non-student" do
+    context "when authenticated as non-student (admin preview)" do
       before { sign_in_as_super_admin }
 
-      it "denies access" do
+      it "allows access" do
         get student_department_map_path(department)
-        expect(response).to have_http_status(:forbidden).or have_http_status(:redirect)
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include(department.name)
       end
     end
   end

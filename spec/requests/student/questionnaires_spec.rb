@@ -30,6 +30,19 @@ RSpec.describe "Student::Questionnaires", type: :request do
         expect(response.body).to include(questionnaire2.name)
         expect(response.body).not_to include(other_questionnaire.name)
       end
+
+      it "displays navigation buttons" do
+        get student_department_program_questionnaires_path(department, program)
+        expect(response.body).to include("Questionnaires")
+        expect(response.body).to include("Appointments")
+        expect(response.body).to include("Calendar")
+        expect(response.body).to include("Map")
+      end
+
+      it "displays Back to Dashboard button" do
+        get student_department_program_questionnaires_path(department, program)
+        expect(response.body).to include("Back to Dashboard")
+      end
     end
 
     context "when unauthenticated" do
@@ -73,6 +86,19 @@ RSpec.describe "Student::Questionnaires", type: :request do
         expect(response.body).to include(question.text)
       end
 
+      it "displays navigation buttons" do
+        get student_department_program_questionnaire_path(department, program, questionnaire)
+        expect(response.body).to include("Questionnaires")
+        expect(response.body).to include("Appointments")
+        expect(response.body).to include("Calendar")
+        expect(response.body).to include("Map")
+      end
+
+      it "displays Back to Dashboard button" do
+        get student_department_program_questionnaire_path(department, program, questionnaire)
+        expect(response.body).to include("Back to Dashboard")
+      end
+
       it "displays existing answers" do
         question = create(:question, questionnaire: questionnaire)
         answer = create(:answer, question: question, student: student_user, program: program, content: "My answer")
@@ -96,6 +122,19 @@ RSpec.describe "Student::Questionnaires", type: :request do
         question = create(:question, questionnaire: questionnaire)
         get edit_student_department_program_questionnaire_path(department, program, questionnaire)
         expect(response.body).to include(question.text)
+      end
+
+      it "displays navigation buttons" do
+        get edit_student_department_program_questionnaire_path(department, program, questionnaire)
+        expect(response.body).to include("Questionnaires")
+        expect(response.body).to include("Appointments")
+        expect(response.body).to include("Calendar")
+        expect(response.body).to include("Map")
+      end
+
+      it "displays Back to Dashboard button" do
+        get edit_student_department_program_questionnaire_path(department, program, questionnaire)
+        expect(response.body).to include("Back to Dashboard")
       end
     end
   end
