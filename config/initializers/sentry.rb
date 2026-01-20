@@ -32,6 +32,12 @@ Sentry.init do |config|
   # Profile sampling - adjust based on your needs
   config.profiles_sample_rate = Rails.env.production? ? 0.1 : 1.0
 
+  # Metrics configuration
+  # Enable metrics collection
+  config.enable_metrics = true
+  # Set metrics sample rate (1.0 = 100% of metrics, 0.1 = 10%)
+  config.metrics_sample_rate = Rails.env.production? ? 1.0 : 1.0
+
   # Custom sampling logic if needed
   config.traces_sampler = lambda do |context|
     # Don't sample health check endpoints
@@ -118,4 +124,148 @@ Sentry.init do |config|
 
   # Configure debug mode (only in development)
   config.debug = Rails.env.development?
+end
+
+# Automatic request metrics tracking
+# This will track HTTP request duration, status codes, and other request-level metrics
+ActiveSupport::Notifications.subscribe("process_action.action_controller") do |*args|
+  event = ActiveSupport::Notifications::Event.new(*args)
+  next unless defined?(Sentry) && Sentry.initialized?
+  next unless Sentry.configuration.enabled_environments.include?(Rails.env)
+
+  controller = event.payload[:controller]
+  action = event.payload[:action]
+  status = event.payload[:status]
+  format = event.payload[:format] || "html"
+  method = event.payload[:method] || "GET"
+  duration_ms = event.duration
+
+  # Track request duration
+  Sentry::Metrics.distribution(
+    "http.request.duration",
+    duration_ms,
+    unit: "millisecond",
+    attributes: {
+      controller: controller,
+      action: action,
+      status: status.to_s,
+      format: format,
+      method: method,
+      environment: Rails.env
+    }
+  )
+
+  # Track request count by status code
+  Sentry::Metrics.count(
+    "http.request.count",
+    value: 1,
+    attributes: {
+      controller: controller,
+      action: action,
+      status: status.to_s,
+      format: format,
+      method: method,
+      status_category: status.to_s[0] + "xx", # e.g., "2xx", "4xx", "5xx"
+      environment: Rails.env
+    }
+  )
+
+  # Track slow requests (> 1 second)
+  if duration_ms > 1000
+    Sentry::Metrics.count(
+      "http.request.slow",
+      value: 1,
+      attributes: {
+        controller: controller,
+        action: action,
+        status: status.to_s,
+        method: method,
+        environment: Rails.env
+      }
+    )
+  end
+
+  # Track error responses (4xx and 5xx)
+  if status >= 400
+    Sentry::Metrics.count(
+      "http.request.error",
+      value: 1,
+      attributes: {
+        controller: controller,
+        action: action,
+        status: status.to_s,
+        method: method,
+        error_type: status >= 500 ? "server_error" : "client_error",
+        environment: Rails.env
+      }
+    )
+  end
+rescue StandardError => e
+  Rails.logger.error("Failed to track request metrics: #{e.message}")
+end
+
+# Track database query metrics
+ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
+  event = ActiveSupport::Notifications::Event.new(*args)
+  next unless defined?(Sentry) && Sentry.initialized?
+  next unless Sentry.configuration.enabled_environments.include?(Rails.env)
+
+  name = event.payload[:name]
+  sql = event.payload[:sql]
+  duration_ms = event.duration
+
+  # Extract query type (SELECT, INSERT, UPDATE, DELETE)
+  query_type = sql&.strip&.upcase&.split&.first || "UNKNOWN"
+
+  # Track query duration
+  Sentry::Metrics.distribution(
+    "db.query.duration",
+    duration_ms,
+    unit: "millisecond",
+    attributes: {
+      query_type: query_type,
+      name: name,
+      environment: Rails.env
+    }
+  )
+
+  # Track slow queries (> 100ms)
+  if duration_ms > 100
+    Sentry::Metrics.count(
+      "db.query.slow",
+      value: 1,
+      attributes: {
+        query_type: query_type,
+        name: name,
+        environment: Rails.env
+      }
+    )
+  end
+rescue StandardError => e
+  Rails.logger.error("Failed to track database metrics: #{e.message}")
+end
+
+# Track view rendering metrics
+ActiveSupport::Notifications.subscribe("render_template.action_view") do |*args|
+  event = ActiveSupport::Notifications::Event.new(*args)
+  next unless defined?(Sentry) && Sentry.initialized?
+  next unless Sentry.configuration.enabled_environments.include?(Rails.env)
+
+  identifier = event.payload[:identifier]
+  duration_ms = event.duration
+
+  # Extract template name
+  template_name = identifier&.split("/")&.last&.split(".")&.first || "unknown"
+
+  Sentry::Metrics.distribution(
+    "view.render.duration",
+    duration_ms,
+    unit: "millisecond",
+    attributes: {
+      template: template_name,
+      environment: Rails.env
+    }
+  )
+rescue StandardError => e
+  Rails.logger.error("Failed to track view metrics: #{e.message}")
 end
