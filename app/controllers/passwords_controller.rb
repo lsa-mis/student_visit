@@ -8,7 +8,11 @@ class PasswordsController < ApplicationController
 
   def create
     if user = User.find_by(email_address: params[:email_address])
+      Rails.logger.info("Queueing password reset email for user: #{user.email_address}")
       PasswordsMailer.reset(user).deliver_later
+      Rails.logger.info("Password reset email queued successfully for user: #{user.email_address}")
+    else
+      Rails.logger.info("Password reset requested for non-existent email: #{params[:email_address]}")
     end
 
     redirect_to new_session_path, notice: "Password reset instructions sent (if user with that email address exists)."
