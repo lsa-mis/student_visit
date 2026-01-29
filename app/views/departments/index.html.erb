@@ -6,6 +6,10 @@
     <% end %>
   </div>
 
+  <%= render "shared/page_instructions",
+      page_path: "departments/index",
+      default_text: "Use this page to view and manage departments. Create a department, then add programs within it. Set an active program per department to define which program students see first." %>
+
   <% if @departments.any? %>
     <div class="bg-white shadow rounded-lg overflow-hidden">
       <table class="min-w-full divide-y divide-gray-200">

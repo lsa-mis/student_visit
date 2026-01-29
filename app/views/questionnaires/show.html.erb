@@ -17,6 +17,10 @@
     </div>
   </div>
 
+  <%= render "shared/page_instructions",
+      page_path: "questionnaires/show",
+      default_text: "Manage questions for this questionnaire. Add questions, set types and options, then view student responses. Students complete questionnaires from their dashboard." %>
+
   <div class="bg-white shadow rounded-lg p-6">
     <h2 class="text-xl font-semibold mb-4">Questions</h2>
     <% if @questions.any? %>

@@ -9,6 +9,10 @@
     </p>
   </div>
 
+  <%= render "shared/page_instructions",
+      page_path: "appointments/schedule_builder",
+      default_text: "Create multiple appointments at once. Select a faculty member, add one or more days, then add time blocks per day. Use \"Time Range\" for a block of slots or \"Single Appointment\" for one fixed slot. Dates should match the program's held-on dates when possible." %>
+
   <%= form_with url: create_schedule_department_program_appointments_path(@program.department, @program), method: :post, class: "bg-white shadow rounded-lg p-6" do |form| %>
     <div class="mb-6">
       <%= form.label :vip_id, "Faculty Member", class: "block text-sm font-medium text-gray-700 mb-2" %>

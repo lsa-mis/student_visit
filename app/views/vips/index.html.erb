@@ -12,6 +12,10 @@
     </div>
   </div>
 
+  <%= render "shared/page_instructions",
+      page_path: "vips/index",
+      default_text: "Manage VIPs (faculty/staff) for this program. VIPs can be assigned to appointments. Toggle \"On Dashboard\" to show or hide each VIP on the student dashboard." %>
+
   <div class="bg-white shadow rounded-lg p-6">
     <% if @vips.any? %>
       <div class="overflow-x-auto">

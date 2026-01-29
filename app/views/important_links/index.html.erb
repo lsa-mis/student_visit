@@ -11,6 +11,10 @@
     </div>
   </div>
 
+  <%= render "shared/page_instructions",
+      page_path: "important_links/index",
+      default_text: "Add links to display to students on their dashboard, such as program resources, forms, or external sites. Use ranking to control display order." %>
+
   <div class="bg-white shadow rounded-lg p-6">
     <% if @important_links.any? %>
       <div class="overflow-x-auto">

@@ -1,7 +1,9 @@
 <div class="container mx-auto px-4 py-8">
   <h1 class="text-3xl font-bold mb-6">New Page Content</h1>
 
-  <%= form_with model: [:admin, @page_content], local: true do |form| %>
+  <%= form_with model: [:admin, @page_content], local: true, data: { controller: "page-content-form" } do |form| %>
+    <script type="application/json" data-page-content-form-target="optionsData"><%= raw PageContent.area_options_map_for_js.to_json %></script>
+    <script type="application/json" data-page-content-form-target="existingData"><%= raw (@existing_page_contents || {}).to_json %></script>
     <% if @page_content.errors.any? %>
       <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
         <h2 class="font-bold"><%= pluralize(@page_content.errors.count, "error") %> prohibited this page content from being saved:</h2>
@@ -16,18 +18,35 @@
     <div class="bg-white rounded-lg shadow p-6">
       <div class="mb-4">
         <%= form.label :page_path, "Page Path", class: "block text-sm font-medium text-gray-700 mb-2" %>
-        <%= form.text_field :page_path,
-            placeholder: "e.g., home/index, student/dashboard/show",
-            class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
-        <p class="mt-1 text-sm text-gray-500">The path of the page where this content will appear (controller/action)</p>
+        <%= form.select :page_path,
+            options_for_select(PageContent::KNOWN_PAGE_PATHS, @page_content.page_path),
+            { include_blank: "Select a page..." },
+            {
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500",
+              data: { page_content_form_target: "pagePathSelect", action: "change->page-content-form#updateAreas" }
+            } %>
+        <p class="mt-1 text-sm text-gray-500">The path of the page where this content will appear</p>
       </div>
 
       <div class="mb-4">
         <%= form.label :area_name, "Area Name", class: "block text-sm font-medium text-gray-700 mb-2" %>
-        <%= form.text_field :area_name,
-            placeholder: "e.g., welcome_message, footer_text, hero_title",
-            class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
-        <p class="mt-1 text-sm text-gray-500">A unique identifier for this content area on the page</p>
+        <% area_options = PageContent.area_options_for(@page_content.page_path) %>
+        <%= form.select :area_name,
+            options_for_select(area_options, @page_content.area_name),
+            { include_blank: area_options.any? ? "Select an area..." : "Select a page first..." },
+            {
+              class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500",
+              data: {
+                page_content_form_target: "areaSelect",
+                action: "change->page-content-form#checkExisting"
+              },
+              disabled: area_options.empty?
+            } %>
+        <p class="mt-1 text-sm text-gray-500">The content area on the page (varies by page)</p>
+        <div data-page-content-form-target="existingIndicator" class="hidden mt-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
+          <p class="text-sm font-medium text-amber-800">Content already set for this area.</p>
+          <a data-page-content-form-target="existingEditLink" href="#" class="text-sm text-amber-700 hover:text-amber-900 underline mt-1 inline-block">Edit existing content</a>
+        </div>
       </div>
 
       <div class="mb-4">

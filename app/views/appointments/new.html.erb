@@ -6,6 +6,10 @@
     </p>
   </div>
 
+  <%= render "shared/page_instructions",
+      page_path: "appointments/new",
+      default_text: "Create a single appointment for a faculty member. Select the faculty member and start time. End time is optional; if omitted, the program's default appointment length is used." %>
+
   <%= form_with model: [@program.department, @program, @appointment], class: "bg-white shadow rounded-lg p-6" do |form| %>
     <% if @appointment.errors.any? %>
       <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">

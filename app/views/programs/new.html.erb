@@ -2,6 +2,10 @@
   <h1 class="text-3xl font-bold mb-6">New Program</h1>
   <p class="text-gray-600 mb-6">Department: <%= link_to @department.name, department_path(@department), class: "text-blue-600 hover:text-blue-800" %></p>
 
+  <%= render "shared/page_instructions",
+      page_path: "programs/new",
+      default_text: "Create a new program for a department. Set open and close dates, questionnaire due date, and the dates when program events occur. The default appointment length is used when creating individual appointments." %>
+
   <%= form_with model: [@department, @program], class: "bg-white shadow rounded-lg p-6" do |form| %>
     <% if @program.errors.any? %>
       <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
