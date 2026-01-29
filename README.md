@@ -43,7 +43,7 @@ A comprehensive web application for managing student visits, appointments, and q
 - Minimum 2GB RAM
 - At least 10GB free disk space
 - Ubuntu 20.04+ or similar Linux distribution recommended
-- Docker (for containerized deployment with Kamal)
+- Deployment: Hatchbox on DigitalOcean (Docker/Kamal config present but unused)
 
 ## Server Setup
 
