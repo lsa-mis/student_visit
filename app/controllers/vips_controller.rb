@@ -2,8 +2,13 @@ class VipsController < ApplicationController
   before_action :set_program
   before_action :set_vip, only: [ :show, :edit, :update, :destroy ]
 
+  SORTABLE_COLUMNS = %w[ranking name title profile_url display_on_student_dashboard].freeze
+
   def index
-    @vips = policy_scope(Vip).where(program: @program).ordered
+    base = policy_scope(Vip).where(program: @program)
+    @vips = apply_sort(base)
+    @sort_column = sort_column
+    @sort_direction = sort_direction
     authorize Vip.new(program: @program)
   end
 
@@ -84,5 +89,23 @@ class VipsController < ApplicationController
 
   def vip_params
     params.require(:vip).permit(:name, :profile_url, :title, :ranking, :display_on_student_dashboard)
+  end
+
+  def sort_column
+    col = params[:sort].to_s
+    col if SORTABLE_COLUMNS.include?(col)
+  end
+
+  def sort_direction
+    dir = params[:direction].to_s.downcase
+    dir == "desc" ? "desc" : "asc"
+  end
+
+  def apply_sort(scope)
+    if sort_column
+      scope.reorder(sort_column => sort_direction)
+    else
+      scope.ordered
+    end
   end
 end
