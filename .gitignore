@@ -41,3 +41,6 @@
 
 # SimpleCov coverage reports
 /coverage/
+
+# Cursor debug session logs
+.cursor/debug.log
