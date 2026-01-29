@@ -2,9 +2,27 @@ class StudentsController < ApplicationController
   before_action :set_program
   before_action :set_student, only: [ :edit, :update, :destroy ]
 
+  SORTABLE_COLUMNS = %w[email_address last_name first_name umid enrolled].freeze
+  SORT_DIRECTIONS = %w[asc desc].freeze
+
   def index
-    @students = @program.students.order(:email_address)
+    @sort_column = params[:sort].presence_in(SORTABLE_COLUMNS) || "email_address"
+    @sort_direction = params[:direction].presence_in(SORT_DIRECTIONS) || "asc"
+    @students = sorted_students
     authorize @program, :show?
+  end
+
+  def export
+    authorize @program, :show?
+    @sort_column = params[:sort].presence_in(SORTABLE_COLUMNS) || "email_address"
+    @sort_direction = params[:direction].presence_in(SORT_DIRECTIONS) || "asc"
+    students = sorted_students
+    csv_data = CsvExportService.export_program_students(students, @program)
+    filename = "students-#{@program.name.parameterize}-#{Date.current}.csv"
+    send_data csv_data,
+              filename: filename,
+              type: "text/csv; charset=utf-8",
+              disposition: "attachment"
   end
 
   def search
@@ -155,6 +173,15 @@ class StudentsController < ApplicationController
   end
 
   private
+
+  def sorted_students
+    scope = @program.students
+    if @sort_column == "enrolled"
+      scope.reorder(Arel.sql("student_programs.created_at #{@sort_direction}"))
+    else
+      scope.reorder(@sort_column => @sort_direction)
+    end
+  end
 
   def set_program
     @program = Program.find(params[:program_id])

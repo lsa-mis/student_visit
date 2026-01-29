@@ -38,6 +38,7 @@ class Vip < ApplicationRecord
     from("(#{sql}) as vips").order(:last_name)
   }
   scope :for_student_dashboard, -> { where(display_on_student_dashboard: true) }
+  scope :ordered_by_ranking, -> { order(:ranking, :name) }
 
   def display_name
     [ name, title ].compact.reject(&:blank?).join(" - ")

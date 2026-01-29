@@ -5,7 +5,7 @@
       <p class="text-gray-600 mt-1">Department: <%= link_to @department.name, department_path(@department), class: "text-blue-600 hover:text-blue-800" %></p>
     </div>
     <% if policy(AffiliatedResource.new(department: @department)).create? %>
-      <%= link_to "New Resource", new_department_affiliated_resource_path(@department), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+      <%= link_to "New Resource", new_department_affiliated_resource_path(@department), class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700" %>
     <% end %>
   </div>
 

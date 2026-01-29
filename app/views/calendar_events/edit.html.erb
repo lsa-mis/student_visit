@@ -40,11 +40,45 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div>
         <%= form.label :start_time, "Start Time", class: "block text-sm font-medium text-gray-700 mb-2" %>
-        <%= form.datetime_local_field :start_time, value: @calendar_event.start_time&.strftime("%Y-%m-%dT%H:%M"), class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+        <% if @program.held_on_dates.present? && @program.held_on_dates.is_a?(Array) && @program.held_on_dates.any? %>
+          <% start_date_options = @program.held_on_dates_list.dup; start_date_options << @calendar_event.start_time.to_date if @calendar_event.start_time && !@program.held_on_date?(@calendar_event.start_time); start_date_options.sort!.uniq! %>
+          <div data-controller="program-datetime" data-program-datetime-initial-value="<%= @calendar_event.start_time&.strftime('%Y-%m-%dT%H:%M') %>" class="flex flex-wrap gap-2 items-end">
+            <%= form.hidden_field :start_time, data: { program_datetime_target: "hidden" }, value: @calendar_event.start_time&.strftime("%Y-%m-%dT%H:%M") %>
+            <div class="flex-1 min-w-[140px]">
+              <select data-program-datetime-target="dateSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                <% start_date_options.each do |d| %>
+                  <option value="<%= d.strftime('%Y-%m-%d') %>"><%= d.strftime('%B %d, %Y') %></option>
+                <% end %>
+              </select>
+            </div>
+            <div class="min-w-[100px]">
+              <input type="time" data-program-datetime-target="timeInput" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+            </div>
+          </div>
+        <% else %>
+          <%= form.datetime_local_field :start_time, value: @calendar_event.start_time&.strftime("%Y-%m-%dT%H:%M"), class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+        <% end %>
       </div>
       <div>
         <%= form.label :end_time, "End Time", class: "block text-sm font-medium text-gray-700 mb-2" %>
-        <%= form.datetime_local_field :end_time, value: @calendar_event.end_time&.strftime("%Y-%m-%dT%H:%M"), class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+        <% if @program.held_on_dates.present? && @program.held_on_dates.is_a?(Array) && @program.held_on_dates.any? %>
+          <% end_date_options = @program.held_on_dates_list.dup; end_date_options << @calendar_event.end_time.to_date if @calendar_event.end_time && !@program.held_on_date?(@calendar_event.end_time); end_date_options.sort!.uniq! %>
+          <div data-controller="program-datetime" data-program-datetime-initial-value="<%= @calendar_event.end_time&.strftime('%Y-%m-%dT%H:%M') %>" class="flex flex-wrap gap-2 items-end">
+            <%= form.hidden_field :end_time, data: { program_datetime_target: "hidden" }, value: @calendar_event.end_time&.strftime("%Y-%m-%dT%H:%M") %>
+            <div class="flex-1 min-w-[140px]">
+              <select data-program-datetime-target="dateSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                <% end_date_options.each do |d| %>
+                  <option value="<%= d.strftime('%Y-%m-%d') %>"><%= d.strftime('%B %d, %Y') %></option>
+                <% end %>
+              </select>
+            </div>
+            <div class="min-w-[100px]">
+              <input type="time" data-program-datetime-target="timeInput" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+            </div>
+          </div>
+        <% else %>
+          <%= form.datetime_local_field :end_time, value: @calendar_event.end_time&.strftime("%Y-%m-%dT%H:%M"), class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+        <% end %>
       </div>
     </div>
 
@@ -81,8 +115,8 @@
     </div>
 
     <div class="flex justify-end space-x-4">
-      <%= form.submit "Update Calendar Event", class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
-      <%= link_to "Cancel", department_program_calendar_event_path(@program.department, @program, @calendar_event), class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+      <%= form.submit "Update Calendar Event", class: "bg-green-600 text-white btn-responsive rounded hover:bg-green-700" %>
+      <%= link_to "Cancel", department_program_calendar_event_path(@program.department, @program, @calendar_event), class: "bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700" %>
     </div>
   <% end %>
 </div>

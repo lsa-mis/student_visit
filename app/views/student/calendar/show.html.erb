@@ -30,13 +30,13 @@
         <% if @filter_mode == "date" %>
           <%= link_to "← Previous",
               student_department_program_calendar_path(@department, @program, date: @date - (@view_mode == "single" ? 1.day : 1.week), view: @view_mode, filter: @filter_mode),
-              class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+              class: "btn-responsive bg-gray-600 text-white rounded hover:bg-gray-700" %>
           <%= link_to "Today",
               student_department_program_calendar_path(@department, @program, date: Date.current, view: @view_mode, filter: @filter_mode),
-              class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+              class: "btn-responsive bg-blue-600 text-white rounded hover:bg-blue-700" %>
           <%= link_to "Next →",
               student_department_program_calendar_path(@department, @program, date: @date + (@view_mode == "single" ? 1.day : 1.week), view: @view_mode, filter: @filter_mode),
-              class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+              class: "btn-responsive bg-gray-600 text-white rounded hover:bg-gray-700" %>
           <div class="flex items-center gap-2 ml-2">
             <label for="date-picker" class="text-sm font-medium text-gray-700">Go to date:</label>
             <%= date_field_tag :date_picker, @date, id: "date-picker",
@@ -49,17 +49,17 @@
         <% first_held_on_date = @program.held_on_dates_list.first || Date.current %>
         <%= link_to "Filter by Date",
             student_department_program_calendar_path(@department, @program, date: first_held_on_date, view: "single", filter: "date"),
-            class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 #{@filter_mode == 'date' ? 'opacity-75 cursor-not-allowed' : ''}" %>
+            class: "btn-responsive bg-green-600 text-white rounded hover:bg-green-700 #{@filter_mode == 'date' ? 'opacity-75 cursor-not-allowed' : ''}" %>
         <%= link_to "Show All Events",
             student_department_program_calendar_path(@department, @program, filter: "all"),
-            class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 #{@filter_mode == 'all' ? 'opacity-75 cursor-not-allowed' : ''}" %>
+            class: "btn-responsive bg-green-600 text-white rounded hover:bg-green-700 #{@filter_mode == 'all' ? 'opacity-75 cursor-not-allowed' : ''}" %>
         <% if @filter_mode == "date" %>
           <%= link_to "Single Day",
               student_department_program_calendar_path(@department, @program, date: @date, view: "single", filter: @filter_mode),
-              class: "bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 #{@view_mode == 'single' ? 'opacity-75 cursor-not-allowed' : ''}" %>
+              class: "btn-responsive bg-purple-600 text-white rounded hover:bg-purple-700 #{@view_mode == 'single' ? 'opacity-75 cursor-not-allowed' : ''}" %>
           <%= link_to "Week View",
               student_department_program_calendar_path(@department, @program, date: @date, view: "multi", filter: @filter_mode),
-              class: "bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 #{@view_mode == 'multi' ? 'opacity-75 cursor-not-allowed' : ''}" %>
+              class: "btn-responsive bg-purple-600 text-white rounded hover:bg-purple-700 #{@view_mode == 'multi' ? 'opacity-75 cursor-not-allowed' : ''}" %>
         <% end %>
       </div>
     </div>

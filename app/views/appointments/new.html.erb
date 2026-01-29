@@ -6,6 +6,10 @@
     </p>
   </div>
 
+  <%= render "shared/page_instructions",
+      page_path: "appointments/new",
+      default_text: "Create a single appointment for a faculty member. Select the faculty member and start time. End time is optional; if omitted, the program's default appointment length is used." %>
+
   <%= form_with model: [@program.department, @program, @appointment], class: "bg-white shadow rounded-lg p-6" do |form| %>
     <% if @appointment.errors.any? %>
       <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
@@ -41,8 +45,8 @@
     </div>
 
     <div class="flex justify-end space-x-4">
-      <%= form.submit "Create Appointment", class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
-      <%= link_to "Cancel", department_program_appointments_path(@program.department, @program), class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+      <%= form.submit "Create Appointment", class: "bg-green-600 text-white btn-responsive rounded hover:bg-green-700" %>
+      <%= link_to "Cancel", department_program_appointments_path(@program.department, @program), class: "bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700" %>
     </div>
   <% end %>
 </div>

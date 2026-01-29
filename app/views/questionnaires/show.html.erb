@@ -8,14 +8,18 @@
     </div>
     <div>
       <% if policy(@questionnaire).show? %>
-        <%= link_to "View Responses", responses_department_program_questionnaire_path(@department, @program, @questionnaire), class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mr-2" %>
+        <%= link_to "View Responses", responses_department_program_questionnaire_path(@department, @program, @questionnaire), class: "bg-green-600 text-white btn-responsive rounded hover:bg-green-700 mr-2" %>
       <% end %>
       <% if policy(@questionnaire).update? %>
-        <%= link_to "Edit", edit_department_program_questionnaire_path(@department, @program, @questionnaire), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mr-2" %>
-        <%= link_to "Add Question", new_department_program_questionnaire_question_path(@department, @program, @questionnaire), class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
+        <%= link_to "Edit", edit_department_program_questionnaire_path(@department, @program, @questionnaire), class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700 mr-2" %>
+        <%= link_to "Add Question", new_department_program_questionnaire_question_path(@department, @program, @questionnaire), class: "bg-green-600 text-white btn-responsive rounded hover:bg-green-700" %>
       <% end %>
     </div>
   </div>
+
+  <%= render "shared/page_instructions",
+      page_path: "questionnaires/show",
+      default_text: "Manage questions for this questionnaire. Add questions, set types and options, then view student responses. Students complete questionnaires from their dashboard." %>
 
   <div class="bg-white shadow rounded-lg p-6">
     <h2 class="text-xl font-semibold mb-4">Questions</h2>
@@ -45,7 +49,7 @@
     <% else %>
       <p class="text-gray-500">No questions added yet.</p>
       <% if policy(@questionnaire).update? %>
-        <%= link_to "Add First Question", new_department_program_questionnaire_question_path(@department, @program, @questionnaire), class: "mt-4 inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
+        <%= link_to "Add First Question", new_department_program_questionnaire_question_path(@department, @program, @questionnaire), class: "mt-4 inline-block bg-green-600 text-white btn-responsive rounded hover:bg-green-700" %>
       <% end %>
     <% end %>
   </div>

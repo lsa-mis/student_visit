@@ -8,6 +8,7 @@ RSpec.describe CalendarEvent, type: :model do
     subject { CalendarEvent.new(program: program, title: "Test", start_time: Time.current, end_time: 1.hour.from_now) }
     it { should belong_to(:program) }
     it { should have_many(:calendar_event_faculties).dependent(:destroy) }
+    it { should have_many(:vips).through(:calendar_event_faculties) }
     it { should have_many(:participating_faculty).through(:calendar_event_faculties).source(:vip) }
   end
 
@@ -173,6 +174,34 @@ RSpec.describe CalendarEvent, type: :model do
       )
       event.notes = "Test notes"
       expect(event.notes).to be_present
+    end
+  end
+
+  describe 'vip_ids (for form collection_check_boxes)' do
+    let(:vip1) { Vip.create!(name: "Dr. Smith", program: program) }
+    let(:vip2) { Vip.create!(name: "Dr. Jones", program: program) }
+    let(:event) do
+      CalendarEvent.create!(
+        title: "Test Event",
+        start_time: Time.current,
+        end_time: 1.hour.from_now,
+        program: program
+      )
+    end
+
+    it 'responds to vip_ids so new/edit forms can render participating faculty checkboxes' do
+      expect(event).to respond_to(:vip_ids)
+      expect(event).to respond_to(:vip_ids=)
+    end
+
+    it 'returns current vip ids and accepts vip_ids= for mass assignment' do
+      event.participating_faculty << vip1 << vip2
+      expect(event.vip_ids).to match_array([vip1.id, vip2.id])
+
+      event.vip_ids = [vip1.id]
+      event.save!
+      event.reload
+      expect(event.vip_ids).to eq([vip1.id])
     end
   end
 

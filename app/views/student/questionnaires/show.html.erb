@@ -44,7 +44,7 @@
       <% if current_user&.student? %>
         <%= link_to "Edit Answers",
             edit_student_department_program_questionnaire_path(@department, @program, @questionnaire),
-            class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+            class: "btn-responsive bg-blue-600 text-white rounded hover:bg-blue-700" %>
       <% end %>
     <% end %>
   </div>

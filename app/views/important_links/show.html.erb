@@ -6,9 +6,9 @@
     </div>
     <div class="flex gap-2">
       <% if policy(@important_link).update? %>
-        <%= link_to "Edit", edit_department_program_important_link_path(@department, @program, @important_link), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+        <%= link_to "Edit", edit_department_program_important_link_path(@department, @program, @important_link), class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700" %>
       <% end %>
-      <%= link_to "Back to Links", department_program_important_links_path(@department, @program), class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+      <%= link_to "Back to Links", department_program_important_links_path(@department, @program), class: "bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700" %>
     </div>
   </div>
 

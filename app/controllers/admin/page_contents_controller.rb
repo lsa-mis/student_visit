@@ -11,6 +11,11 @@ class Admin::PageContentsController < ApplicationController
 
   def new
     @page_content = authorize PageContent.new
+    @existing_page_contents = PageContent.pluck(:page_path, :area_name, :id).to_h do |page_path, area_name, id|
+      key = "#{page_path}|#{area_name}"
+      edit_url = edit_admin_page_content_path(id: id)
+      [ key, edit_url ]
+    end
   end
 
   def create

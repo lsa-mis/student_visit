@@ -1,6 +1,7 @@
 class CalendarEvent < ApplicationRecord
   belongs_to :program
   has_many :calendar_event_faculties, dependent: :destroy
+  has_many :vips, through: :calendar_event_faculties
   has_many :participating_faculty, through: :calendar_event_faculties, source: :vip
 
   has_rich_text :description

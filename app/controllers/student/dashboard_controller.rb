@@ -13,7 +13,7 @@ class Student::DashboardController < ApplicationController
     if @selected_department_id
       @selected_department = @enrolled_departments.find_by(id: @selected_department_id)
       @active_program = @selected_department&.active_program
-      @vips = @active_program&.vips&.for_student_dashboard&.ordered || []
+      @vips = @active_program&.vips&.for_student_dashboard&.ordered_by_ranking || []
       @important_links = @active_program&.important_links&.ordered || []
     end
   end
@@ -35,7 +35,7 @@ class Student::DashboardController < ApplicationController
 
     @enrolled_departments = [ @selected_department ]
     @selected_department_id = @selected_department.id
-    @vips = @active_program.vips.for_student_dashboard.ordered
+    @vips = @active_program.vips.for_student_dashboard.ordered_by_ranking
     @important_links = @active_program.important_links.ordered
     @preview_mode = true
 

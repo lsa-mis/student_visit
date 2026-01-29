@@ -45,7 +45,7 @@
                   <% if current_user&.student? %>
                     <%= form_with url: select_student_department_program_appointment_path(@department, @program, appointment),
                         method: :post, class: "inline" do |form| %>
-                      <%= form.submit "Select", class: "bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700" %>
+                      <%= form.submit "Select", class: "bg-green-600 text-white btn-responsive rounded text-sm hover:bg-green-700" %>
                     <% end %>
                   <% end %>
                 </div>
