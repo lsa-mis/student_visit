@@ -1,6 +1,23 @@
 require "csv"
 
 class CsvExportService
+  # Simple list of program students (Email, Last Name, First Name, UMID, Enrolled) for the students index page.
+  def self.export_program_students(students, program)
+    CSV.generate(headers: true) do |csv|
+      csv << [ "Email", "Last Name", "First Name", "UMID", "Enrolled" ]
+      Array(students).each do |student|
+        enrolled_at = student.student_programs.find_by(program: program)&.created_at&.strftime("%B %d, %Y")
+        csv << [
+          student.email_address,
+          student.last_name.presence || "",
+          student.first_name.presence || "",
+          student.umid.presence || "",
+          enrolled_at.presence || ""
+        ]
+      end
+    end
+  end
+
   def self.export_students(program)
     CSV.generate(headers: true) do |csv|
       # Ensure questionnaires and questions are loaded

@@ -6,9 +6,12 @@
         Program: <%= link_to @program.name, department_program_path(@department, @program), class: "text-blue-600 hover:text-blue-800" %>
       </p>
     </div>
-    <% if policy(@program).update? %>
-      <%= link_to "Bulk Upload", bulk_upload_department_program_students_path(@department, @program), class: "bg-green-600 text-white btn-responsive rounded hover:bg-green-700" %>
-    <% end %>
+    <div class="flex gap-2 items-center">
+      <%= link_to "Download CSV", export_department_program_students_path(@department, @program, format: :csv, sort: @sort_column || "email_address", direction: @sort_direction || "asc"), class: "bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700" %>
+      <% if policy(@program).update? %>
+        <%= link_to "Bulk Upload", bulk_upload_department_program_students_path(@department, @program), class: "bg-green-600 text-white btn-responsive rounded hover:bg-green-700" %>
+      <% end %>
+    </div>
   </div>
 
   <%= render "shared/page_instructions",
@@ -72,11 +75,11 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Name</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">First Name</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">UMID</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enrolled</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= sort_link("email_address", "Email", current_sort: @sort_column || "email_address", current_direction: @sort_direction || "asc") %></th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= sort_link("last_name", "Last Name", current_sort: @sort_column || "email_address", current_direction: @sort_direction || "asc") %></th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= sort_link("first_name", "First Name", current_sort: @sort_column || "email_address", current_direction: @sort_direction || "asc") %></th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= sort_link("umid", "UMID", current_sort: @sort_column || "email_address", current_direction: @sort_direction || "asc") %></th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= sort_link("enrolled", "Enrolled", current_sort: @sort_column || "email_address", current_direction: @sort_direction || "asc") %></th>
               <% if policy(@program).update? %>
                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               <% end %>

@@ -58,6 +58,7 @@ Rails.application.routes.draw do
           get :bulk_upload
           post :process_bulk_upload
           get :search
+          get :export, format: :csv
         end
       end
       resources :questionnaires do
