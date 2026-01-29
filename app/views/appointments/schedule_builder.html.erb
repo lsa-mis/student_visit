@@ -23,14 +23,14 @@
       <div id="schedule-days" class="space-y-4">
         <!-- Days will be added here dynamically -->
       </div>
-      <button type="button" onclick="addDay()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      <button type="button" onclick="addDay()" class="mt-4 bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700">
         + Add Day
       </button>
     </div>
 
     <div class="flex justify-end space-x-4 mt-6">
-      <%= form.submit "Create All Appointments", class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
-      <%= link_to "Cancel", department_program_appointments_path(@program.department, @program), class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+      <%= form.submit "Create All Appointments", class: "bg-green-600 text-white btn-responsive rounded hover:bg-green-700" %>
+      <%= link_to "Cancel", department_program_appointments_path(@program.department, @program), class: "bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700" %>
     </div>
   <% end %>
 </div>
@@ -63,7 +63,7 @@
       <div class="time-blocks-${dayCount} space-y-2 mb-2">
         <!-- Time blocks will be added here -->
       </div>
-      <button type="button" onclick="addTimeBlock(${dayCount})" class="bg-gray-600 text-white px-3 py-2 rounded hover:bg-gray-700 text-sm">
+      <button type="button" onclick="addTimeBlock(${dayCount})" class="bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700 text-sm">
         + Add Time Block
       </button>
     `;

@@ -143,4 +143,18 @@
     font-weight: 400;
     line-height: 150%;
   }
+
+  /* Responsive buttons: smaller on mobile, full size from sm breakpoint up */
+  .btn-responsive {
+    @apply inline-block text-center font-medium rounded cursor-pointer transition-colors;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  @media (min-width: 40rem) {
+    .btn-responsive {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+    }
+  }
 }

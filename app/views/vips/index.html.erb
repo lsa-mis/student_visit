@@ -6,8 +6,8 @@
     </div>
     <div class="flex gap-2">
       <% if policy(Vip.new(program: @program)).create? %>
-        <%= link_to "Bulk Upload", bulk_upload_department_program_vips_path(@department, @program), class: "bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" %>
-        <%= link_to "New VIP", new_department_program_vip_path(@department, @program), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+        <%= link_to "Bulk Upload", bulk_upload_department_program_vips_path(@department, @program), class: "bg-purple-600 text-white btn-responsive rounded hover:bg-purple-700" %>
+        <%= link_to "New VIP", new_department_program_vip_path(@department, @program), class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700" %>
       <% end %>
     </div>
   </div>

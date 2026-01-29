@@ -13,13 +13,13 @@
       <% if policy([:student, :dashboard]).preview? %>
         <%= link_to "View as Student",
                     preview_student_dashboard_path(department_id: @department.id, program_id: @program.id),
-                    class: "bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700" %>
+                    class: "btn-responsive bg-indigo-600 text-white rounded hover:bg-indigo-700" %>
       <% end %>
       <% if policy(@program).update? %>
-        <%= link_to "Edit", edit_department_program_path(@department, @program), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
-        <%= link_to "Edit Content", edit_content_department_program_path(@department, @program), class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
+        <%= link_to "Edit", edit_department_program_path(@department, @program), class: "btn-responsive bg-blue-600 text-white rounded hover:bg-blue-700" %>
+        <%= link_to "Edit Content", edit_content_department_program_path(@department, @program), class: "btn-responsive bg-green-600 text-white rounded hover:bg-green-700" %>
       <% end %>
-      <%= link_to "Back to Programs", department_programs_path(@department), class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+      <%= link_to "Back to Programs", department_programs_path(@department), class: "btn-responsive bg-gray-600 text-white rounded hover:bg-gray-700" %>
     </div>
   </div>
 

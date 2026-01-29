@@ -6,7 +6,7 @@
     </div>
     <div class="flex gap-2">
       <% if policy(ImportantLink.new(program: @program)).create? %>
-        <%= link_to "New Link", new_department_program_important_link_path(@department, @program), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+        <%= link_to "New Link", new_department_program_important_link_path(@department, @program), class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700" %>
       <% end %>
     </div>
   </div>
