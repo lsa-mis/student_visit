@@ -1,4 +1,4 @@
-<div class="mt-8 pt-6 border-t border-gray-200">
+<div class="mt-8 pt-6 border-t border-gray-200 mb-10 pb-6">
   <% if local_assigns[:show_dashboard_link] %>
     <div class="mb-4">
       <%= link_to student_dashboard_path,
@@ -10,29 +10,29 @@
       <% end %>
     </div>
   <% end %>
-  
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
     <%= link_to student_department_program_questionnaires_path(@department, @program),
-        class: "bg-blue-100 hover:bg-blue-200 p-4 rounded-lg text-center transition-colors" do %>
-      <div class="text-2xl mb-1">📝</div>
+        class: "bg-blue-100 hover:bg-blue-200 p-3 rounded-lg text-center transition-colors" do %>
+      <div class="text-xl mb-0.5">📝</div>
       <div class="text-sm font-semibold">Questionnaires</div>
     <% end %>
 
     <%= link_to student_department_program_appointments_path(@department, @program),
-        class: "bg-green-100 hover:bg-green-200 p-4 rounded-lg text-center transition-colors" do %>
-      <div class="text-2xl mb-1">📅</div>
+        class: "bg-green-100 hover:bg-green-200 p-3 rounded-lg text-center transition-colors" do %>
+      <div class="text-xl mb-0.5">📅</div>
       <div class="text-sm font-semibold">Appointments</div>
     <% end %>
 
     <%= link_to student_department_program_calendar_path(@department, @program, filter: "all"),
-        class: "bg-purple-100 hover:bg-purple-200 p-4 rounded-lg text-center transition-colors" do %>
-      <div class="text-2xl mb-1">🗓️</div>
+        class: "bg-purple-100 hover:bg-purple-200 p-3 rounded-lg text-center transition-colors" do %>
+      <div class="text-xl mb-0.5">🗓️</div>
       <div class="text-sm font-semibold">Calendar</div>
     <% end %>
 
     <%= link_to student_department_map_path(@department),
-        class: "bg-yellow-100 hover:bg-yellow-200 p-4 rounded-lg text-center transition-colors" do %>
-      <div class="text-2xl mb-1">🗺️</div>
+        class: "bg-yellow-100 hover:bg-yellow-200 p-3 rounded-lg text-center transition-colors" do %>
+      <div class="text-xl mb-0.5">🗺️</div>
       <div class="text-sm font-semibold">Map</div>
     <% end %>
   </div>
