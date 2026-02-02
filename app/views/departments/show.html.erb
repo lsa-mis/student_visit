@@ -3,9 +3,9 @@
     <h1 class="text-3xl font-bold"><%= @department.name %></h1>
     <div>
       <% if policy(@department).update? %>
-        <%= link_to "Edit", edit_department_path(@department), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mr-2" %>
+        <%= link_to "Edit", edit_department_path(@department), class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700 mr-2" %>
       <% end %>
-      <%= link_to "Back to Departments", departments_path, class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+      <%= link_to "Back to Departments", departments_path, class: "bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700" %>
     </div>
   </div>
 
@@ -53,7 +53,7 @@
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-xl font-semibold">Programs</h2>
       <% if policy(Program.new(department: @department)).create? %>
-        <%= link_to "New Program", new_department_program_path(@department), class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
+        <%= link_to "New Program", new_department_program_path(@department), class: "bg-green-600 text-white btn-responsive rounded hover:bg-green-700" %>
       <% end %>
     </div>
     <%= render partial: "programs_list", locals: { programs: @department.programs.order(active: :desc, created_at: :desc) } %>
@@ -91,7 +91,7 @@
     <div class="bg-white shadow rounded-lg p-6 mt-6">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-semibold">Department Admins</h2>
-        <%= link_to "Manage Admins", department_admins_path(@department), class: "bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" %>
+        <%= link_to "Manage Admins", department_admins_path(@department), class: "bg-purple-600 text-white btn-responsive rounded hover:bg-purple-700" %>
       </div>
       <ul class="list-disc list-inside">
         <% @department.admin_users.each do |admin| %>

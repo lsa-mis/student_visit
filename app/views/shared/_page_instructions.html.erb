@@ -1,0 +1,11 @@
+<%# Super-admin editable instructions. Locals: page_path (required), area_name (default: "instructions"), default_text (required) %>
+<% area_name = local_assigns[:area_name] || "instructions" %>
+<div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+  <% if render_page_content(page_path, area_name) %>
+    <div class="prose prose-sm max-w-none text-gray-700">
+      <%= render_page_content(page_path, area_name) %>
+    </div>
+  <% else %>
+    <p class="text-sm text-gray-700 leading-relaxed"><%= default_text %></p>
+  <% end %>
+</div>

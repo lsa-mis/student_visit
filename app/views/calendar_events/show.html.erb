@@ -8,9 +8,9 @@
     </div>
     <div>
       <% if policy(@calendar_event).update? %>
-        <%= link_to "Edit", edit_department_program_calendar_event_path(@program.department, @program, @calendar_event), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mr-2" %>
+        <%= link_to "Edit", edit_department_program_calendar_event_path(@program.department, @program, @calendar_event), class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700 mr-2" %>
       <% end %>
-      <%= link_to "Back to Events", department_program_calendar_events_path(@program.department, @program), class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+      <%= link_to "Back to Events", department_program_calendar_events_path(@program.department, @program), class: "bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700" %>
     </div>
   </div>
 

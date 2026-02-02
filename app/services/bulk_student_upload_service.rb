@@ -104,8 +104,13 @@ class BulkStudentUploadService
     if student_program.new_record?
       if student_program.save
         @success_count += 1
-        # Send welcome email when student is added to a program (new or existing student)
-        StudentMailer.welcome(user, program, is_new_student: was_new_record).deliver_later
+        # Send welcome email when student is added to a program (new or existing student).
+        # Use deliver_now in development/test so Letter Opener Web shows every email; deliver_later in production.
+        if Rails.env.production?
+          StudentMailer.welcome(user, program, is_new_student: was_new_record).deliver_later
+        else
+          StudentMailer.welcome(user, program, is_new_student: was_new_record).deliver_now
+        end
       else
         @failure_count += 1
         errors << "Row #{row_data}: Failed to enroll student - #{student_program.errors.full_messages.join(', ')}"

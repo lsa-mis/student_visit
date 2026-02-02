@@ -6,10 +6,14 @@
     </div>
     <div class="flex gap-2">
       <% if policy(ImportantLink.new(program: @program)).create? %>
-        <%= link_to "New Link", new_department_program_important_link_path(@department, @program), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+        <%= link_to "New Link", new_department_program_important_link_path(@department, @program), class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700" %>
       <% end %>
     </div>
   </div>
+
+  <%= render "shared/page_instructions",
+      page_path: "important_links/index",
+      default_text: "Add links to display to students on their dashboard, such as program resources, forms, or external sites. Use ranking to control display order." %>
 
   <div class="bg-white shadow rounded-lg p-6">
     <% if @important_links.any? %>

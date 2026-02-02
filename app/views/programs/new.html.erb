@@ -2,6 +2,10 @@
   <h1 class="text-3xl font-bold mb-6">New Program</h1>
   <p class="text-gray-600 mb-6">Department: <%= link_to @department.name, department_path(@department), class: "text-blue-600 hover:text-blue-800" %></p>
 
+  <%= render "shared/page_instructions",
+      page_path: "programs/new",
+      default_text: "Create a new program for a department. Set open and close dates, questionnaire due date, and the dates when program events occur. The default appointment length is used when creating individual appointments." %>
+
   <%= form_with model: [@department, @program], class: "bg-white shadow rounded-lg p-6" do |form| %>
     <% if @program.errors.any? %>
       <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
@@ -40,7 +44,7 @@
       <div id="held-on-dates-container" class="space-y-2">
         <div id="add-date-row" class="flex gap-2 items-center">
           <%= date_field_tag "program[held_on_dates][]", nil, class: "px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
-          <button type="button" onclick="addHeldOnDateField()" class="bg-blue-600 text-white px-3 py-2 rounded hover:bg-blue-700 text-sm">Add Date</button>
+          <button type="button" onclick="addHeldOnDateField()" class="bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700 text-sm">Add Date</button>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-1">Add all dates when program events will occur (e.g., March 21, 22, 23)</p>
@@ -70,8 +74,8 @@
     </div>
 
     <div class="flex justify-end space-x-4">
-      <%= form.submit "Create Program", class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
-      <%= link_to "Cancel", department_programs_path(@department), class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+      <%= form.submit "Create Program", class: "bg-green-600 text-white btn-responsive rounded hover:bg-green-700" %>
+      <%= link_to "Cancel", department_programs_path(@department), class: "bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700" %>
     </div>
   <% end %>
 </div>
@@ -100,7 +104,7 @@
       newField.className = 'flex gap-2 items-center';
       newField.innerHTML = `
         <input type="date" name="program[held_on_dates][]" value="${escapeHtml(dateValue)}" class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" />
-        <button type="button" onclick="this.parentElement.remove()" class="bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 text-sm">Remove</button>
+        <button type="button" onclick="this.parentElement.remove()" class="bg-red-600 text-white btn-responsive rounded hover:bg-red-700 text-sm">Remove</button>
       `;
 
       // Insert before the add-date-row

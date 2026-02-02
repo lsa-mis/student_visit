@@ -8,9 +8,9 @@
     </div>
     <div class="flex gap-2">
       <%= link_to "By Faculty CSV", appointments_admin_department_program_reports_path(@department, @program, view: "faculty", format: :csv),
-          class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
+          class: "btn-responsive bg-green-600 text-white rounded hover:bg-green-700" %>
       <%= link_to "By Student CSV", appointments_admin_department_program_reports_path(@department, @program, view: "student", format: :csv),
-          class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+          class: "btn-responsive bg-blue-600 text-white rounded hover:bg-blue-700" %>
     </div>
   </div>
 

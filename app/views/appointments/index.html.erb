@@ -8,9 +8,9 @@
     </div>
     <div class="flex space-x-2">
       <% if policy(Appointment.new(program: @program)).create? %>
-        <%= link_to "Bulk Upload", bulk_upload_department_program_appointments_path(@department, @program), class: "bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700" %>
-        <%= link_to "Schedule Builder", schedule_builder_department_program_appointments_path(@department, @program), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
-        <%= link_to "New Appointment", new_department_program_appointment_path(@department, @program), class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
+        <%= link_to "Bulk Upload", bulk_upload_department_program_appointments_path(@department, @program), class: "bg-purple-600 text-white btn-responsive rounded hover:bg-purple-700" %>
+        <%= link_to "Schedule Builder", schedule_builder_department_program_appointments_path(@department, @program), class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700" %>
+        <%= link_to "New Appointment", new_department_program_appointment_path(@department, @program), class: "bg-green-600 text-white btn-responsive rounded hover:bg-green-700" %>
       <% end %>
     </div>
   </div>

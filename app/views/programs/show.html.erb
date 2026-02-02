@@ -13,15 +13,19 @@
       <% if policy([:student, :dashboard]).preview? %>
         <%= link_to "View as Student",
                     preview_student_dashboard_path(department_id: @department.id, program_id: @program.id),
-                    class: "bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700" %>
+                    class: "btn-responsive bg-indigo-600 text-white rounded hover:bg-indigo-700" %>
       <% end %>
       <% if policy(@program).update? %>
-        <%= link_to "Edit", edit_department_program_path(@department, @program), class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
-        <%= link_to "Edit Content", edit_content_department_program_path(@department, @program), class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
+        <%= link_to "Edit", edit_department_program_path(@department, @program), class: "btn-responsive bg-blue-600 text-white rounded hover:bg-blue-700" %>
+        <%= link_to "Edit Content", edit_content_department_program_path(@department, @program), class: "btn-responsive bg-green-600 text-white rounded hover:bg-green-700" %>
       <% end %>
-      <%= link_to "Back to Programs", department_programs_path(@department), class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+      <%= link_to "Back to Programs", department_programs_path(@department), class: "btn-responsive bg-gray-600 text-white rounded hover:bg-gray-700" %>
     </div>
   </div>
+
+  <%= render "shared/page_instructions",
+      page_path: "programs/show",
+      default_text: "This is the program dashboard. Use the links below to manage students, questionnaires, calendar events, appointments, VIPs (faculty/staff), and important links. Use \"Edit Content\" to customize the program page students see." %>
 
   <div class="bg-white shadow rounded-lg p-6 mb-6">
     <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -83,60 +87,62 @@
   <% if policy(@program).show? %>
     <div class="bg-white shadow rounded-lg p-6 mb-6">
       <h2 class="text-xl font-semibold mb-4">Program Management</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <%= link_to department_program_students_path(@department, @program),
-            class: "bg-blue-100 hover:bg-blue-200 p-6 rounded-lg text-center transition-colors" do %>
-          <div class="text-3xl mb-2">👥</div>
-          <div class="font-semibold">Students</div>
-          <div class="text-sm text-gray-600 mt-1">
-            <%= pluralize(@program.students.count, 'student') %>
-          </div>
-        <% end %>
+      <div class="mb-4">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+          <%= link_to department_program_students_path(@department, @program),
+              class: "bg-blue-100 hover:bg-blue-200 p-3 rounded-lg text-center transition-colors" do %>
+            <div class="text-xl mb-0.5">👥</div>
+            <div class="text-sm font-semibold">Students</div>
+            <div class="text-xs text-gray-600 mt-0.5">
+              <%= pluralize(@program.students.count, 'student') %>
+            </div>
+          <% end %>
 
-        <%= link_to department_program_questionnaires_path(@department, @program),
-            class: "bg-green-100 hover:bg-green-200 p-6 rounded-lg text-center transition-colors" do %>
-          <div class="text-3xl mb-2">📝</div>
-          <div class="font-semibold">Questionnaires</div>
-          <div class="text-sm text-gray-600 mt-1">
-            <%= pluralize(@program.questionnaires.count, 'questionnaire') %>
-          </div>
-        <% end %>
+          <%= link_to department_program_questionnaires_path(@department, @program),
+              class: "bg-green-100 hover:bg-green-200 p-3 rounded-lg text-center transition-colors" do %>
+            <div class="text-xl mb-0.5">📝</div>
+            <div class="text-sm font-semibold">Questionnaires</div>
+            <div class="text-xs text-gray-600 mt-0.5">
+              <%= pluralize(@program.questionnaires.count, 'questionnaire') %>
+            </div>
+          <% end %>
 
-        <%= link_to department_program_calendar_events_path(@department, @program),
-            class: "bg-purple-100 hover:bg-purple-200 p-6 rounded-lg text-center transition-colors" do %>
-          <div class="text-3xl mb-2">🗓️</div>
-          <div class="font-semibold">Calendar Events</div>
-          <div class="text-sm text-gray-600 mt-1">
-            <%= pluralize(@program.calendar_events.count, 'event') %>
-          </div>
-        <% end %>
+          <%= link_to department_program_calendar_events_path(@department, @program),
+              class: "bg-purple-100 hover:bg-purple-200 p-3 rounded-lg text-center transition-colors" do %>
+            <div class="text-xl mb-0.5">🗓️</div>
+            <div class="text-sm font-semibold">Calendar Events</div>
+            <div class="text-xs text-gray-600 mt-0.5">
+              <%= pluralize(@program.calendar_events.count, 'event') %>
+            </div>
+          <% end %>
 
-        <%= link_to department_program_appointments_path(@department, @program),
-            class: "bg-yellow-100 hover:bg-yellow-200 p-6 rounded-lg text-center transition-colors" do %>
-          <div class="text-3xl mb-2">📅</div>
-          <div class="font-semibold">Appointments</div>
-          <div class="text-sm text-gray-600 mt-1">
-            <%= pluralize(@program.appointments.count, 'appointment') %>
-          </div>
-        <% end %>
+          <%= link_to department_program_appointments_path(@department, @program),
+              class: "bg-yellow-100 hover:bg-yellow-200 p-3 rounded-lg text-center transition-colors" do %>
+            <div class="text-xl mb-0.5">📅</div>
+            <div class="text-sm font-semibold">Appointments</div>
+            <div class="text-xs text-gray-600 mt-0.5">
+              <%= pluralize(@program.appointments.count, 'appointment') %>
+            </div>
+          <% end %>
 
-        <%= link_to department_program_vips_path(@department, @program),
-            class: "bg-indigo-100 hover:bg-indigo-200 p-6 rounded-lg text-center transition-colors" do %>
-          <div class="text-3xl mb-2">👔</div>
-          <div class="font-semibold">VIPs (Faculty/Staff)</div>
-          <div class="text-sm text-gray-600 mt-1">
-            <%= pluralize(@program.vips.count, 'VIP') %>
-          </div>
-        <% end %>
+          <%= link_to department_program_vips_path(@department, @program),
+              class: "bg-indigo-100 hover:bg-indigo-200 p-3 rounded-lg text-center transition-colors" do %>
+            <div class="text-xl mb-0.5">👔</div>
+            <div class="text-sm font-semibold">VIPs (Faculty/Staff)</div>
+            <div class="text-xs text-gray-600 mt-0.5">
+              <%= pluralize(@program.vips.count, 'VIP') %>
+            </div>
+          <% end %>
 
-        <%= link_to department_program_important_links_path(@department, @program),
-            class: "bg-teal-100 hover:bg-teal-200 p-6 rounded-lg text-center transition-colors" do %>
-          <div class="text-3xl mb-2">🔗</div>
-          <div class="font-semibold">Important Links</div>
-          <div class="text-sm text-gray-600 mt-1">
-            <%= pluralize(@program.important_links.count, 'link') %>
-          </div>
-        <% end %>
+          <%= link_to department_program_important_links_path(@department, @program),
+              class: "bg-teal-100 hover:bg-teal-200 p-3 rounded-lg text-center transition-colors" do %>
+            <div class="text-xl mb-0.5">🔗</div>
+            <div class="text-sm font-semibold">Important Links</div>
+            <div class="text-xs text-gray-600 mt-0.5">
+              <%= pluralize(@program.important_links.count, 'link') %>
+            </div>
+          <% end %>
+        </div>
       </div>
     </div>
   <% end %>

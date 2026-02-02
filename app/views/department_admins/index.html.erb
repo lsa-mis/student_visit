@@ -4,7 +4,7 @@
       <h1 class="text-3xl font-bold">Department Admins</h1>
       <p class="text-gray-600 mt-1">Department: <%= link_to @department.name, department_path(@department), class: "text-blue-600 hover:text-blue-800" %></p>
     </div>
-    <%= link_to "Back to Department", department_path(@department), class: "bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700" %>
+    <%= link_to "Back to Department", department_path(@department), class: "bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700" %>
   </div>
 
   <div class="bg-white shadow rounded-lg p-6 mb-6">
@@ -38,7 +38,7 @@
       </div>
 
       <div>
-        <%= form.submit "Add Admin", class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+        <%= form.submit "Add Admin", class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700" %>
       </div>
     <% end %>
 
