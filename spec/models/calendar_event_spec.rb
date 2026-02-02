@@ -196,12 +196,12 @@ RSpec.describe CalendarEvent, type: :model do
 
     it 'returns current vip ids and accepts vip_ids= for mass assignment' do
       event.participating_faculty << vip1 << vip2
-      expect(event.vip_ids).to match_array([vip1.id, vip2.id])
+      expect(event.vip_ids).to match_array([ vip1.id, vip2.id ])
 
-      event.vip_ids = [vip1.id]
+      event.vip_ids = [ vip1.id ]
       event.save!
       event.reload
-      expect(event.vip_ids).to eq([vip1.id])
+      expect(event.vip_ids).to eq([ vip1.id ])
     end
   end
 

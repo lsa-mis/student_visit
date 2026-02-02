@@ -19,7 +19,7 @@ class PageContent < ApplicationRecord
     [ "Important links — index", "important_links/index" ]
   ].freeze
 
-  # Page-specific area options. [ "Label", "area_name" ]. Default for other pages: [ ["Instructions", "instructions"] ]
+  # Page-specific area options. [ "Label", "area_name" ]. Default for other pages: [ [ "Instructions", "instructions" ] ]
   KNOWN_PAGE_AREAS = {
     "home/index" => [
       [ "Hero title", "hero_title" ],
