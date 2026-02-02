@@ -176,10 +176,12 @@ class StudentsController < ApplicationController
 
   def sorted_students
     scope = @program.students
-    if @sort_column == "enrolled"
-      scope.reorder(Arel.sql("student_programs.created_at #{@sort_direction}"))
+    sort_direction = SORT_DIRECTIONS.include?(@sort_direction.to_s.downcase) ? @sort_direction.to_s.downcase : "asc"
+    sort_column = SORTABLE_COLUMNS.include?(@sort_column) ? @sort_column : "email_address"
+    if sort_column == "enrolled"
+      scope.reorder(Arel.sql("student_programs.created_at #{sort_direction}"))
     else
-      scope.reorder(@sort_column => @sort_direction)
+      scope.reorder(sort_column => sort_direction)
     end
   end
 
