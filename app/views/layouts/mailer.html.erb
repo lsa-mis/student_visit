@@ -145,8 +145,20 @@
       <div class="container">
         <div class="header">
           <div class="header-content">
-            <% if attachments['LSA_Logo.svg'] %>
-              <%= image_tag attachments['LSA_Logo.svg'].url, alt: "LSA Logo", class: "logo" %>
+            <% if attachments["LSA_Logo.png"] %>
+              <%= image_tag attachments["LSA_Logo.png"].url,
+                            alt: "LSA Logo",
+                            class: "logo",
+                            width: 150,
+                            height: 49,
+                            style: "display:block;max-width:150px;width:150px;height:auto;" %>
+            <% elsif attachments["LSA_Logo.svg"] %>
+              <%= image_tag attachments["LSA_Logo.svg"].url,
+                            alt: "LSA Logo",
+                            class: "logo",
+                            width: 150,
+                            height: 49,
+                            style: "display:block;max-width:150px;width:150px;height:auto;" %>
             <% else %>
               <span class="header-title">Student Visit</span>
             <% end %>
