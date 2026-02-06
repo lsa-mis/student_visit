@@ -205,8 +205,9 @@ RSpec.describe Program, type: :model do
     end
 
     it 'handles Time objects' do
-      program.update!(held_on_dates: [ Date.today.to_s ])
-      expect(program.held_on_date?(Time.current)).to be true
+      now = Time.current
+      program.update!(held_on_dates: [ now.to_date.to_s ])
+      expect(program.held_on_date?(now)).to be true
     end
   end
 
