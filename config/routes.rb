@@ -75,7 +75,7 @@ Rails.application.routes.draw do
           post :process_bulk_upload
         end
       end
-      resources :appointments, only: [ :index, :show, :new, :create, :destroy ] do
+      resources :appointments, only: [ :index, :show, :new, :create, :edit, :update, :destroy ] do
         collection do
           get :bulk_upload
           post :process_bulk_upload

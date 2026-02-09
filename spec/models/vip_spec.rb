@@ -19,16 +19,34 @@ RSpec.describe Vip, type: :model do
       expect(vip.errors[:name]).to be_present
     end
 
-    it 'is valid with name' do
+    it 'requires office_number' do
       vip = Vip.new(name: "Dr. Smith", program: program)
+      expect(vip).not_to be_valid
+      expect(vip.errors[:office_number]).to be_present
+    end
+
+    it 'is valid with name and office_number' do
+      vip = Vip.new(name: "Dr. Smith", office_number: "LSA 3202", program: program)
+      expect(vip).to be_valid
+    end
+
+    it 'is valid with name, office_number, and other fields' do
+      vip = Vip.new(
+        name: "Dr. Smith",
+        office_number: "ISR 4184B",
+        title: "Professor",
+        profile_url: "http://example.com",
+        ranking: 1,
+        program: program
+      )
       expect(vip).to be_valid
     end
   end
 
   describe 'scopes' do
-    let!(:vip1) { Vip.create!(name: "Dr. Smith", program: program, ranking: 2) }
-    let!(:vip2) { Vip.create!(name: "Dr. Jones", program: program, ranking: 1) }
-    let!(:vip3) { Vip.create!(name: "Dr. Brown", program: program, ranking: 1) }
+    let!(:vip1) { Vip.create!(name: "Dr. Smith", office_number: "LSA 3202", program: program, ranking: 2) }
+    let!(:vip2) { Vip.create!(name: "Dr. Jones", office_number: "ISR 4184B", program: program, ranking: 1) }
+    let!(:vip3) { Vip.create!(name: "Dr. Brown", office_number: "LSA 3203", program: program, ranking: 1) }
 
     describe '.ordered' do
       it 'orders by ranking then name' do
@@ -49,29 +67,29 @@ RSpec.describe Vip, type: :model do
 
   describe '#display_name' do
     it 'returns name when title is nil' do
-      vip = Vip.create!(name: "Dr. Smith", program: program)
+      vip = Vip.create!(name: "Dr. Smith", office_number: "LSA 3202", program: program)
       expect(vip.display_name).to eq("Dr. Smith")
     end
 
     it 'returns title and name when title is present' do
-      vip = Vip.create!(name: "Smith", title: "Dr.", program: program)
+      vip = Vip.create!(name: "Smith", title: "Dr.", office_number: "LSA 3202", program: program)
       expect(vip.display_name).to eq("Smith - Dr.")
     end
 
     it 'returns name when title is blank' do
-      vip = Vip.create!(name: "Smith", title: "", program: program)
+      vip = Vip.create!(name: "Smith", title: "", office_number: "LSA 3202", program: program)
       # compact removes nil and empty strings, so blank title should be removed
       expect(vip.display_name).to eq("Smith")
     end
 
     it 'handles nil title' do
-      vip = Vip.create!(name: "Smith", title: nil, program: program)
+      vip = Vip.create!(name: "Smith", title: nil, office_number: "LSA 3202", program: program)
       expect(vip.display_name).to eq("Smith")
     end
   end
 
   describe 'appointments association' do
-    let(:vip) { Vip.create!(name: "Dr. Smith", program: program) }
+    let(:vip) { Vip.create!(name: "Dr. Smith", office_number: "LSA 3202", program: program) }
     let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
     let!(:appointment) do
       Appointment.create!(
@@ -93,7 +111,7 @@ RSpec.describe Vip, type: :model do
   end
 
   describe 'calendar_events association' do
-    let(:vip) { Vip.create!(name: "Dr. Smith", program: program) }
+    let(:vip) { Vip.create!(name: "Dr. Smith", office_number: "LSA 3202", program: program) }
     let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
     let(:event) do
       CalendarEvent.create!(

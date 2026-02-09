@@ -24,6 +24,12 @@
           <dd class="mt-1 text-sm text-gray-900"><%= @vip.title %></dd>
         </div>
       <% end %>
+      <% if @vip.office_number.present? %>
+        <div>
+          <dt class="text-sm font-medium text-gray-500">Office Number</dt>
+          <dd class="mt-1 text-sm text-gray-900"><%= @vip.office_number %></dd>
+        </div>
+      <% end %>
       <div>
         <dt class="text-sm font-medium text-gray-500">Ranking</dt>
         <dd class="mt-1 text-sm text-gray-900"><%= @vip.ranking %></dd>

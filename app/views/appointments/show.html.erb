@@ -7,6 +7,9 @@
       </p>
     </div>
     <div class="flex items-center space-x-2">
+      <% if policy(@appointment).update? %>
+        <%= link_to "Edit", edit_department_program_appointment_path(@department, @program, @appointment), class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700" %>
+      <% end %>
       <% if policy(@appointment).destroy? %>
         <%= button_to "Delete Appointment",
                       department_program_appointment_path(@department, @program, @appointment),
@@ -68,6 +71,15 @@
             (<%= ((@appointment.end_time - @appointment.start_time) / 60).to_i %> minutes)
           </dd>
         </div>
+
+        <% if @appointment.office_number.present? %>
+          <div>
+            <dt class="text-sm font-medium text-gray-500">Office Number</dt>
+            <dd class="mt-1 text-sm text-gray-900">
+              <%= @appointment.office_number %>
+            </dd>
+          </div>
+        <% end %>
 
         <div>
           <dt class="text-sm font-medium text-gray-500">Created</dt>

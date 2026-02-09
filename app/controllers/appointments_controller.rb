@@ -1,6 +1,6 @@
 class AppointmentsController < ApplicationController
   before_action :set_program
-  before_action :set_appointment, only: [ :show, :destroy, :release ]
+  before_action :set_appointment, only: [ :show, :edit, :update, :destroy, :release ]
 
   def index
     @appointments = @program.appointments.includes(:vip, :student).order(:start_time)
@@ -49,6 +49,23 @@ class AppointmentsController < ApplicationController
       redirect_to department_program_appointments_path(@program.department, @program), notice: "Appointment was successfully created."
     else
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def edit
+    authorize @appointment, :update?
+    @vips = @program.vips.ordered
+  end
+
+  def update
+    authorize @appointment, :update?
+    @vips = @program.vips.ordered
+
+    if @appointment.update(appointment_params)
+      track_business_event("appointment.updated", program_id: @program.id.to_s, vip_id: @appointment.vip_id.to_s)
+      redirect_to department_program_appointment_path(@program.department, @program, @appointment), notice: "Appointment was successfully updated."
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -136,7 +153,7 @@ class AppointmentsController < ApplicationController
   end
 
   def appointment_params
-    params.require(:appointment).permit(:vip_id, :start_time, :end_time)
+    params.require(:appointment).permit(:vip_id, :start_time, :end_time, :office_number)
   end
 
   def normalize_schedule_params(schedule_params)

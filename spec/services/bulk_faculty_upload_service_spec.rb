@@ -38,9 +38,9 @@ RSpec.describe BulkFacultyUploadService, type: :service do
 
     context 'with valid CSV file' do
       let(:csv_content) do
-        "Name,Profile URL,Title,Ranking\n" \
-        "Dr. Smith,http://example.com/smith,Professor,1\n" \
-        "Dr. Jones,http://example.com/jones,Associate Professor,2\n"
+        "Name,Profile URL,Title,Ranking,Office Number\n" \
+        "Dr. Smith,http://example.com/smith,Professor,1,LSA 3202\n" \
+        "Dr. Jones,http://example.com/jones,Associate Professor,2,ISR 4184B\n"
       end
       let(:csv_file) { Tempfile.new([ 'faculty', '.csv' ]) }
 
@@ -71,6 +71,36 @@ RSpec.describe BulkFacultyUploadService, type: :service do
         expect(vip.profile_url).to eq("http://example.com/smith")
         expect(vip.title).to eq("Professor")
         expect(vip.ranking).to eq(1)
+        expect(vip.office_number).to eq("LSA 3202")
+      end
+
+      it 'sets office_number for all VIPs' do
+        service = BulkFacultyUploadService.new(program, file)
+        service.call
+        smith = Vip.find_by(name: "Dr. Smith")
+        jones = Vip.find_by(name: "Dr. Jones")
+        expect(smith.office_number).to eq("LSA 3202")
+        expect(jones.office_number).to eq("ISR 4184B")
+      end
+
+      it 'handles missing office_number gracefully' do
+        csv_content_missing_office = "Name,Profile URL,Title,Ranking,Office Number\n" \
+          "Dr. Test,http://example.com,Professor,1,\n"
+        csv_file_missing = Tempfile.new([ 'faculty', '.csv' ])
+        csv_file_missing.write(csv_content_missing_office)
+        csv_file_missing.rewind
+        allow(file).to receive(:path).and_return(csv_file_missing.path)
+
+        service = BulkFacultyUploadService.new(program, file)
+        expect {
+          service.call
+        }.not_to change { Vip.count }
+        # Should fail validation because office_number is required
+        test_vip = Vip.find_by(name: "Dr. Test")
+        expect(test_vip).to be_nil
+        expect(service.failure_count).to eq(1)
+        csv_file_missing.close
+        csv_file_missing.unlink
       end
 
       it 'returns true when at least one VIP is created' do
@@ -80,11 +110,11 @@ RSpec.describe BulkFacultyUploadService, type: :service do
     end
 
     context 'with existing VIPs' do
-      let!(:existing_vip) { Vip.create!(name: "Dr. Smith", program: program) }
+      let!(:existing_vip) { Vip.create!(name: "Dr. Smith", office_number: "LSA 3202", program: program) }
       let(:csv_content) do
-        "Name,Profile URL,Title,Ranking\n" \
-        "Dr. Smith,http://example.com/smith,Updated Title,5\n" \
-        "Dr. New,http://example.com/new,Professor,1\n"
+        "Name,Profile URL,Title,Ranking,Office Number\n" \
+        "Dr. Smith,http://example.com/smith,Updated Title,5,ISR 4184B\n" \
+        "Dr. New,http://example.com/new,Professor,1,LSA 3202\n"
       end
       let(:csv_file) { Tempfile.new([ 'faculty', '.csv' ]) }
 
@@ -105,6 +135,7 @@ RSpec.describe BulkFacultyUploadService, type: :service do
         service.call
         expect(existing_vip.reload.title).to eq("Updated Title")
         expect(existing_vip.ranking).to eq(5)
+        expect(existing_vip.office_number).to eq("ISR 4184B")
       end
 
       it 'creates new VIPs' do
@@ -117,8 +148,8 @@ RSpec.describe BulkFacultyUploadService, type: :service do
 
     context 'with invalid rows' do
       let(:csv_content) do
-        "Name,Profile URL,Title,Ranking\n" \
-        ",http://example.com/smith,Professor,1\n"
+        "Name,Profile URL,Title,Ranking,Office Number\n" \
+        ",http://example.com/smith,Professor,1,LSA 3202\n"
       end
       let(:csv_file) { Tempfile.new([ 'faculty', '.csv' ]) }
 
@@ -143,9 +174,9 @@ RSpec.describe BulkFacultyUploadService, type: :service do
 
     context 'with ranking values' do
       let(:csv_content) do
-        "Name,Profile URL,Title,Ranking\n" \
-        "Dr. Smith,http://example.com/smith,Professor,\n" \
-        "Dr. Jones,http://example.com/jones,Professor,abc\n"
+        "Name,Profile URL,Title,Ranking,Office Number\n" \
+        "Dr. Smith,http://example.com/smith,Professor,,LSA 3202\n" \
+        "Dr. Jones,http://example.com/jones,Professor,abc,ISR 4184B\n"
       end
       let(:csv_file) { Tempfile.new([ 'faculty', '.csv' ]) }
 
