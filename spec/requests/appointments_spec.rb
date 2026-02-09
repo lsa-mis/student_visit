@@ -411,16 +411,14 @@ RSpec.describe "Appointments", type: :request do
 
       it "allows clearing office_number" do
         appointment.update!(office_number: "LSA 3202")
-        # Note: The callback will try to set it from VIP if blank, so we need to ensure
-        # the update actually clears it. Since office_number is optional for appointments,
-        # clearing it should work, but the callback might reset it. Let's test the actual behavior.
         patch department_program_appointment_path(department, program, appointment), params: {
           appointment: {
             office_number: ""
           }
         }
-        # The callback will set it back from VIP if blank, so let's verify it's set to VIP's office
-        expect(appointment.reload.office_number).to eq(vip.office_number)
+        expect(response).to redirect_to(department_program_appointment_path(department, program, appointment))
+        # set_office_number_from_vip runs only on create, so update preserves the cleared value
+        expect(appointment.reload.office_number).to be_blank
       end
     end
 

@@ -39,9 +39,8 @@
   <% end %>
 
 <%= render "shared/page_instructions",
-      page_path: "appointments/bulk_upload",
-      default_text: "Click 'View' on any appointment to see more details. Click the 'Edit' button on the appointment details page (blue button at the top) to
-      modify the 'Office Number' field if the meeting is in a different location. Click 'Update Appointment' to save" %>
+      page_path: "appointments/index",
+      default_text: "Click 'View' on any appointment to see more details. Click the 'Edit' button on the appointment details page (blue button at the top) to modify the 'Office Number' field if the meeting is in a different location. Click 'Update Appointment' to save." %>
 
   <div class="bg-white shadow rounded-lg p-6">
     <% if @appointments.any? %>
@@ -73,7 +72,7 @@
                   <%= appointment.end_time.strftime("%B %d, %Y at %I:%M %p") %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <%= appointment.office_number.present? ? appointment.office_number : "<span class=\"text-gray-400\">—</span>".html_safe %>
+                  <%= appointment.office_number.presence || content_tag(:span, "—", class: "text-gray-400") %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <% if appointment.student %>

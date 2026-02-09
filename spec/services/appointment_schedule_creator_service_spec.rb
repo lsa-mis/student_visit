@@ -112,8 +112,8 @@ RSpec.describe AppointmentScheduleCreatorService, type: :service do
         expect(appointment.vip).to eq(vip)
         expect(appointment.start_time.to_date).to eq(date)
         expect(appointment.end_time - appointment.start_time).to eq(30.minutes)
-        # Office number should default from VIP
-        expect(appointment.office_number).to eq(vip.office_number) if vip.office_number.present?
+        # Office number should default from VIP (VIP validates office_number presence)
+        expect(appointment.office_number).to eq(vip.office_number)
       end
 
       it 'creates multiple single appointments' do

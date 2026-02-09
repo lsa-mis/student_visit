@@ -9,7 +9,7 @@ class Appointment < ApplicationRecord
   validate :end_time_after_start_time
 
   before_validation :set_end_time_from_default_length, if: -> { end_time.blank? && start_time.present? && program.present? }
-  before_validation :set_office_number_from_vip, if: -> { office_number.blank? && vip.present? }
+  before_validation :set_office_number_from_vip, on: :create, if: -> { office_number.blank? && vip.present? }
 
   scope :available, -> { where(student_id: nil) }
   scope :booked, -> { where.not(student_id: nil) }
