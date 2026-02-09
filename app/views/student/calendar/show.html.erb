@@ -15,6 +15,10 @@
     </div>
   <% end %>
 
+  <%= render "shared/page_instructions",
+      page_path: "student/calendar/show",
+      default_text: "View program dates, calendar events, and your scheduled appointments. Use the filters to switch between date view and all events." %>
+
   <% if @program.held_on_dates.present? && @program.held_on_dates.is_a?(Array) && @program.held_on_dates.any? %>
     <div class="bg-white shadow rounded-lg p-6 mb-6">
       <h2 class="text-xl font-semibold mb-2">Program Dates</h2>

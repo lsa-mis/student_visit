@@ -15,6 +15,10 @@
     </div>
   <% end %>
 
+  <%= render "shared/page_instructions",
+      page_path: "student/appointments/available",
+      default_text: "Browse available appointment times by faculty. Use the filter to narrow by faculty, then click Select to book an appointment." %>
+
   <div class="bg-white shadow rounded-lg p-6 mb-6">
     <h2 class="text-xl font-semibold mb-4">Filter by Faculty</h2>
     <%= form_with url: available_student_department_program_appointments_path(@department, @program),

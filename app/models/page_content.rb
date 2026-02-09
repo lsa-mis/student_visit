@@ -11,12 +11,17 @@ class PageContent < ApplicationRecord
     [ "Students — bulk upload", "students/bulk_upload" ],
     [ "Questionnaires — show", "questionnaires/show" ],
     [ "Calendar events — bulk upload", "calendar_events/bulk_upload" ],
+    [ "Appointments — index", "appointments/index" ],
     [ "Appointments — schedule builder", "appointments/schedule_builder" ],
     [ "Appointments — new", "appointments/new" ],
     [ "Appointments — bulk upload", "appointments/bulk_upload" ],
     [ "VIPs — index", "vips/index" ],
     [ "VIPs — bulk upload", "vips/bulk_upload" ],
-    [ "Important links — index", "important_links/index" ]
+    [ "Important links — index", "important_links/index" ],
+    [ "Student — Questionnaires — index", "student/questionnaires/index" ],
+    [ "Student — Appointments — index", "student/appointments/index" ],
+    [ "Student — Appointments — available", "student/appointments/available" ],
+    [ "Student — Calendar — show", "student/calendar/show" ]
   ].freeze
 
   # Page-specific area options. [ "Label", "area_name" ]. Default for other pages: [ [ "Instructions", "instructions" ] ]
