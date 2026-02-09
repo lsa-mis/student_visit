@@ -38,6 +38,11 @@
     </div>
   <% end %>
 
+<%= render "shared/page_instructions",
+      page_path: "appointments/bulk_upload",
+      default_text: "Click 'View' on any appointment to see more details. Click the 'Edit' button on the appointment details page (blue button at the top) to
+      modify the 'Office Number' field if the meeting is in a different location. Click 'Update Appointment' to save" %>
+
   <div class="bg-white shadow rounded-lg p-6">
     <% if @appointments.any? %>
       <div class="overflow-x-auto">
@@ -47,6 +52,7 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Faculty</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Time</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Time</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Office Number</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               <% if policy(Appointment.new(program: @program)).show? %>
@@ -65,6 +71,9 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <%= appointment.end_time.strftime("%B %d, %Y at %I:%M %p") %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <%= appointment.office_number.present? ? appointment.office_number : "<span class=\"text-gray-400\">—</span>".html_safe %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <% if appointment.student %>

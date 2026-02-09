@@ -5,5 +5,6 @@ FactoryBot.define do
     title { "Professor" }
     ranking { 0 }
     profile_url { nil }
+    office_number { "LSA 3202" }
   end
 end

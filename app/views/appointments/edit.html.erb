@@ -1,14 +1,14 @@
 <div class="container mx-auto px-4 py-8">
   <div class="mb-6">
-    <h1 class="text-3xl font-bold">New Appointment</h1>
+    <h1 class="text-3xl font-bold">Edit Appointment</h1>
     <p class="text-gray-600 mt-1">
       Program: <%= link_to @program.name, department_program_path(@program.department, @program), class: "text-blue-600 hover:text-blue-800" %>
     </p>
   </div>
 
   <%= render "shared/page_instructions",
-      page_path: "appointments/new",
-      default_text: "Create a single appointment for a faculty member. Select the faculty member and start time. End time is optional; if omitted, the program's default appointment length is used." %>
+      page_path: "appointments/edit",
+      default_text: "Edit appointment details. You can change the office location if the meeting is in a different space than the faculty member's office." %>
 
   <%= form_with model: [@program.department, @program, @appointment], class: "bg-white shadow rounded-lg p-6" do |form| %>
     <% if @appointment.errors.any? %>
@@ -36,30 +36,31 @@
       <%= form.label :office_number, "Office Number", class: "block text-sm font-medium text-gray-700 mb-2" %>
       <%= form.text_field :office_number, 
           placeholder: "e.g., LSA 3202 or ISR 4184B", 
-          value: @appointment.vip&.office_number,
+          value: @appointment.office_number,
           class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
       <p class="text-xs text-gray-500 mt-1">
-        Defaults to the faculty member's office number, but can be edited if meeting in a different location.
+        Defaults to the faculty member's office number (<%= @appointment.vip&.office_number || "N/A" %>), but can be edited if meeting in a different location.
       </p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
       <div>
         <%= form.label :start_time, "Start Time", class: "block text-sm font-medium text-gray-700 mb-2" %>
-        <%= form.datetime_local_field :start_time, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500", required: true %>
+        <%= form.datetime_local_field :start_time, 
+            value: @appointment.start_time&.strftime("%Y-%m-%dT%H:%M"),
+            class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500", required: true %>
       </div>
       <div>
-        <%= form.label :end_time, "End Time (optional)", class: "block text-sm font-medium text-gray-700 mb-2" %>
-        <%= form.datetime_local_field :end_time, class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
-        <p class="text-xs text-gray-500 mt-1">
-          If not specified, end time will be automatically calculated based on the program's default appointment length (<%= @program.default_appointment_length %> minutes)
-        </p>
+        <%= form.label :end_time, "End Time", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= form.datetime_local_field :end_time, 
+            value: @appointment.end_time&.strftime("%Y-%m-%dT%H:%M"),
+            class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500", required: true %>
       </div>
     </div>
 
     <div class="flex justify-end space-x-4">
-      <%= form.submit "Create Appointment", class: "bg-green-600 text-white btn-responsive rounded hover:bg-green-700" %>
-      <%= link_to "Cancel", department_program_appointments_path(@program.department, @program), class: "bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700" %>
+      <%= form.submit "Update Appointment", class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700" %>
+      <%= link_to "Cancel", department_program_appointment_path(@program.department, @program, @appointment), class: "bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700" %>
     </div>
   <% end %>
 
@@ -74,9 +75,11 @@
         vipSelect.addEventListener('change', function() {
           const selectedVipId = this.value;
           if (selectedVipId && officeNumberMap[selectedVipId]) {
-            officeNumberField.value = officeNumberMap[selectedVipId];
-          } else {
-            officeNumberField.value = '';
+            // Only update if the field is currently empty or matches the current VIP's office number
+            const currentVipId = '<%= @appointment.vip_id %>';
+            if (!officeNumberField.value || officeNumberField.value === officeNumberMap[currentVipId]) {
+              officeNumberField.value = officeNumberMap[selectedVipId];
+            }
           }
         });
       }

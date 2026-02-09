@@ -2,7 +2,7 @@ class VipsController < ApplicationController
   before_action :set_program
   before_action :set_vip, only: [ :show, :edit, :update, :destroy ]
 
-  SORTABLE_COLUMNS = %w[ranking name title profile_url display_on_student_dashboard].freeze
+  SORTABLE_COLUMNS = %w[ranking name title office_number profile_url display_on_student_dashboard].freeze
 
   def index
     base = policy_scope(Vip).where(program: @program)
@@ -88,7 +88,7 @@ class VipsController < ApplicationController
   end
 
   def vip_params
-    params.require(:vip).permit(:name, :profile_url, :title, :ranking, :display_on_student_dashboard)
+    params.require(:vip).permit(:name, :profile_url, :title, :ranking, :display_on_student_dashboard, :office_number)
   end
 
   def sort_column

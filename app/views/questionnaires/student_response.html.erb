@@ -111,10 +111,10 @@
                   <strong>Duration:</strong>
                   <%= distance_of_time_in_words(appointment.start_time, appointment.end_time) %>
                 </p>
-                <% if appointment.vip&.location.present? %>
+                <% if appointment.office_number.present? %>
                   <p>
-                    <strong>Location:</strong>
-                    <%= appointment.vip.location %>
+                    <strong>Office Number:</strong>
+                    <%= appointment.office_number %>
                   </p>
                 <% end %>
               </div>

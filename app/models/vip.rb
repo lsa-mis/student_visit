@@ -5,6 +5,7 @@ class Vip < ApplicationRecord
   has_many :appointments, dependent: :destroy
 
   validates :name, presence: true
+  validates :office_number, presence: true
 
   scope :ordered, -> {
     # Order by last name (last word in the name field)

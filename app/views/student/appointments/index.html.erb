@@ -44,6 +44,9 @@
                   <%= appointment.start_time.strftime("%B %d, %Y at %I:%M %p") %> -
                   <%= appointment.end_time.strftime("%I:%M %p") %>
                 </p>
+                <% if appointment.office_number.present? %>
+                  <p class="text-sm text-gray-500">Office: <%= appointment.office_number %></p>
+                <% end %>
               </div>
             </div>
           </li>

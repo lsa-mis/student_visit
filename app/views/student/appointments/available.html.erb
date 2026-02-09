@@ -40,6 +40,9 @@
                     <p class="text-sm">
                       <%= appointment.start_time.strftime("%B %d, %Y") %><br>
                       <%= appointment.start_time.strftime("%I:%M %p") %> - <%= appointment.end_time.strftime("%I:%M %p") %>
+                      <% if appointment.office_number.present? %><br>
+                      <span class="text-xs text-gray-500">Office: <%= appointment.office_number %></span>
+                      <% end %>
                     </p>
                   </div>
                   <% if current_user&.student? %>

@@ -3,5 +3,8 @@
   <% @appointments.each do |appointment| %>
     <p><%= @student.email_address %></p>
     <p><%= appointment.vip.display_name %></p>
+    <% if appointment.office_number.present? %>
+      <p>Office: <%= appointment.office_number %></p>
+    <% end %>
   <% end %>
 </div>

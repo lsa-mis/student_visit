@@ -8,7 +8,7 @@
 
   <%= render "shared/page_instructions",
       page_path: "vips/bulk_upload",
-      default_text: "Upload a CSV or Excel file with columns: Name (required), Profile URL, Title, Ranking. The first row (headers) is skipped." %>
+      default_text: "Upload a CSV or Excel file with columns: Name (required), Profile URL, Title, Ranking, Office Number (required). The first row (headers) is skipped." %>
 
   <div class="bg-white shadow rounded-lg p-6 mb-6">
     <h2 class="text-xl font-semibold mb-4">File Format</h2>
@@ -19,6 +19,7 @@
       <li>Column 2: Profile URL (optional)</li>
       <li>Column 3: Title (optional)</li>
       <li>Column 4: Ranking (optional, defaults to 0)</li>
+      <li>Column 5: Office Number (required, e.g., LSA 3202 or ISR 4184B)</li>
     </ul>
   </div>
 
