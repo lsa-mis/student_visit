@@ -44,7 +44,7 @@
                   <%= vip.title %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <%= vip.office_number.present? ? vip.office_number : "<span class=\"text-gray-400\">—</span>".html_safe %>
+                  <%= vip.office_number.present? ? vip.office_number : tag.span("—", class: "text-gray-400") %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   <% if vip.profile_url.present? %>
