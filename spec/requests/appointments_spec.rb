@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "Appointments", type: :request do
   let(:department) { Department.create!(name: "Test Department") }
   let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
-  let(:vip) { Vip.create!(name: "Dr. Smith", program: program) }
+  let(:vip) { Vip.create!(name: "Dr. Smith", office_number: "LSA 3202", program: program) }
   let(:student) { User.create!(email_address: 'student@example.com', password: 'password123') }
   let(:appointment) do
     Appointment.create!(
@@ -268,6 +268,165 @@ RSpec.describe "Appointments", type: :request do
     context "when unauthenticated" do
       it "redirects to login" do
         delete department_program_appointment_path(department, program, appointment)
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
+  describe "GET /departments/:department_id/programs/:program_id/appointments/new" do
+    context "when authenticated as super admin" do
+      before { sign_in_as_super_admin }
+
+      it "returns http success" do
+        get new_department_program_appointment_path(department, program)
+        expect(response).to have_http_status(:success)
+      end
+
+      it "displays office_number field" do
+        get new_department_program_appointment_path(department, program)
+        expect(response.body).to include("Office Number")
+      end
+    end
+
+    context "when unauthenticated" do
+      it "redirects to login" do
+        get new_department_program_appointment_path(department, program)
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
+  describe "POST /departments/:department_id/programs/:program_id/appointments" do
+    context "when authenticated as super admin" do
+      before { sign_in_as_super_admin }
+
+      it "creates an appointment with office_number from VIP" do
+        expect {
+          post department_program_appointments_path(department, program), params: {
+            appointment: {
+              vip_id: vip.id,
+              start_time: 1.hour.from_now.strftime("%Y-%m-%dT%H:%M"),
+              end_time: 2.hours.from_now.strftime("%Y-%m-%dT%H:%M")
+            }
+          }
+        }.to change { Appointment.count }.by(1)
+        created_appointment = Appointment.last
+        expect(created_appointment.office_number).to eq("LSA 3202")
+        expect(response).to redirect_to(department_program_appointments_path(department, program))
+      end
+
+      it "creates an appointment with custom office_number" do
+        expect {
+          post department_program_appointments_path(department, program), params: {
+            appointment: {
+              vip_id: vip.id,
+              start_time: 1.hour.from_now.strftime("%Y-%m-%dT%H:%M"),
+              end_time: 2.hours.from_now.strftime("%Y-%m-%dT%H:%M"),
+              office_number: "ISR 4184B"
+            }
+          }
+        }.to change { Appointment.count }.by(1)
+        created_appointment = Appointment.last
+        expect(created_appointment.office_number).to eq("ISR 4184B")
+      end
+
+      it "allows appointment to have different office_number than VIP" do
+        post department_program_appointments_path(department, program), params: {
+          appointment: {
+            vip_id: vip.id,
+            start_time: 1.hour.from_now.strftime("%Y-%m-%dT%H:%M"),
+            end_time: 2.hours.from_now.strftime("%Y-%m-%dT%H:%M"),
+            office_number: "Different Location"
+          }
+        }
+        created_appointment = Appointment.last
+        expect(created_appointment.office_number).to eq("Different Location")
+        expect(created_appointment.vip.office_number).to eq("LSA 3202")
+      end
+    end
+
+    context "when unauthenticated" do
+      it "redirects to login" do
+        post department_program_appointments_path(department, program), params: {
+          appointment: {
+            vip_id: vip.id,
+            start_time: 1.hour.from_now.strftime("%Y-%m-%dT%H:%M"),
+            end_time: 2.hours.from_now.strftime("%Y-%m-%dT%H:%M")
+          }
+        }
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
+  describe "GET /departments/:department_id/programs/:program_id/appointments/:id/edit" do
+    context "when authenticated as super admin" do
+      before { sign_in_as_super_admin }
+
+      it "returns http success" do
+        get edit_department_program_appointment_path(department, program, appointment)
+        expect(response).to have_http_status(:success)
+      end
+
+      it "displays office_number field with current value" do
+        appointment.update!(office_number: "ISR 4184B")
+        get edit_department_program_appointment_path(department, program, appointment)
+        expect(response.body).to include("Office Number")
+        expect(response.body).to include("ISR 4184B")
+      end
+    end
+
+    context "when unauthenticated" do
+      it "redirects to login" do
+        get edit_department_program_appointment_path(department, program, appointment)
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
+  describe "PATCH /departments/:department_id/programs/:program_id/appointments/:id" do
+    context "when authenticated as super admin" do
+      before { sign_in_as_super_admin }
+
+      it "updates the appointment office_number" do
+        patch department_program_appointment_path(department, program, appointment), params: {
+          appointment: {
+            office_number: "ISR 4184B"
+          }
+        }
+        expect(response).to redirect_to(department_program_appointment_path(department, program, appointment))
+        expect(appointment.reload.office_number).to eq("ISR 4184B")
+      end
+
+      it "updates office_number independently of VIP" do
+        appointment.update!(office_number: "LSA 3202")
+        patch department_program_appointment_path(department, program, appointment), params: {
+          appointment: {
+            office_number: "Custom Meeting Room"
+          }
+        }
+        expect(appointment.reload.office_number).to eq("Custom Meeting Room")
+        expect(appointment.vip.office_number).to eq("LSA 3202")
+      end
+
+      it "allows clearing office_number" do
+        appointment.update!(office_number: "LSA 3202")
+        patch department_program_appointment_path(department, program, appointment), params: {
+          appointment: {
+            office_number: ""
+          }
+        }
+        expect(response).to redirect_to(department_program_appointment_path(department, program, appointment))
+        # set_office_number_from_vip runs only on create, so update preserves the cleared value
+        expect(appointment.reload.office_number).to be_blank
+      end
+    end
+
+    context "when unauthenticated" do
+      it "redirects to login" do
+        patch department_program_appointment_path(department, program, appointment), params: {
+          appointment: { office_number: "ISR 4184B" }
+        }
         expect(response).to redirect_to(new_session_path)
       end
     end

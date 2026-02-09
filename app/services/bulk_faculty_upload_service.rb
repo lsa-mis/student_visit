@@ -67,18 +67,20 @@ class BulkFacultyUploadService
   end
 
   def process_row(row_data)
-    # Expected format: name, profile_url, title, ranking
+    # Expected format: name, profile_url, title, ranking, office_number
     name = row_data[0]&.to_s&.strip
     return if name.blank?
 
     profile_url = row_data[1]&.to_s&.strip
     title = row_data[2]&.to_s&.strip
     ranking = row_data[3]&.to_i || 0
+    office_number = row_data[4]&.to_s&.strip
 
     vip = Vip.find_or_initialize_by(program: program, name: name)
     vip.profile_url = profile_url if profile_url.present?
     vip.title = title if title.present?
     vip.ranking = ranking
+    vip.office_number = office_number if office_number.present?
 
     if vip.save
       @success_count += 1

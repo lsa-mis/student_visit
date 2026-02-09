@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Appointment, type: :model do
   let(:department) { Department.create!(name: "Test Department") }
   let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
-  let(:vip) { Vip.create!(name: "Dr. Smith", program: program) }
+  let(:vip) { Vip.create!(name: "Dr. Smith", office_number: "LSA 3202", program: program) }
   let(:student) { User.create!(email_address: 'student@example.com', password: 'password123') }
 
   describe 'associations' do
@@ -63,6 +63,73 @@ RSpec.describe Appointment, type: :model do
     end
   end
 
+  describe 'office_number' do
+    let(:vip_with_office) { Vip.create!(name: "Dr. Jones", office_number: "ISR 4184B", program: program) }
+    let(:vip_without_office) { Vip.create!(name: "Dr. Brown", office_number: "LSA 3202", program: program) }
+
+    describe 'defaulting from VIP' do
+      it 'sets office_number from VIP when creating appointment without office_number' do
+        appointment = Appointment.new(
+          start_time: Time.current,
+          end_time: 1.hour.from_now,
+          program: program,
+          vip: vip_with_office
+        )
+        appointment.valid? # Trigger validations and callbacks
+        expect(appointment.office_number).to eq("ISR 4184B")
+      end
+
+      it 'does not override office_number if already set' do
+        appointment = Appointment.new(
+          start_time: Time.current,
+          end_time: 1.hour.from_now,
+          program: program,
+          vip: vip_with_office,
+          office_number: "Custom Location"
+        )
+        appointment.valid? # Trigger validations and callbacks
+        expect(appointment.office_number).to eq("Custom Location")
+      end
+
+      it 'does not set office_number if VIP has no office_number' do
+        # Since office_number is required, we'll test with a VIP that has nil office_number
+        # by bypassing validation temporarily
+        vip_no_office = Vip.new(name: "Dr. No Office", office_number: nil, program: program)
+        vip_no_office.save(validate: false)
+        appointment = Appointment.new(
+          start_time: Time.current,
+          end_time: 1.hour.from_now,
+          program: program,
+          vip: vip_no_office
+        )
+        appointment.valid? # Trigger validations and callbacks
+        expect(appointment.office_number).to be_blank
+      end
+
+      it 'sets office_number when saving appointment' do
+        appointment = Appointment.create!(
+          start_time: 1.hour.from_now,
+          end_time: 2.hours.from_now,
+          program: program,
+          vip: vip_with_office
+        )
+        expect(appointment.office_number).to eq("ISR 4184B")
+      end
+
+      it 'allows appointment to have different office_number than VIP' do
+        appointment = Appointment.create!(
+          start_time: 1.hour.from_now,
+          end_time: 2.hours.from_now,
+          program: program,
+          vip: vip_with_office,
+          office_number: "Different Location"
+        )
+        expect(appointment.office_number).to eq("Different Location")
+        expect(appointment.vip.office_number).to eq("ISR 4184B")
+      end
+    end
+  end
+
   describe 'scopes' do
     let!(:available_appointment) do
       Appointment.create!(
@@ -97,7 +164,7 @@ RSpec.describe Appointment, type: :model do
     end
 
     describe '.for_vip' do
-      let(:other_vip) { Vip.create!(name: "Dr. Jones", program: program) }
+      let(:other_vip) { Vip.create!(name: "Dr. Jones", office_number: "ISR 4184B", program: program) }
       let!(:other_appointment) do
         Appointment.create!(
           start_time: 5.hours.from_now,

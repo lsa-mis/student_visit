@@ -178,8 +178,8 @@ RSpec.describe CalendarEvent, type: :model do
   end
 
   describe 'vip_ids (for form collection_check_boxes)' do
-    let(:vip1) { Vip.create!(name: "Dr. Smith", program: program) }
-    let(:vip2) { Vip.create!(name: "Dr. Jones", program: program) }
+    let(:vip1) { Vip.create!(name: "Dr. Smith", office_number: "LSA 3202", program: program) }
+    let(:vip2) { Vip.create!(name: "Dr. Jones", office_number: "ISR 4184B", program: program) }
     let(:event) do
       CalendarEvent.create!(
         title: "Test Event",
@@ -206,8 +206,8 @@ RSpec.describe CalendarEvent, type: :model do
   end
 
   describe 'participating_faculty association' do
-    let(:vip1) { Vip.create!(name: "Dr. Smith", program: program) }
-    let(:vip2) { Vip.create!(name: "Dr. Jones", program: program) }
+    let(:vip1) { Vip.create!(name: "Dr. Smith", office_number: "LSA 3202", program: program) }
+    let(:vip2) { Vip.create!(name: "Dr. Jones", office_number: "ISR 4184B", program: program) }
     let(:event) do
       CalendarEvent.create!(
         title: "Test Event",

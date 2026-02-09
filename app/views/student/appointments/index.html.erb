@@ -15,6 +15,10 @@
     </div>
   <% end %>
 
+  <%= render "shared/page_instructions",
+      page_path: "student/appointments/index",
+      default_text: "View available appointment slots or manage your scheduled appointments using the options below." %>
+
   <div class="mt-6 mb-4">
     <div class="grid grid-cols-2 md:grid-cols-2 gap-2">
       <%= link_to available_student_department_program_appointments_path(@department, @program),
@@ -44,6 +48,9 @@
                   <%= appointment.start_time.strftime("%B %d, %Y at %I:%M %p") %> -
                   <%= appointment.end_time.strftime("%I:%M %p") %>
                 </p>
+                <% if appointment.office_number.present? %>
+                  <p class="text-sm text-gray-500">Office: <%= appointment.office_number %></p>
+                <% end %>
               </div>
             </div>
           </li>

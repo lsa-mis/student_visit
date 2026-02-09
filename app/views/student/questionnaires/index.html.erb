@@ -15,6 +15,10 @@
     </div>
   <% end %>
 
+  <%= render "shared/page_instructions",
+      page_path: "student/questionnaires/index",
+      default_text: "Complete the questionnaires listed below for this program. Click View/Edit to open and submit each questionnaire." %>
+
   <div class="bg-white shadow rounded-lg p-6">
     <% if @questionnaires.any? %>
       <ul class="divide-y divide-gray-200">
