@@ -29,6 +29,20 @@ RSpec.describe "Student::Calendar", type: :request do
           expect(response.body).to include(event2.title)
         end
 
+        it "groups calendar events by date with date headings" do
+          date1 = 3.days.from_now.to_date
+          date2 = 5.days.from_now.to_date
+          event_on_date1 = create(:calendar_event, program: program, start_time: date1.to_time + 10.hours, title: "Morning Session")
+          event_on_date2 = create(:calendar_event, program: program, start_time: date2.to_time + 14.hours, title: "Afternoon Session")
+
+          get student_department_program_calendar_path(department, program), params: { filter: "all" }
+
+          expect(response.body).to include(event_on_date1.title)
+          expect(response.body).to include(event_on_date2.title)
+          expect(response.body).to include(date1.strftime("%A, %B %d, %Y"))
+          expect(response.body).to include(date2.strftime("%A, %B %d, %Y"))
+        end
+
         it "displays all appointments" do
           appointment1 = create(:appointment, :booked, :past, program: program, student: student_user, vip: vip)
           appointment2 = create(:appointment, :booked, :upcoming, program: program, student: student_user, vip: vip)
