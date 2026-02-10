@@ -7,7 +7,7 @@ gem "image_processing", "~> 1.2"
 gem "importmap-rails"
 gem "jbuilder"
 gem "kamal", require: false
-gem 'lsa_tdx_feedback', '~> 1.0', '>= 1.0.3'
+gem 'lsa_tdx_feedback', '~> 1.0'
 gem "propshaft"
 gem "puma", ">= 5.0"
 gem "pundit"
