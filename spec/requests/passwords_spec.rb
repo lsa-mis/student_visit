@@ -167,7 +167,23 @@ RSpec.describe 'Passwords', type: :request do
         expect(user.password_digest).not_to eq(old_digest)
       end
 
-      it 'destroys all existing sessions' do
+      it 'destroys all existing sessions when unauthenticated (manual password reset)' do
+        session1 = user.sessions.create!(user_agent: 'Agent1', ip_address: '127.0.0.1')
+        session2 = user.sessions.create!(user_agent: 'Agent2', ip_address: '127.0.0.2')
+
+        patch password_path(token), params: {
+          password: 'newpassword123',
+          password_confirmation: 'newpassword123'
+        }
+
+        expect(Session.find_by(id: session1.id)).to be_nil
+        expect(Session.find_by(id: session2.id)).to be_nil
+      end
+
+      it 'destroys all existing sessions when a different user is signed in (is_first_login false)' do
+        other_user = User.create!(email_address: 'other@example.com', password: 'otherpass123')
+        sign_in_as(other_user)
+
         session1 = user.sessions.create!(user_agent: 'Agent1', ip_address: '127.0.0.1')
         session2 = user.sessions.create!(user_agent: 'Agent2', ip_address: '127.0.0.2')
 
@@ -200,6 +216,68 @@ RSpec.describe 'Passwords', type: :request do
           password: 'newpassword123'
         }
         expect(response).to redirect_to(root_path)
+      end
+    end
+
+    context 'first-login flow (Current.user matches user changing password)' do
+      before do
+        sign_in_as(user)
+        if User.respond_to?(:find_by_password_reset_token!)
+          allow(User).to receive(:find_by_password_reset_token!).with(token).and_return(user)
+        end
+      end
+
+      it 'preserves the existing session (does not destroy sessions)' do
+        expect(user.sessions.count).to eq(1) # from sign_in_as
+
+        patch password_path(token), params: {
+          password: 'newpassword123',
+          password_confirmation: 'newpassword123'
+        }
+
+        expect(user.sessions.reload.count).to eq(1)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:notice]).to eq('Password has been changed. Welcome!')
+      end
+
+      it 'redirects student to student_dashboard_path when no return_to_after_password_change' do
+        user.add_role('student')
+
+        patch password_path(token), params: {
+          password: 'newpassword123',
+          password_confirmation: 'newpassword123'
+        }
+
+        expect(response).to redirect_to(student_dashboard_path)
+        expect(flash[:notice]).to eq('Password has been changed. Welcome!')
+      end
+
+      it 'redirects to return_to_after_password_change when set (full first-login flow)' do
+        user.update!(must_change_password: true)
+        user.add_role('student')
+
+        # Simulate SessionsController first-login: login sets session[:return_to_after_password_change]
+        post session_path, params: {
+          email_address: user.email_address,
+          password: 'oldpassword123'
+        }
+        expect(response).to have_http_status(:redirect)
+        expect(response.location).to match(%r{/passwords/[^/]+/edit})
+
+        # Extract token from redirect location (e.g. /passwords/TOKEN/edit)
+        token_from_redirect = response.location.split('/').slice(-2)
+
+        # Token is time-based; stub so any token for this user resolves (no mock from parent context)
+        allow(User).to receive(:find_by_password_reset_token!).and_return(user)
+
+        patch password_path(token_from_redirect), params: {
+          password: 'newpassword123',
+          password_confirmation: 'newpassword123'
+        }
+
+        # SessionsController set return_to_after_password_change to student_dashboard_path
+        expect(response).to redirect_to(student_dashboard_path)
+        expect(flash[:notice]).to eq('Password has been changed. Welcome!')
       end
     end
 
