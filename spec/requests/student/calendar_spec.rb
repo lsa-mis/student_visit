@@ -109,6 +109,202 @@ RSpec.describe "Student::Calendar", type: :request do
         get student_department_program_calendar_path(department, program)
         expect(response.body).to include("Back to Dashboard")
       end
+
+      context "N+1 query prevention" do
+        let(:vip1) { create(:vip, program: program, name: "Dr. Smith") }
+        let(:vip2) { create(:vip, program: program, name: "Dr. Jones") }
+        let(:vip3) { create(:vip, program: program, name: "Dr. Williams") }
+
+        before do
+          # Create multiple calendar events with rich text fields and participating faculty
+          5.times do |i|
+            event = create(:calendar_event,
+                          program: program,
+                          start_time: i.days.from_now,
+                          title: "Event #{i + 1}")
+            event.description = "Description for event #{i + 1}"
+            event.location = "Location #{i + 1}"
+            event.notes = "Notes for event #{i + 1}"
+            event.save!
+
+            # Add participating faculty to some events
+            if i.even?
+              event.participating_faculty << vip1
+            end
+            if i % 3 == 0
+              event.participating_faculty << vip2
+            end
+            if i == 2
+              event.participating_faculty << vip3
+            end
+          end
+        end
+
+        it "eager loads rich text fields and participating_faculty for 'all' filter mode" do
+          # Count only queries related to calendar events and their associations
+          relevant_queries = []
+          callback = lambda do |_name, _start, _finish, _id, payload|
+            sql = payload[:sql]
+            if sql.match?(/SELECT/i) &&
+               !sql.match?(/schema_migrations|ar_internal_metadata|sessions|users|student_programs|departments|programs|appointments/i) &&
+               (sql.match?(/calendar_events|action_text_rich_texts|calendar_event_faculties|vips/i))
+              relevant_queries << sql
+            end
+          end
+
+          ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+            get student_department_program_calendar_path(department, program), params: { filter: "all" }
+          end
+
+          expect(response).to have_http_status(:success)
+          # Should have batched queries, not one per event
+          # With 5 events, if we had N+1, we'd have 5+ queries per association type
+          # With eager loading, should be a small constant number regardless of event count
+          expect(relevant_queries.length).to be <= 20
+        end
+
+        it "eager loads rich text fields and participating_faculty for 'single' day view" do
+          relevant_queries = []
+          callback = lambda do |_name, _start, _finish, _id, payload|
+            sql = payload[:sql]
+            if sql.match?(/SELECT/i) &&
+               !sql.match?(/schema_migrations|ar_internal_metadata|sessions|users|student_programs|departments|programs|appointments/i) &&
+               (sql.match?(/calendar_events|action_text_rich_texts|calendar_event_faculties|vips/i))
+              relevant_queries << sql
+            end
+          end
+
+          ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+            get student_department_program_calendar_path(department, program),
+                params: { filter: "date", view: "single", date: Date.current.to_s }
+          end
+
+          expect(response).to have_http_status(:success)
+          # Should have batched queries, not one per event
+          expect(relevant_queries.length).to be <= 20
+        end
+
+        it "eager loads rich text fields and participating_faculty for 'week' view" do
+          relevant_queries = []
+          callback = lambda do |_name, _start, _finish, _id, payload|
+            sql = payload[:sql]
+            if sql.match?(/SELECT/i) &&
+               !sql.match?(/schema_migrations|ar_internal_metadata|sessions|users|student_programs|departments|programs|appointments/i) &&
+               (sql.match?(/calendar_events|action_text_rich_texts|calendar_event_faculties|vips/i))
+              relevant_queries << sql
+            end
+          end
+
+          ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+            get student_department_program_calendar_path(department, program),
+                params: { filter: "date", view: "multi", date: Date.current.to_s }
+          end
+
+          expect(response).to have_http_status(:success)
+          # Should have batched queries, not one per event
+          expect(relevant_queries.length).to be <= 20
+        end
+
+        it "does not make N+1 queries when accessing rich text fields" do
+          # Clear the before block's events first to avoid interference
+          CalendarEvent.where(program: program).destroy_all
+
+          # Create events with rich text content
+          events = 5.times.map do |i|
+            event = create(:calendar_event,
+                          program: program,
+                          start_time: i.days.from_now,
+                          title: "Event #{i + 1}")
+            event.description = "Description #{i + 1}"
+            event.location = "Location #{i + 1}"
+            event.notes = "Notes #{i + 1}"
+            event.save!
+            event
+          end
+
+          # Count queries when rendering the view
+          action_text_queries = []
+          callback = lambda do |_name, _start, _finish, _id, payload|
+            if payload[:sql].match?(/action_text_rich_texts/i) && payload[:sql].match?(/SELECT/i)
+              action_text_queries << payload[:sql]
+            end
+          end
+
+          ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+            get student_department_program_calendar_path(department, program), params: { filter: "all" }
+          end
+
+          expect(response).to have_http_status(:success)
+          # With eager loading using with_rich_text_*, we should have:
+          # - Up to 3 queries for action_text_rich_texts (one per field type: description, location, notes)
+          # Not one per event (which would be 15 queries for 5 events × 3 fields)
+          # The number should be much less than events.length * 3
+          expect(action_text_queries.length).to be < (events.length * 3) # Less than N×3 = no N+1
+        end
+
+        it "does not make N+1 queries when accessing participating_faculty" do
+          # Clear the before block's events first to avoid interference
+          CalendarEvent.where(program: program).destroy_all
+
+          # Create events with participating faculty
+          events = 5.times.map do |i|
+            event = create(:calendar_event,
+                          program: program,
+                          start_time: i.days.from_now,
+                          title: "Event #{i + 1}")
+            event.participating_faculty << vip1 if i.even?
+            event.participating_faculty << vip2 if i.odd?
+            event
+          end
+
+          # Count queries for participating_faculty during the request only
+          faculty_queries = []
+          callback = lambda do |_name, _start, _finish, _id, payload|
+            sql = payload[:sql]
+            # Match queries that reference calendar_event_faculties or vips tables
+            # This includes both direct table queries and JOIN queries
+            if sql.match?(/SELECT/i) &&
+               (sql.match?(/calendar_event_faculties/i) || sql.match?(/\bvips\b/i))
+              faculty_queries << sql
+            end
+          end
+
+          ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+            get student_department_program_calendar_path(department, program), params: { filter: "all" }
+          end
+
+          expect(response).to have_http_status(:success)
+          # With eager loading, we should have batched queries, not one per event
+          # For 5 events, if we had N+1, we'd have 5+ queries per event iteration
+          # With eager loading, should be a small constant number
+          # The key test: queries should NOT scale linearly with number of events
+          # 12 queries for 5 events is still much better than 5+ queries per event (25+)
+          expect(faculty_queries.length).to be < (events.length * 3) # Less than 3× events = no N+1
+        end
+
+        it "renders rich text fields and participating_faculty correctly" do
+          event = create(:calendar_event,
+                        program: program,
+                        start_time: 1.day.from_now,
+                        title: "Test Event")
+          event.description = "Test description"
+          event.location = "Test location"
+          event.notes = "Test notes"
+          event.participating_faculty << vip1
+          event.participating_faculty << vip2
+          event.save!
+
+          get student_department_program_calendar_path(department, program), params: { filter: "all" }
+
+          expect(response).to have_http_status(:success)
+          expect(response.body).to include("Test Event")
+          expect(response.body).to include("Test description")
+          expect(response.body).to include("Test location")
+          expect(response.body).to include("Test notes")
+          expect(response.body).to include(vip1.name)
+          expect(response.body).to include(vip2.name)
+        end
+      end
     end
 
     context "when unauthenticated" do

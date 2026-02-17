@@ -19,7 +19,12 @@ class Student::CalendarController < ApplicationController
 
     if @filter_mode == "all"
       # Show all events for the program
-      @calendar_events = @program.calendar_events.order(:start_time)
+      @calendar_events = @program.calendar_events
+                                  .with_rich_text_description
+                                  .with_rich_text_location
+                                  .with_rich_text_notes
+                                  .includes(calendar_event_faculties: :vip)
+                                  .order(:start_time)
       @my_appointments = @program.appointments
                                  .for_student(current_user)
                                  .includes(:vip)
@@ -28,6 +33,10 @@ class Student::CalendarController < ApplicationController
       # Single day view
       @calendar_events = @program.calendar_events
                                   .where(start_time: @date.beginning_of_day..@date.end_of_day)
+                                  .with_rich_text_description
+                                  .with_rich_text_location
+                                  .with_rich_text_notes
+                                  .includes(calendar_event_faculties: :vip)
                                   .order(:start_time)
       @my_appointments = @program.appointments
                                  .for_student(current_user)
@@ -40,6 +49,10 @@ class Student::CalendarController < ApplicationController
       end_date = @date.end_of_week
       @calendar_events = @program.calendar_events
                                   .where(start_time: start_date..end_date)
+                                  .with_rich_text_description
+                                  .with_rich_text_location
+                                  .with_rich_text_notes
+                                  .includes(calendar_event_faculties: :vip)
                                   .order(:start_time)
       @my_appointments = @program.appointments
                                  .for_student(current_user)
