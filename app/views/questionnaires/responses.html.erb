@@ -133,12 +133,29 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  window.questionnaireCharts = window.questionnaireCharts || [];
+
+  function initQuestionnaireCharts() {
+    if (typeof Chart === 'undefined') return;
+
+    // Destroy any existing questionnaire charts (e.g. from previous init or Turbo revisit)
+    if (window.questionnaireCharts && window.questionnaireCharts.length) {
+      window.questionnaireCharts.forEach(function (c) {
+        try { if (c && typeof c.destroy === 'function') c.destroy(); } catch (e) {}
+      });
+      window.questionnaireCharts = [];
+    }
+
     <% @questions.each do |question| %>
       <% chart_data = @chart_data[question.id] %>
       <% if chart_data && ["radio", "checkbox"].include?(question.question_type) && chart_data[:labels].present? && chart_data[:labels].any? %>
         const ctx<%= question.id %> = document.getElementById('chart-<%= question.id %>');
         if (ctx<%= question.id %>) {
+          var existingChart<%= question.id %> = Chart.getChart(ctx<%= question.id %>);
+          if (existingChart<%= question.id %>) {
+            existingChart<%= question.id %>.destroy();
+          }
+
           const labels<%= question.id %> = <%= raw chart_data[:labels].to_json %>;
           const data<%= question.id %> = <%= chart_data[:data].to_json %>;
 
@@ -167,7 +184,7 @@
             });
 
             try {
-              new Chart(ctx<%= question.id %>, {
+              var chart<%= question.id %> = new Chart(ctx<%= question.id %>, {
                 type: 'bar',
                 data: {
                   labels: labels<%= question.id %>,
@@ -198,6 +215,7 @@
                   }
                 }
               });
+              window.questionnaireCharts.push(chart<%= question.id %>);
             } catch (error) {
               console.error('Error creating chart for question <%= question.id %>:', error);
             }
@@ -205,5 +223,6 @@
         }
       <% end %>
     <% end %>
-  });
+  }
+  window.initQuestionnaireCharts = initQuestionnaireCharts;
 </script>
