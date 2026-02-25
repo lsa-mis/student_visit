@@ -17,17 +17,23 @@ document.addEventListener("turbo:before-render", function () {
     });
     window.questionnaireCharts = [];
   }
+  delete window.initQuestionnaireCharts;
 });
 
 // Initialize questionnaire charts on pages that define initQuestionnaireCharts
-document.addEventListener("DOMContentLoaded", function () {
+function runInitQuestionnaireCharts() {
   if (typeof window.initQuestionnaireCharts === "function") {
     window.initQuestionnaireCharts();
   }
-});
+}
 
-document.addEventListener("turbo:load", function () {
-  if (typeof window.initQuestionnaireCharts === "function") {
-    window.initQuestionnaireCharts();
-  }
-});
+// DOMContentLoaded: for initial load/hard refresh when module runs in time
+document.addEventListener("DOMContentLoaded", runInitQuestionnaireCharts);
+
+// If the module ran after DOMContentLoaded (e.g. late ES module load), run immediately
+if (document.readyState !== "loading") {
+  runInitQuestionnaireCharts();
+}
+
+// turbo:load: for Turbo visits and when Turbo handles initial load
+document.addEventListener("turbo:load", runInitQuestionnaireCharts);
