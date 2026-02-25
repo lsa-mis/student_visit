@@ -23,7 +23,7 @@ class Student::CalendarController < ApplicationController
                                   .with_rich_text_description
                                   .with_rich_text_location
                                   .with_rich_text_notes
-                                  .includes(calendar_event_faculties: :vip)
+                                  .includes(:participating_faculty, calendar_event_faculties: :vip)
                                   .order(:start_time)
       @my_appointments = @program.appointments
                                  .for_student(current_user)
@@ -36,7 +36,7 @@ class Student::CalendarController < ApplicationController
                                   .with_rich_text_description
                                   .with_rich_text_location
                                   .with_rich_text_notes
-                                  .includes(calendar_event_faculties: :vip)
+                                  .includes(:participating_faculty, calendar_event_faculties: :vip)
                                   .order(:start_time)
       @my_appointments = @program.appointments
                                  .for_student(current_user)
@@ -52,7 +52,7 @@ class Student::CalendarController < ApplicationController
                                   .with_rich_text_description
                                   .with_rich_text_location
                                   .with_rich_text_notes
-                                  .includes(calendar_event_faculties: :vip)
+                                  .includes(:participating_faculty, calendar_event_faculties: :vip)
                                   .order(:start_time)
       @my_appointments = @program.appointments
                                  .for_student(current_user)
