@@ -181,6 +181,78 @@ RSpec.describe "Appointments", type: :request do
     end
   end
 
+  describe "GET /departments/:department_id/programs/:program_id/appointments/export" do
+    context "when authenticated as super admin" do
+      before { sign_in_as_super_admin }
+
+      it "returns CSV attachment with all appointments" do
+        appointment
+        get export_department_program_appointments_path(department, program, scope: "all", format: :csv)
+        expect(response).to have_http_status(:success)
+        expect(response.media_type).to eq("text/csv")
+        expect(response.headers["Content-Disposition"]).to include("attachment")
+        expect(response.headers["Content-Disposition"]).to include("appointments")
+        expect(response.body).to include("Faculty")
+        expect(response.body).to include("Office Number")
+        expect(response.body).to include("Dr. Smith")
+      end
+
+      it "returns CSV with only scheduled appointments when scope is scheduled" do
+        available_apt = Appointment.create!(
+          start_time: 1.hour.from_now,
+          end_time: 2.hours.from_now,
+          program: program,
+          vip: vip
+        )
+        booked_apt = Appointment.create!(
+          start_time: 3.hours.from_now,
+          end_time: 4.hours.from_now,
+          program: program,
+          vip: vip,
+          student: student
+        )
+        get export_department_program_appointments_path(department, program, scope: "scheduled", format: :csv)
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include("Booked")
+        expect(response.body).to include("student@example.com")
+      end
+
+      it "returns CSV with headers when no appointments exist" do
+        get export_department_program_appointments_path(department, program, scope: "all", format: :csv)
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include("Faculty")
+        expect(response.body).to include("Date")
+      end
+    end
+
+    context "when authenticated as department admin" do
+      before { sign_in_as_department_admin(department) }
+
+      it "returns CSV attachment" do
+        get export_department_program_appointments_path(department, program, scope: "all", format: :csv)
+        expect(response).to have_http_status(:success)
+        expect(response.media_type).to eq("text/csv")
+      end
+    end
+
+    context "when unauthenticated" do
+      it "redirects to login" do
+        get export_department_program_appointments_path(department, program, scope: "all", format: :csv)
+        expect(response).to redirect_to(new_session_path)
+      end
+    end
+
+    context "when authenticated as student" do
+      before { sign_in_as_student }
+
+      it "redirects with authorization error" do
+        get export_department_program_appointments_path(department, program, scope: "all", format: :csv)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to include("not authorized")
+      end
+    end
+  end
+
   describe "GET /departments/:department_id/programs/:program_id/appointments/by_faculty" do
     context "when authenticated as super admin" do
       before { sign_in_as_super_admin }
