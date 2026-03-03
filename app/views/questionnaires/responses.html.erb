@@ -225,4 +225,21 @@
     <% end %>
   }
   window.initQuestionnaireCharts = initQuestionnaireCharts;
+
+  // Initialize immediately when this script runs. On Turbo navigation, turbo:load can fire
+  // before inline scripts execute, so we must init here to ensure charts display on first visit.
+  if (typeof Chart !== 'undefined') {
+    initQuestionnaireCharts();
+  } else {
+    // Fallback if Chart.js hasn't loaded yet (e.g. slow CDN)
+    (function waitForChart(attempts) {
+      if (typeof Chart !== 'undefined') {
+        initQuestionnaireCharts();
+      } else if (document.readyState !== 'complete') {
+        window.addEventListener('load', function() { waitForChart(attempts); }, { once: true });
+      } else if (attempts < 100) {
+        setTimeout(function() { waitForChart(attempts + 1); }, 50);
+      }
+    })(0);
+  }
 </script>
