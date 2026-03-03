@@ -83,6 +83,7 @@ Rails.application.routes.draw do
           get :by_student
           get :schedule_builder
           post :create_schedule
+          get :export, format: :csv
         end
         member do
           post :release

@@ -50,6 +50,112 @@ RSpec.describe CsvExportService, type: :service do
     end
   end
 
+  describe '.export_program_appointments' do
+    let!(:available_appointment) do
+      Appointment.create!(
+        start_time: 1.hour.from_now,
+        end_time: 2.hours.from_now,
+        program: program,
+        vip: vip,
+        office_number: "LSA 3202"
+      )
+    end
+    let!(:booked_appointment) do
+      Appointment.create!(
+        start_time: 3.hours.from_now,
+        end_time: 4.hours.from_now,
+        program: program,
+        vip: vip,
+        student: student,
+        office_number: "ISR 4184B"
+      )
+    end
+
+    it 'generates CSV with expected headers' do
+      csv = CsvExportService.export_program_appointments(program, scope: :all)
+      expect(csv).to be_a(String)
+      expect(csv).to include("Faculty")
+      expect(csv).to include("Date")
+      expect(csv).to include("Start Time")
+      expect(csv).to include("End Time")
+      expect(csv).to include("Office Number")
+      expect(csv).to include("Status")
+      expect(csv).to include("Student")
+    end
+
+    it 'includes all appointments when scope is :all' do
+      csv = CsvExportService.export_program_appointments(program, scope: :all)
+      expect(csv).to include("Dr. Smith")
+      expect(csv).to include("Available")
+      expect(csv).to include("Booked")
+      expect(csv).to include("student@example.com")
+      expect(csv).to include("LSA 3202")
+      expect(csv).to include("ISR 4184B")
+    end
+
+    it 'includes only booked appointments when scope is :scheduled' do
+      csv = CsvExportService.export_program_appointments(program, scope: :scheduled)
+      expect(csv).to include("Dr. Smith")
+      expect(csv).to include("Booked")
+      expect(csv).to include("student@example.com")
+      expect(csv).not_to include("Available")
+    end
+
+    it 'defaults to :all scope when not specified' do
+      csv = CsvExportService.export_program_appointments(program)
+      expect(csv).to include("Available")
+      expect(csv).to include("Booked")
+    end
+
+    it 'handles empty appointments' do
+      program_without_appointments = Program.create!(
+        name: "Empty Program",
+        department: department,
+        default_appointment_length: 30,
+        information_email_address: "empty@example.com"
+      )
+      csv = CsvExportService.export_program_appointments(program_without_appointments, scope: :all)
+      expect(csv).to include("Faculty")
+      expect(csv).to include("Date")
+      expect(csv.lines.count).to eq(1)
+    end
+
+    it 'sorts by VIP last name then by appointment date' do
+      vip_adams = Vip.create!(name: "Dr. Adams", office_number: "LSA 100", program: program)
+      vip_zeller = Vip.create!(name: "Dr. Zeller", office_number: "LSA 200", program: program)
+      Appointment.create!(start_time: 2.hours.from_now, end_time: 3.hours.from_now, program: program, vip: vip_zeller)
+      Appointment.create!(start_time: 5.hours.from_now, end_time: 6.hours.from_now, program: program, vip: vip_adams)
+      Appointment.create!(start_time: 1.hour.from_now, end_time: 2.hours.from_now, program: program, vip: vip_adams)
+      csv = CsvExportService.export_program_appointments(program, scope: :all)
+      lines = csv.lines
+      # Adams (A) before Smith (S) before Zeller (Z). Within each VIP: by start_time.
+      # Adams: 1hr, 5hr. Smith: 1hr, 3hr (from available_appointment, booked_appointment). Zeller: 2hr.
+      expect(lines[1]).to include("Dr. Adams")
+      expect(lines[2]).to include("Dr. Adams")
+      expect(lines[3]).to include("Dr. Smith")
+      expect(lines[4]).to include("Dr. Smith")
+      expect(lines[5]).to include("Dr. Zeller")
+    end
+
+    it 'handles empty scheduled appointments' do
+      program_without_booked = Program.create!(
+        name: "No Booked Program",
+        department: department,
+        default_appointment_length: 30,
+        information_email_address: "nobook@example.com"
+      )
+      Appointment.create!(
+        start_time: 1.hour.from_now,
+        end_time: 2.hours.from_now,
+        program: program_without_booked,
+        vip: Vip.create!(name: "Dr. Jones", office_number: "LSA 100", program: program_without_booked)
+      )
+      csv = CsvExportService.export_program_appointments(program_without_booked, scope: :scheduled)
+      expect(csv).to include("Faculty")
+      expect(csv.lines.count).to eq(1)
+    end
+  end
+
   describe '.export_appointments_by_faculty' do
     let!(:appointment1) do
       Appointment.create!(
