@@ -56,22 +56,24 @@ class CsvExportService
 
   # Export program appointments for the appointments index page.
   # scope: :all (default) or :scheduled (booked only)
+  # Sorted by VIP last name (alphabetical), then by appointment date
   def self.export_program_appointments(program, scope: :all)
-    appointments = program.appointments.includes(:vip, :student).order(:start_time)
-    appointments = appointments.booked if scope == :scheduled
-
     CSV.generate(headers: true) do |csv|
       csv << [ "Faculty", "Date", "Start Time", "End Time", "Office Number", "Status", "Student" ]
-      appointments.each do |appointment|
-        csv << [
-          appointment.vip.display_name,
-          appointment.start_time.strftime("%Y-%m-%d"),
-          appointment.start_time.strftime("%I:%M %p"),
-          appointment.end_time.strftime("%I:%M %p"),
-          appointment.office_number.presence || "",
-          appointment.available? ? "Available" : "Booked",
-          appointment.student&.email_address || ""
-        ]
+      program.vips.ordered.each do |vip|
+        appointments = program.appointments.for_vip(vip).includes(:student).order(:start_time)
+        appointments = appointments.booked if scope == :scheduled
+        appointments.each do |appointment|
+          csv << [
+            vip.display_name,
+            appointment.start_time.strftime("%Y-%m-%d"),
+            appointment.start_time.strftime("%I:%M %p"),
+            appointment.end_time.strftime("%I:%M %p"),
+            appointment.office_number.presence || "",
+            appointment.available? ? "Available" : "Booked",
+            appointment.student&.email_address || ""
+          ]
+        end
       end
     end
   end
