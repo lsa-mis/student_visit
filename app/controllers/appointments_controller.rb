@@ -109,6 +109,18 @@ class AppointmentsController < ApplicationController
     @appointments = @program.appointments.for_student(@student).includes(:vip).order(:start_time)
   end
 
+  def export
+    authorize Appointment.new(program: @program), :index?
+    scope = params[:scope] == "scheduled" ? :scheduled : :all
+    csv_data = CsvExportService.export_program_appointments(@program, scope: scope)
+    suffix = scope == :scheduled ? "scheduled" : "all"
+    filename = "appointments-#{@program.name.parameterize}-#{suffix}-#{Date.current}.csv"
+    send_data csv_data,
+              filename: filename,
+              type: "text/csv; charset=utf-8",
+              disposition: "attachment"
+  end
+
   def schedule_builder
     authorize Appointment.new(program: @program), :create?
     @vips = @program.vips.ordered

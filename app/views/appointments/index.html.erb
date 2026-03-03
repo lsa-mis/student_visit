@@ -6,11 +6,45 @@
         Program: <%= link_to @program.name, department_program_path(@department, @program), class: "text-blue-600 hover:text-blue-800" %>
       </p>
     </div>
-    <div class="flex space-x-2">
+    <div class="flex items-center gap-4">
+      <% if policy(Appointment.new(program: @program)).index? %>
+        <div class="relative" data-controller="dropdown">
+          <div class="inline-flex rounded-lg overflow-hidden shadow-sm border border-gray-300 bg-white">
+            <%= link_to export_department_program_appointments_path(@department, @program, scope: "scheduled", format: :csv),
+                        class: "inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 border-r border-gray-300" do %>
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Download CSV (Scheduled)
+            <% end %>
+            <button type="button"
+                    class="inline-flex items-center px-2 py-2.5 text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-300"
+                    data-action="click->dropdown#toggle"
+                    aria-label="Choose download scope">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+          <div class="hidden absolute right-0 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
+               data-dropdown-target="menu">
+            <%= link_to export_department_program_appointments_path(@department, @program, scope: "all", format: :csv),
+                        class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100" do %>
+              All appointments
+            <% end %>
+            <%= link_to export_department_program_appointments_path(@department, @program, scope: "scheduled", format: :csv),
+                        class: "block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100" do %>
+              Scheduled only
+            <% end %>
+          </div>
+        </div>
+      <% end %>
       <% if policy(Appointment.new(program: @program)).create? %>
-        <%= link_to "Bulk Upload", bulk_upload_department_program_appointments_path(@department, @program), class: "bg-purple-600 text-white btn-responsive rounded hover:bg-purple-700" %>
-        <%= link_to "Schedule Builder", schedule_builder_department_program_appointments_path(@department, @program), class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700" %>
-        <%= link_to "New Appointment", new_department_program_appointment_path(@department, @program), class: "bg-green-600 text-white btn-responsive rounded hover:bg-green-700" %>
+        <div class="flex space-x-2">
+          <%= link_to "Bulk Upload", bulk_upload_department_program_appointments_path(@department, @program), class: "bg-purple-600 text-white btn-responsive rounded hover:bg-purple-700" %>
+          <%= link_to "Schedule Builder", schedule_builder_department_program_appointments_path(@department, @program), class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700" %>
+          <%= link_to "New Appointment", new_department_program_appointment_path(@department, @program), class: "bg-green-600 text-white btn-responsive rounded hover:bg-green-700" %>
+        </div>
       <% end %>
     </div>
   </div>

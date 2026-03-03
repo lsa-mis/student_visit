@@ -54,6 +54,28 @@ class CsvExportService
     end
   end
 
+  # Export program appointments for the appointments index page.
+  # scope: :all (default) or :scheduled (booked only)
+  def self.export_program_appointments(program, scope: :all)
+    appointments = program.appointments.includes(:vip, :student).order(:start_time)
+    appointments = appointments.booked if scope == :scheduled
+
+    CSV.generate(headers: true) do |csv|
+      csv << [ "Faculty", "Date", "Start Time", "End Time", "Office Number", "Status", "Student" ]
+      appointments.each do |appointment|
+        csv << [
+          appointment.vip.display_name,
+          appointment.start_time.strftime("%Y-%m-%d"),
+          appointment.start_time.strftime("%I:%M %p"),
+          appointment.end_time.strftime("%I:%M %p"),
+          appointment.office_number.presence || "",
+          appointment.available? ? "Available" : "Booked",
+          appointment.student&.email_address || ""
+        ]
+      end
+    end
+  end
+
   def self.export_appointments_by_faculty(program)
     CSV.generate(headers: true) do |csv|
       csv << [ "Faculty", "Date", "Start Time", "End Time", "Status", "Student" ]
