@@ -1,9 +1,10 @@
 source "https://rubygems.org"
+ruby "4.0.1"
 
 gem "bcrypt", "~> 3.1"
 gem "bootsnap", require: false
 gem "google-cloud-storage"
-gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 1.14"
 gem "importmap-rails"
 gem "jbuilder"
 gem "kamal", require: false
