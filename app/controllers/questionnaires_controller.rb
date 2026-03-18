@@ -5,6 +5,8 @@ class QuestionnairesController < ApplicationController
   def index
     @questionnaires = @program.questionnaires.includes(:questions)
     authorize Questionnaire.new(program: @program)
+    @can_view_questionnaires = policy(Questionnaire.new(program: @program)).show?
+    @can_update_questionnaires = policy(Questionnaire.new(program: @program)).update?
   end
 
   def show

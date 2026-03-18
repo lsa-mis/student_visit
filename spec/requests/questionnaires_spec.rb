@@ -13,6 +13,13 @@ RSpec.describe "Questionnaires", type: :request do
         get department_program_questionnaires_path(department, program)
         expect(response).to have_http_status(:success)
       end
+
+      it "shows questionnaire actions" do
+        questionnaire
+        get department_program_questionnaires_path(department, program)
+        expect(response.body).to include("View Responses")
+        expect(response.body).to include("Edit")
+      end
     end
 
     context "when unauthenticated" do

@@ -61,7 +61,7 @@
                   <% end %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <% if policy(vip).update? %>
+                  <% if @can_update_vips %>
                     <%= link_to "Edit", edit_department_program_vip_path(@department, @program, vip), class: "text-indigo-600 hover:text-indigo-800" %>
                   <% end %>
                 </td>

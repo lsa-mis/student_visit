@@ -23,10 +23,11 @@ RSpec.describe "Appointments", type: :request do
         expect(response).to have_http_status(:success)
       end
 
-      it "displays appointments" do
+      it "displays appointments and actions" do
         appointment
         get department_program_appointments_path(department, program)
         expect(response.body).to include("Dr. Smith")
+        expect(response.body).to include("View")
       end
     end
 
@@ -36,6 +37,13 @@ RSpec.describe "Appointments", type: :request do
       it "returns http success" do
         get department_program_appointments_path(department, program)
         expect(response).to have_http_status(:success)
+      end
+
+      it "shows actions column" do
+        appointment
+        get department_program_appointments_path(department, program)
+        expect(response.body).to include("Actions")
+        expect(response.body).to include("View")
       end
     end
 

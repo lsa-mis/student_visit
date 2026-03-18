@@ -5,6 +5,8 @@ class AffiliatedResourcesController < ApplicationController
   def index
     @affiliated_resources = @department.affiliated_resources.ordered
     authorize AffiliatedResource.new(department: @department)
+    @can_update_affiliated_resources = policy(AffiliatedResource.new(department: @department)).update?
+    @can_destroy_affiliated_resources = policy(AffiliatedResource.new(department: @department)).destroy?
   end
 
   def new

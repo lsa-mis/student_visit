@@ -19,10 +19,10 @@
               <%= link_to resource.url, safe_url(resource.url), target: "_blank", class: "text-blue-600 hover:text-blue-800 text-sm" %>
             </div>
             <div>
-              <% if policy(resource).update? %>
+              <% if @can_update_affiliated_resources %>
                 <%= link_to "Edit", edit_department_affiliated_resource_path(@department, resource), class: "text-indigo-600 hover:text-indigo-800 mr-4" %>
               <% end %>
-              <% if policy(resource).destroy? %>
+              <% if @can_destroy_affiliated_resources %>
                 <%= link_to "Delete", department_affiliated_resource_path(@department, resource), method: :delete,
                     data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-800" %>
               <% end %>

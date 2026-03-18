@@ -12,6 +12,12 @@ RSpec.describe "Students", type: :request do
         get department_program_students_path(department, program)
         expect(response).to have_http_status(:success)
       end
+
+      it "shows bulk upload and actions" do
+        get department_program_students_path(department, program)
+        expect(response.body).to include("Bulk Upload")
+        expect(response.body).to include("Actions")
+      end
     end
 
     context "when authenticated as department admin" do
@@ -27,6 +33,22 @@ RSpec.describe "Students", type: :request do
       it "redirects to login" do
         get department_program_students_path(department, program)
         expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
+  describe "POST /departments/:department_id/programs/:program_id/students" do
+    context "when authenticated as super admin" do
+      before { sign_in_as_super_admin }
+
+      it "re-renders index with admin controls on validation error" do
+        post department_program_students_path(department, program), params: {
+          email_address: "" # missing email triggers validation branch
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.body).to include("Bulk Upload")
+        expect(response.body).to include("Add Student")
       end
     end
   end

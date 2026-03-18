@@ -10,6 +10,7 @@ class VipsController < ApplicationController
     @sort_column = sort_column
     @sort_direction = sort_direction
     authorize Vip.new(program: @program)
+    @can_update_vips = policy(Vip.new(program: @program)).update?
   end
 
   def show
