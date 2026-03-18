@@ -38,7 +38,8 @@ RSpec.describe "Appointments", type: :request do
         appointment
         get department_program_appointments_path(department, program)
         expect(response.body).to include("Dr. Smith")
-        expect(response.body).to include("View")
+        expect(response.body).to include("Actions")
+        expect(response.body).to include(department_program_appointment_path(department, program, appointment))
       end
     end
 
@@ -54,7 +55,7 @@ RSpec.describe "Appointments", type: :request do
         appointment
         get department_program_appointments_path(department, program)
         expect(response.body).to include("Actions")
-        expect(response.body).to include("View")
+        expect(response.body).to include(department_program_appointment_path(department, program, appointment))
       end
     end
 
