@@ -14,7 +14,7 @@ RSpec.describe CalendarEventPolicy, type: :policy do
       let(:user) { create(:user, :with_super_admin_role) }
 
       it 'allows access' do
-        expect(subject.new(user, CalendarEvent).index?).to be true
+        expect(subject.new(user, CalendarEvent.new(program: program)).index?).to be true
       end
     end
 
@@ -26,7 +26,19 @@ RSpec.describe CalendarEventPolicy, type: :policy do
       end
 
       it 'allows access' do
-        expect(subject.new(user, CalendarEvent).index?).to be true
+        expect(subject.new(user, CalendarEvent.new(program: program)).index?).to be true
+      end
+    end
+
+    context 'as department admin of other department' do
+      let(:user) do
+        user = create(:user, :with_department_admin_role)
+        DepartmentAdmin.create!(user: user, department: other_department)
+        user
+      end
+
+      it 'denies access' do
+        expect(subject.new(user, CalendarEvent.new(program: program)).index?).to be false
       end
     end
 
@@ -34,7 +46,7 @@ RSpec.describe CalendarEventPolicy, type: :policy do
       let(:user) { create(:user, :with_student_role) }
 
       it 'denies access' do
-        expect(subject.new(user, CalendarEvent).index?).to be false
+        expect(subject.new(user, CalendarEvent.new(program: program)).index?).to be false
       end
     end
   end

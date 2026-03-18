@@ -1,23 +1,57 @@
 class AppointmentPolicy < ApplicationPolicy
   def index?
     return false unless user
-    user.super_admin? || user.department_admin?
+    # Department admins can only access appointment indexes for programs in their own department.
+    return true if user.super_admin?
+
+    record_program = record.respond_to?(:program) ? record.program : nil
+    return false unless record_program
+
+    user.department_admin_for?(record_program.department)
   end
 
   def show?
-    user&.super_admin? || user&.department_admin_for?(record.program.department)
+    return false unless user
+
+    return true if user.super_admin?
+
+    record_program = record.respond_to?(:program) ? record.program : nil
+    return false unless record_program
+
+    user.department_admin_for?(record_program.department)
   end
 
   def create?
-    user&.super_admin? || user&.department_admin_for?(record.program.department)
+    return false unless user
+
+    return true if user.super_admin?
+
+    record_program = record.respond_to?(:program) ? record.program : nil
+    return false unless record_program
+
+    user.department_admin_for?(record_program.department)
   end
 
   def update?
-    user&.super_admin? || user&.department_admin_for?(record.program.department)
+    return false unless user
+
+    return true if user.super_admin?
+
+    record_program = record.respond_to?(:program) ? record.program : nil
+    return false unless record_program
+
+    user.department_admin_for?(record_program.department)
   end
 
   def destroy?
-    user&.super_admin? || user&.department_admin_for?(record.program.department)
+    return false unless user
+
+    return true if user.super_admin?
+
+    record_program = record.respond_to?(:program) ? record.program : nil
+    return false unless record_program
+
+    user.department_admin_for?(record_program.department)
   end
 
   class Scope < Scope

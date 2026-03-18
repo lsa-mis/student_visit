@@ -8,7 +8,7 @@
     </div>
     <div class="flex gap-2 items-center">
       <%= link_to "Download CSV", export_department_program_students_path(@department, @program, format: :csv, sort: @sort_column || "email_address", direction: @sort_direction || "asc"), class: "bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700" %>
-      <% if policy(@program).update? %>
+      <% if @can_update_program %>
         <%= link_to "Bulk Upload", bulk_upload_department_program_students_path(@department, @program), class: "bg-green-600 text-white btn-responsive rounded hover:bg-green-700" %>
       <% end %>
     </div>
@@ -18,7 +18,7 @@
       page_path: "students/index",
       default_text: "Add students to this program individually by email and UMID, or use Bulk Upload to add many at once. UMID is used as the initial password; students must change it on first login." %>
 
-  <% if policy(@program).update? %>
+  <% if @can_update_program %>
     <div class="bg-white shadow rounded-lg p-6 mb-6">
       <h2 class="text-xl font-semibold mb-4">Add Student</h2>
       <%= form_with url: department_program_students_path(@department, @program), method: :post, class: "space-y-4", data: { controller: "email-autocomplete", "email-autocomplete-search-url-value": search_department_program_students_path(@department, @program) } do |form| %>
@@ -80,7 +80,7 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= sort_link("first_name", "First Name", current_sort: @sort_column || "email_address", current_direction: @sort_direction || "asc") %></th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= sort_link("umid", "UMID", current_sort: @sort_column || "email_address", current_direction: @sort_direction || "asc") %></th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= sort_link("enrolled", "Enrolled", current_sort: @sort_column || "email_address", current_direction: @sort_direction || "asc") %></th>
-              <% if policy(@program).update? %>
+              <% if @can_update_program %>
                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               <% end %>
             </tr>
@@ -101,9 +101,9 @@
                   <%= student.umid || "-" %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <%= student.student_programs.find_by(program: @program).created_at.strftime("%B %d, %Y") %>
+                  <%= (@student_program_created_at_by_user_id || {})[student.id]&.strftime("%B %d, %Y") || "-" %>
                 </td>
-                <% if policy(@program).update? %>
+                <% if @can_update_program %>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <%= link_to "Edit", edit_department_program_student_path(@department, @program, student), class: "text-indigo-600 hover:text-indigo-800 mr-4" %>
                     <%= button_to "Remove", department_program_student_path(@department, @program, student),

@@ -22,6 +22,12 @@ RSpec.describe "Vips", type: :request do
         get department_program_vips_path(department, program)
         expect(response).to have_http_status(:success)
       end
+
+      it "shows edit actions" do
+        vip
+        get department_program_vips_path(department, program)
+        expect(response.body).to include("Edit")
+      end
     end
 
     context "when unauthenticated" do

@@ -1,6 +1,12 @@
 class CalendarEventPolicy < ApplicationPolicy
   def index?
-    user&.super_admin? || user&.department_admin?
+    return false unless user
+    return true if user.super_admin?
+
+    record_program = record.respond_to?(:program) ? record.program : nil
+    return false unless record_program
+
+    user.department_admin_for?(record_program.department)
   end
 
   def show?
