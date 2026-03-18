@@ -5,7 +5,7 @@
       <p class="text-gray-600 mt-1">Program: <%= link_to @program.name, department_program_path(@department, @program), class: "text-blue-600 hover:text-blue-800" %></p>
     </div>
     <div class="flex gap-2">
-      <% if policy(Vip.new(program: @program)).create? %>
+      <% if @can_create_vips %>
         <%= link_to "Bulk Upload", bulk_upload_department_program_vips_path(@department, @program), class: "bg-purple-600 text-white btn-responsive rounded hover:bg-purple-700" %>
         <%= link_to "New VIP", new_department_program_vip_path(@department, @program), class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700" %>
       <% end %>
@@ -61,7 +61,7 @@
                   <% end %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <% if policy(vip).update? %>
+                  <% if @can_update_vips %>
                     <%= link_to "Edit", edit_department_program_vip_path(@department, @program, vip), class: "text-indigo-600 hover:text-indigo-800" %>
                   <% end %>
                 </td>

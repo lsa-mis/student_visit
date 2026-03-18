@@ -12,6 +12,18 @@ RSpec.describe "Students", type: :request do
         get department_program_students_path(department, program)
         expect(response).to have_http_status(:success)
       end
+
+      it "shows bulk upload and actions" do
+        student_user = User.create!(email_address: "student@example.com", password: "password123")
+        student_user.add_role("student")
+        StudentProgram.create!(user: student_user, program: program)
+
+        get department_program_students_path(department, program)
+        bulk_upload_path = bulk_upload_department_program_students_path(department, program)
+        # Assert against the actual Bulk Upload anchor, not the page-instructions text.
+        expect(response.body).to match(/href=["']#{Regexp.escape(bulk_upload_path)}["'][^>]*>\s*Bulk Upload\s*</)
+        expect(response.body).to include("Actions")
+      end
     end
 
     context "when authenticated as department admin" do
@@ -27,6 +39,23 @@ RSpec.describe "Students", type: :request do
       it "redirects to login" do
         get department_program_students_path(department, program)
         expect(response).to redirect_to(new_session_path)
+      end
+    end
+  end
+
+  describe "POST /departments/:department_id/programs/:program_id/students" do
+    context "when authenticated as super admin" do
+      before { sign_in_as_super_admin }
+
+      it "re-renders index with admin controls on validation error" do
+        post department_program_students_path(department, program), params: {
+          email_address: "" # missing email triggers validation branch
+        }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        bulk_upload_path = bulk_upload_department_program_students_path(department, program)
+        expect(response).to show_action_element(/href=["']#{Regexp.escape(bulk_upload_path)}["']/)
+        expect(response).to show_action_element("Add Student")
       end
     end
   end

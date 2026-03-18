@@ -3,12 +3,22 @@ require 'rails_helper'
 RSpec.describe "CalendarEvents", type: :request do
   let(:department) { Department.create!(name: "Test Department") }
   let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
+  let(:other_department) { Department.create!(name: "Other Department") }
+  let(:other_program) { Program.create!(name: "Other Program", department: other_department, default_appointment_length: 30, information_email_address: "test@example.com") }
   let(:calendar_event) do
     CalendarEvent.create!(
       title: "Test Event",
       start_time: Time.current,
       end_time: 1.hour.from_now,
       program: program
+    )
+  end
+  let(:other_calendar_event) do
+    CalendarEvent.create!(
+      title: "Other Test Event",
+      start_time: Time.current,
+      end_time: 1.hour.from_now,
+      program: other_program
     )
   end
 
@@ -28,6 +38,17 @@ RSpec.describe "CalendarEvents", type: :request do
       it "returns http success" do
         get department_program_calendar_events_path(department, program)
         expect(response).to have_http_status(:success)
+      end
+    end
+
+    context "when authenticated as department admin of other department" do
+      before { sign_in_as_department_admin(department) }
+
+      it "denies access to other-department program calendar events" do
+        other_calendar_event
+        get department_program_calendar_events_path(other_department, other_program)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to include("not authorized")
       end
     end
 
