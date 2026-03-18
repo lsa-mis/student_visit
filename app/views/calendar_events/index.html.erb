@@ -48,7 +48,7 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Time</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mandatory</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Faculty</th>
-              <% if policy(CalendarEvent.new(program: @program)).update? %>
+              <% if @can_update_calendar_events %>
                 <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               <% end %>
             </tr>
@@ -75,7 +75,7 @@
                     <span class="text-gray-400">None</span>
                   <% end %>
                 </td>
-                <% if policy(event).update? %>
+                <% if @can_update_calendar_events %>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <%= link_to "Edit", edit_department_program_calendar_event_path(@program.department, @program, event), class: "text-indigo-600 hover:text-indigo-800 mr-4" %>
                     <%= link_to "Delete", department_program_calendar_event_path(@program.department, @program, event),

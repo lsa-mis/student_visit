@@ -5,6 +5,7 @@ class CalendarEventsController < ApplicationController
   def index
     @calendar_events = @program.calendar_events.order(:start_time)
     authorize CalendarEvent.new(program: @program)
+    @can_update_calendar_events = policy(CalendarEvent.new(program: @program)).update?
   end
 
   def show
