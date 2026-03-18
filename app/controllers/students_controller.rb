@@ -8,7 +8,7 @@ class StudentsController < ApplicationController
   def index
     @sort_column = params[:sort].presence_in(SORTABLE_COLUMNS) || "email_address"
     @sort_direction = params[:direction].presence_in(SORT_DIRECTIONS) || "asc"
-    @students = sorted_students
+    set_students_and_enrollment_dates(sorted_students)
     authorize @program, :show?
     @can_update_program = policy(@program).update?
   end
@@ -75,7 +75,7 @@ class StudentsController < ApplicationController
 
     # Email address is required
     unless params[:email_address].present?
-      @students = @program.students.order(:email_address)
+      set_students_and_enrollment_dates(@program.students.order(:email_address))
       @can_update_program = policy(@program).update?
       flash.now[:alert] = "Email address is required."
       render :index, status: :unprocessable_entity
@@ -86,7 +86,7 @@ class StudentsController < ApplicationController
 
     # Check if UMID is provided (required)
     unless params[:umid].present?
-      @students = @program.students.order(:email_address)
+      set_students_and_enrollment_dates(@program.students.order(:email_address))
       @can_update_program = policy(@program).update?
       flash.now[:alert] = "UMID is required."
       render :index, status: :unprocessable_entity
@@ -100,7 +100,7 @@ class StudentsController < ApplicationController
 
     # Check if UMID is already taken by another user
     if formatted_umid.present? && User.where.not(id: user.id).exists?(umid: formatted_umid)
-      @students = @program.students.order(:email_address)
+      set_students_and_enrollment_dates(@program.students.order(:email_address))
       @can_update_program = policy(@program).update?
       flash.now[:alert] = "This UMID is already in use by another student."
       render :index, status: :unprocessable_entity
@@ -118,7 +118,7 @@ class StudentsController < ApplicationController
       user.must_change_password = true
 
       unless user.save
-        @students = @program.students.order(:email_address)
+        set_students_and_enrollment_dates(@program.students.order(:email_address))
         @can_update_program = policy(@program).update?
         flash.now[:alert] = "Error creating user: #{user.errors.full_messages.join(', ')}"
         render :index, status: :unprocessable_entity
@@ -148,7 +148,7 @@ class StudentsController < ApplicationController
         StudentMailer.welcome(user, @program, is_new_student: was_new_record).deliver_later
         redirect_to department_program_students_path(@department, @program), notice: "Student was successfully added to the program."
       else
-        @students = @program.students.order(:email_address)
+        set_students_and_enrollment_dates(@program.students.order(:email_address))
         @can_update_program = policy(@program).update?
         flash.now[:alert] = "Error enrolling student: #{student_program.errors.full_messages.join(', ')}"
         render :index, status: :unprocessable_entity
@@ -189,6 +189,16 @@ class StudentsController < ApplicationController
     else
       scope.reorder(sort_column => sort_direction)
     end
+  end
+
+  def set_students_and_enrollment_dates(students_scope)
+    @students = students_scope
+    user_id_subquery = @students.except(:order).select(:id)
+
+    @student_program_created_at_by_user_id = StudentProgram
+      .where(program: @program, user_id: user_id_subquery)
+      .pluck(:user_id, :created_at)
+      .to_h
   end
 
   def set_program

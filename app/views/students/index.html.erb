@@ -101,7 +101,7 @@
                   <%= student.umid || "-" %>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <%= student.student_programs.find_by(program: @program).created_at.strftime("%B %d, %Y") %>
+                  <%= (@student_program_created_at_by_user_id || {})[student.id]&.strftime("%B %d, %Y") || "-" %>
                 </td>
                 <% if @can_update_program %>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
