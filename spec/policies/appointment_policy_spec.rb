@@ -37,6 +37,19 @@ RSpec.describe AppointmentPolicy, type: :policy do
       end
     end
 
+    context 'as department admin of another department' do
+      let(:user) do
+        user = User.create!(email_address: 'other_admin@example.com', password: 'password123')
+        user.add_role('department_admin')
+        DepartmentAdmin.create!(user: user, department: other_department)
+        user
+      end
+
+      it 'denies access' do
+        expect(subject.new(user, Appointment.new(program: program)).index?).to be false
+      end
+    end
+
     context 'as student' do
       let(:user) do
         user = User.create!(email_address: 'student@example.com', password: 'password123')

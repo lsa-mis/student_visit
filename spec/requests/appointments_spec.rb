@@ -2,8 +2,11 @@ require 'rails_helper'
 
 RSpec.describe "Appointments", type: :request do
   let(:department) { Department.create!(name: "Test Department") }
+  let(:other_department) { Department.create!(name: "Other Department") }
   let(:program) { Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com") }
+  let(:other_program) { Program.create!(name: "Other Program", department: other_department, default_appointment_length: 30, information_email_address: "test@example.com") }
   let(:vip) { Vip.create!(name: "Dr. Smith", office_number: "LSA 3202", program: program) }
+  let(:other_vip) { Vip.create!(name: "Dr. Jones", office_number: "ISR 4184B", program: other_program) }
   let(:student) { User.create!(email_address: 'student@example.com', password: 'password123') }
   let(:appointment) do
     Appointment.create!(
@@ -11,6 +14,14 @@ RSpec.describe "Appointments", type: :request do
       end_time: 2.hours.from_now,
       program: program,
       vip: vip
+    )
+  end
+  let(:other_appointment) do
+    Appointment.create!(
+      start_time: 1.hour.from_now,
+      end_time: 2.hours.from_now,
+      program: other_program,
+      vip: other_vip
     )
   end
 
@@ -44,6 +55,17 @@ RSpec.describe "Appointments", type: :request do
         get department_program_appointments_path(department, program)
         expect(response.body).to include("Actions")
         expect(response.body).to include("View")
+      end
+    end
+
+    context "when authenticated as department admin of another department" do
+      before { sign_in_as_department_admin(department) }
+
+      it "denies access to other-department program appointments" do
+        other_appointment
+        get department_program_appointments_path(other_department, other_program)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to include("not authorized")
       end
     end
 

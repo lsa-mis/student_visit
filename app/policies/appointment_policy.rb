@@ -1,7 +1,8 @@
 class AppointmentPolicy < ApplicationPolicy
   def index?
     return false unless user
-    user.super_admin? || user.department_admin?
+    # Department admins can only access appointment indexes for programs in their own department.
+    user.super_admin? || user.department_admin_for?(record.program.department)
   end
 
   def show?
