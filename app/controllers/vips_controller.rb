@@ -9,8 +9,9 @@ class VipsController < ApplicationController
     @vips = apply_sort(base)
     @sort_column = sort_column
     @sort_direction = sort_direction
-    authorize Vip.new(program: @program)
-    @can_update_vips = policy(Vip.new(program: @program)).update?
+    vip = Vip.new(program: @program)
+    authorize vip
+    @can_update_vips = policy(vip).update?
   end
 
   def show
