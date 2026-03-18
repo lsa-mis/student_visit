@@ -11,6 +11,7 @@ class VipsController < ApplicationController
     @sort_direction = sort_direction
     vip = Vip.new(program: @program)
     authorize vip
+    @can_create_vips = policy(vip).create?
     @can_update_vips = policy(vip).update?
   end
 
