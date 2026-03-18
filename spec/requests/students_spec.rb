@@ -19,7 +19,8 @@ RSpec.describe "Students", type: :request do
         StudentProgram.create!(user: student_user, program: program)
 
         get department_program_students_path(department, program)
-        expect(response.body).to include("Bulk Upload")
+        bulk_upload_path = bulk_upload_department_program_students_path(department, program)
+        expect(response.body).to match(/href=["']#{Regexp.escape(bulk_upload_path)}["']/)
         expect(response.body).to include("Actions")
       end
     end
@@ -51,7 +52,8 @@ RSpec.describe "Students", type: :request do
         }
 
         expect(response).to have_http_status(:unprocessable_content)
-        expect(response).to show_action_element("Bulk Upload")
+        bulk_upload_path = bulk_upload_department_program_students_path(department, program)
+        expect(response).to show_action_element(/href=["']#{Regexp.escape(bulk_upload_path)}["']/)
         expect(response).to show_action_element("Add Student")
       end
     end
