@@ -14,6 +14,10 @@ RSpec.describe "Students", type: :request do
       end
 
       it "shows bulk upload and actions" do
+        student_user = User.create!(email_address: "student@example.com", password: "password123")
+        student_user.add_role("student")
+        StudentProgram.create!(user: student_user, program: program)
+
         get department_program_students_path(department, program)
         expect(response.body).to include("Bulk Upload")
         expect(response.body).to include("Actions")
@@ -47,8 +51,8 @@ RSpec.describe "Students", type: :request do
         }
 
         expect(response).to have_http_status(:unprocessable_content)
-        expect(response.body).to include("Bulk Upload")
-        expect(response.body).to include("Add Student")
+        expect(response).to show_action_element("Bulk Upload")
+        expect(response).to show_action_element("Add Student")
       end
     end
   end
