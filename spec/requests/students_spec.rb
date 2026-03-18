@@ -20,7 +20,8 @@ RSpec.describe "Students", type: :request do
 
         get department_program_students_path(department, program)
         bulk_upload_path = bulk_upload_department_program_students_path(department, program)
-        expect(response.body).to match(/href=["']#{Regexp.escape(bulk_upload_path)}["']/)
+        # Assert against the actual Bulk Upload anchor, not the page-instructions text.
+        expect(response.body).to match(/href=["']#{Regexp.escape(bulk_upload_path)}["'][^>]*>\s*Bulk Upload\s*</)
         expect(response.body).to include("Actions")
       end
     end
