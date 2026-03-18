@@ -6,6 +6,7 @@ class AppointmentsController < ApplicationController
     @appointments = @program.appointments.includes(:vip, :student).order(:start_time)
     authorize Appointment.new(program: @program)
     @can_view_appointments = policy(Appointment.new(program: @program)).show?
+    @can_create_appointments = policy(Appointment.new(program: @program)).create?
   end
 
   def show

@@ -39,7 +39,7 @@
           </div>
         </div>
       <% end %>
-      <% if policy(Appointment.new(program: @program)).create? %>
+      <% if @can_create_appointments %>
         <div class="flex space-x-2">
           <%= link_to "Bulk Upload", bulk_upload_department_program_appointments_path(@department, @program), class: "bg-purple-600 text-white btn-responsive rounded hover:bg-purple-700" %>
           <%= link_to "Schedule Builder", schedule_builder_department_program_appointments_path(@department, @program), class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700" %>
