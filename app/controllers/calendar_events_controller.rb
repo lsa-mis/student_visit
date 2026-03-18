@@ -3,11 +3,13 @@ class CalendarEventsController < ApplicationController
   before_action :set_calendar_event, only: [ :show, :edit, :update, :destroy ]
 
   def index
+    calendar_event = CalendarEvent.new(program: @program)
     @calendar_events = @program.calendar_events
       .includes(calendar_event_faculties: :vip)
       .order(:start_time)
-    authorize CalendarEvent.new(program: @program)
-    @can_update_calendar_events = policy(CalendarEvent.new(program: @program)).update?
+    authorize calendar_event
+    @can_create_calendar_events = policy(calendar_event).create?
+    @can_update_calendar_events = policy(calendar_event).update?
   end
 
   def show

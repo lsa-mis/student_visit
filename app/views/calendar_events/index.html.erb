@@ -7,7 +7,7 @@
       </p>
     </div>
     <div class="flex space-x-2">
-      <% if policy(CalendarEvent.new(program: @program)).create? %>
+      <% if @can_create_calendar_events %>
         <%= link_to "Bulk Upload", bulk_upload_department_program_calendar_events_path(@program.department, @program), class: "bg-purple-600 text-white btn-responsive rounded hover:bg-purple-700" %>
         <%= link_to "New Event", new_department_program_calendar_event_path(@program.department, @program), class: "bg-green-600 text-white btn-responsive rounded hover:bg-green-700" %>
       <% end %>
