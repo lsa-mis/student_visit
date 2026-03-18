@@ -39,7 +39,9 @@ RSpec.describe "Appointments", type: :request do
         get department_program_appointments_path(department, program)
         expect(response.body).to include("Dr. Smith")
         expect(response.body).to include("Actions")
-        expect(response.body).to include(department_program_appointment_path(department, program, appointment))
+        show_href = department_program_appointment_path(department, program, appointment)
+        # Verify the per-row "View" link points at the appointment show path.
+        expect(response.body).to match(/href=["']#{Regexp.escape(show_href)}["'][^>]*>\s*View\s*</)
       end
     end
 
@@ -55,7 +57,8 @@ RSpec.describe "Appointments", type: :request do
         appointment
         get department_program_appointments_path(department, program)
         expect(response.body).to include("Actions")
-        expect(response.body).to include(department_program_appointment_path(department, program, appointment))
+        show_href = department_program_appointment_path(department, program, appointment)
+        expect(response.body).to match(/href=["']#{Regexp.escape(show_href)}["'][^>]*>\s*View\s*</)
       end
     end
 
