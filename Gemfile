@@ -12,7 +12,7 @@ gem 'lsa_tdx_feedback', '~> 1.0'
 gem "propshaft"
 gem "puma", ">= 5.0"
 gem "pundit"
-gem "rails", "~> 8.1.2"
+gem "rails", "~> 8.1.3"
 gem "roo"
 gem "sentry-ruby"
 gem "sentry-rails"
