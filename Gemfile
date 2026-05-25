@@ -4,7 +4,7 @@ ruby "4.0.1"
 gem "bcrypt", "~> 3.1"
 gem "bootsnap", require: false
 gem "google-cloud-storage"
-gem "image_processing", "~> 1.14"
+gem "image_processing", "~> 2.0"
 gem "importmap-rails"
 gem "jbuilder"
 gem "kamal", require: false
