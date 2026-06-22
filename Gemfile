@@ -20,7 +20,7 @@ gem "solid_cable"
 gem "solid_cache"
 gem "solid_queue"
 gem "stimulus-rails"
-gem "tailwindcss-rails", "~> 4.4.0"
+gem "tailwindcss-rails", "~> 4.6.0"
 gem "thruster", require: false
 gem "turbo-rails"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
@@ -31,7 +31,7 @@ group :development, :test do
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false
   gem "rspec-rails"
-  gem "shoulda-matchers", "~> 7.0"
+  gem "shoulda-matchers", "~> 8.0"
   gem "sqlite3", ">= 2.1"
 end
 
