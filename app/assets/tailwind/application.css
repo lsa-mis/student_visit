@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 
-@config '../../../config/tailwind.config.js';
+@source '../../../app/helpers/**/*.rb';
+@source '../../../app/components/**/*.{erb,haml,html,slim,rb}';
+@source '../../../config/initializers/**/*.rb';
 
 @utility btn-primary {
   /* Optimized button using Tailwind utilities */
