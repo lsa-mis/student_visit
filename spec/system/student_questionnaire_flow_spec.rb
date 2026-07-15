@@ -77,4 +77,42 @@ RSpec.describe "Student Questionnaire Flow", type: :system do
     content_text = answer.content.respond_to?(:to_plain_text) ? answer.content.to_plain_text : answer.content.to_s
     expect(page).to have_content(content_text, wait: 5)
   end
+
+  it "prefills and saves datetime and link answers from ActionText content" do
+    datetime_question = create(:question, :datetime_type, questionnaire: questionnaire,
+                               text: "Preferred arrival time?", position: 3)
+    link_question = create(:question, :link_type, questionnaire: questionnaire,
+                           text: "Portfolio URL?", position: 4)
+
+    saved_datetime = Time.zone.parse("2026-08-01 14:30")
+    create(:answer, question: datetime_question, student: student_user, program: program,
+           content: saved_datetime.to_s)
+    create(:answer, question: link_question, student: student_user, program: program,
+           content: "https://example.com/portfolio")
+
+    sign_in_as(student_user)
+    visit edit_student_department_program_questionnaire_path(department, program, questionnaire)
+
+    expect(page).to have_content(datetime_question.text, wait: 5)
+    expect(page).to have_content(link_question.text, wait: 5)
+
+    datetime_field = "answers[#{datetime_question.id}][content]"
+    link_field = "answers[#{link_question.id}][content]"
+
+    expect(page).to have_field(datetime_field, with: saved_datetime.strftime("%Y-%m-%dT%H:%M"))
+    expect(page).to have_field(link_field, with: "https://example.com/portfolio")
+
+    fill_in datetime_field, with: "2026-09-15T09:00"
+    fill_in link_field, with: "https://example.com/updated"
+    click_button "Save Answers"
+
+    expect(page).to have_content(questionnaire.name, wait: 5)
+
+    datetime_answer = Answer.find_by!(question: datetime_question, student: student_user, program: program)
+    link_answer = Answer.find_by!(question: link_question, student: student_user, program: program)
+    datetime_text = datetime_answer.content.respond_to?(:to_plain_text) ? datetime_answer.content.to_plain_text : datetime_answer.content.to_s
+    link_text = link_answer.content.respond_to?(:to_plain_text) ? link_answer.content.to_plain_text : link_answer.content.to_s
+    expect(datetime_text).to include("2026-09-15T09:00")
+    expect(link_text).to include("https://example.com/updated")
+  end
 end
