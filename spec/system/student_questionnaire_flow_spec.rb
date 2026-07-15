@@ -99,10 +99,10 @@ RSpec.describe "Student Questionnaire Flow", type: :system do
     datetime_field = "answers[#{datetime_question.id}][content]"
     link_field = "answers[#{link_question.id}][content]"
 
-    expect(page).to have_field(datetime_field, with: saved_datetime.strftime("%Y-%m-%dT%H:%M"))
+    expect(page).to have_field(datetime_field, with: saved_datetime.strftime("%Y-%m-%dT%H:%M:%S"))
     expect(page).to have_field(link_field, with: "https://example.com/portfolio")
 
-    fill_in datetime_field, with: "2026-09-15T09:00"
+    fill_in datetime_field, with: "2026-09-15T09:00:00"
     fill_in link_field, with: "https://example.com/updated"
     click_button "Save Answers"
 
