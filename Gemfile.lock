@@ -581,7 +581,7 @@ DEPENDENCIES
   web-console
 
 RUBY VERSION
-  ruby 4.0.1
+  ruby 4.0.6
 
 BUNDLED WITH
   4.0.0
