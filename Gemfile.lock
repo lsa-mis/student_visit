@@ -363,7 +363,7 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.4.2)
-    rbs (4.1.0)
+    rbs (4.1.1)
       logger
       prism (>= 1.6.0)
       tsort
@@ -568,7 +568,7 @@ DEPENDENCIES
   jbuilder
   kamal
   letter_opener_web (~> 3.0)
-  lsa_tdx_feedback (>= 2.0.1)
+  lsa_tdx_feedback (>= 2.0.2)
   pg
   propshaft
   puma (>= 5.0)
