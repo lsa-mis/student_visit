@@ -29,7 +29,6 @@ class Student::QuestionnairesController < ApplicationController
       return
     end
 
-    answers_saved = 0
     params[:answers]&.each do |question_id, answer_data|
       question = @questionnaire.questions.find_by(id: question_id)
       next unless question
@@ -40,12 +39,9 @@ class Student::QuestionnairesController < ApplicationController
       )
 
       answer.content = answer_data[:content]
-      if answer.save
-        answers_saved += 1
-      end
+      answer.save
     end
 
-    track_business_event("questionnaire.answered", program_id: @program.id.to_s, questionnaire_id: @questionnaire.id.to_s, student_id: current_user.id.to_s, answers_saved: answers_saved.to_s)
     redirect_to student_department_program_questionnaire_path(@program.department, @program, @questionnaire),
                 notice: "Your answers have been saved."
   end
