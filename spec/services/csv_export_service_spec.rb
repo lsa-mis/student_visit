@@ -359,5 +359,44 @@ RSpec.describe CsvExportService, type: :service do
         expect(csv).to include('Rich text content')
       end
     end
+
+    context 'with datetime and link ActionText answers' do
+      let(:datetime_question) do
+        Question.create!(
+          text: "Interview datetime",
+          question_type: "datetime",
+          questionnaire: questionnaire,
+          position: 4
+        )
+      end
+      let(:link_question) do
+        Question.create!(
+          text: "Portfolio link",
+          question_type: "link",
+          questionnaire: questionnaire,
+          position: 5
+        )
+      end
+
+      it 'exports plain-text values without calling strftime on RichText' do
+        Answer.create!(
+          question: datetime_question,
+          student: student,
+          program: program,
+          content: "2026-08-01 14:30:00 -0400"
+        )
+        Answer.create!(
+          question: link_question,
+          student: student,
+          program: program,
+          content: "https://example.com/portfolio"
+        )
+
+        csv = CsvExportService.export_questionnaire_responses(questionnaire, program)
+
+        expect(csv).to include("2026-08-01 14:30:00 -0400")
+        expect(csv).to include("https://example.com/portfolio")
+      end
+    end
   end
 end
