@@ -8,5 +8,10 @@
 
   // Git fetch/pull settings
   "git.autofetch": true,
-  "git.autofetchPeriod": 180
+  "git.autofetchPeriod": 180,
+  "plugins": {
+    "sentry": {
+      "enabled": true
+    }
+  }
 }
