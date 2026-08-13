@@ -136,6 +136,30 @@ RSpec.describe "Student::Questionnaires", type: :request do
         get edit_student_department_program_questionnaire_path(department, program, questionnaire)
         expect(response.body).to include("Back to Dashboard")
       end
+
+      it "prefills datetime answers stored as ActionText without raising" do
+        datetime_question = create(:question, :datetime_type, questionnaire: questionnaire, text: "Arrival time")
+        saved_datetime = Time.zone.parse("2026-08-01 14:30")
+        create(:answer, question: datetime_question, student: student_user, program: program, content: saved_datetime.to_s)
+
+        get edit_student_department_program_questionnaire_path(department, program, questionnaire)
+
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include("Arrival time")
+        expect(response.body).to include(saved_datetime.strftime("%Y-%m-%dT%H:%M"))
+      end
+
+      it "prefills link answers stored as ActionText" do
+        link_question = create(:question, :link_type, questionnaire: questionnaire, text: "Portfolio URL")
+        create(:answer, question: link_question, student: student_user, program: program,
+               content: "https://example.com/portfolio")
+
+        get edit_student_department_program_questionnaire_path(department, program, questionnaire)
+
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include("Portfolio URL")
+        expect(response.body).to include("https://example.com/portfolio")
+      end
     end
   end
 
