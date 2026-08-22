@@ -52,7 +52,13 @@ class CsvExportService
         program.questionnaires.each do |questionnaire|
           questionnaire.questions.order(:position).each do |question|
             answer = answers[question.id]
-            row << csv_safe_cell(answer&.content || "")
+            content = answer&.content
+            text = if content.respond_to?(:to_plain_text)
+              content.to_plain_text
+            else
+              content.to_s
+            end
+            row << csv_safe_cell(text)
           end
         end
 
