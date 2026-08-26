@@ -365,6 +365,15 @@ RSpec.describe CsvExportService, type: :service do
       expect(row["Q1: Test Question"]).to eq("'=HYPERLINK(\"http://evil.example\")")
     end
 
+    it 'neutralizes formula-like student emails' do
+      student.update!(email_address: '=HYPERLINK("http://evil.example")@example.com')
+
+      csv = CSV.parse(CsvExportService.export_questionnaire_responses(questionnaire, program), headers: true)
+      row = csv.find { |r| r['Student Email']&.start_with?("'=") }
+
+      expect(row['Student Email']).to eq("'=hyperlink(\"http://evil.example\")@example.com")
+    end
+
     it 'leaves ordinary answers unchanged' do
       csv = CSV.parse(CsvExportService.export_questionnaire_responses(questionnaire, program), headers: true)
       row = csv.find { |r| r['Student Email'] == 'student@example.com' }

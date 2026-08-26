@@ -192,7 +192,7 @@ class CsvExportService
 
       # Generate row for each student
       students.each do |student|
-        row = [ student.email_address ]
+        row = [ csv_safe_cell(student.email_address) ]
 
         questions.each do |question|
           answer = all_answers[[ student.id, question.id ]]
