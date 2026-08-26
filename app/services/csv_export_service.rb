@@ -1,6 +1,18 @@
 require "csv"
 
 class CsvExportService
+  # Prefix cells that would be interpreted as spreadsheet formulas when opened
+  # in Excel/LibreOffice/Google Sheets (CSV injection / formula injection).
+  CSV_FORMULA_PREFIX = /\A[=+\-@\t\r]/
+
+  def self.csv_safe_cell(value)
+    text = value.to_s
+    return text if text.empty?
+    return text unless text.match?(CSV_FORMULA_PREFIX)
+
+    "'#{text}"
+  end
+
   # Simple list of program students (Email, Last Name, First Name, UMID, Enrolled) for the students index page.
   def self.export_program_students(students, program)
     CSV.generate(headers: true) do |csv|
@@ -8,10 +20,10 @@ class CsvExportService
       Array(students).each do |student|
         enrolled_at = student.student_programs.find_by(program: program)&.created_at&.strftime("%B %d, %Y")
         csv << [
-          student.email_address,
-          student.last_name.presence || "",
-          student.first_name.presence || "",
-          student.umid.presence || "",
+          csv_safe_cell(student.email_address),
+          csv_safe_cell(student.last_name.presence || ""),
+          csv_safe_cell(student.first_name.presence || ""),
+          csv_safe_cell(student.umid.presence || ""),
           enrolled_at.presence || ""
         ]
       end
@@ -32,22 +44,28 @@ class CsvExportService
         appointments = student.appointments.where(program: program).includes(:vip)
 
         row = [
-          student.email_address,
-          student.email_address, # Name field - could be expanded
+          csv_safe_cell(student.email_address),
+          csv_safe_cell(student.email_address), # Name field - could be expanded
           student.student_programs.find_by(program: program)&.created_at&.strftime("%Y-%m-%d")
         ]
 
         program.questionnaires.each do |questionnaire|
           questionnaire.questions.order(:position).each do |question|
             answer = answers[question.id]
-            row << (answer&.content || "")
+            content = answer&.content
+            text = if content.respond_to?(:to_plain_text)
+              content.to_plain_text
+            else
+              content.to_s
+            end
+            row << csv_safe_cell(text)
           end
         end
 
         appointment_list = appointments.map do |apt|
           "#{apt.vip.display_name} - #{apt.start_time.strftime("%m/%d/%Y %I:%M %p")}"
         end.join("; ")
-        row << appointment_list
+        row << csv_safe_cell(appointment_list)
 
         csv << row
       end
@@ -174,7 +192,7 @@ class CsvExportService
 
       # Generate row for each student
       students.each do |student|
-        row = [ student.email_address ]
+        row = [ csv_safe_cell(student.email_address) ]
 
         questions.each do |question|
           answer = all_answers[[ student.id, question.id ]]
@@ -205,7 +223,7 @@ class CsvExportService
               # radio, text, datetime, link
               content.respond_to?(:to_plain_text) ? content.to_plain_text : content.to_s
             end
-            row << display_value
+            row << csv_safe_cell(display_value)
           else
             row << "Not answered"
           end

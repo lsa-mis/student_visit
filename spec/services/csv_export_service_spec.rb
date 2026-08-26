@@ -13,6 +13,44 @@ RSpec.describe CsvExportService, type: :service do
     StudentProgram.create!(user: student, program: program)
   end
 
+  describe '.csv_safe_cell' do
+    it 'prefixes formula-like values' do
+      expect(described_class.csv_safe_cell('=1+1')).to eq("'=1+1")
+      expect(described_class.csv_safe_cell('+1234')).to eq("'+1234")
+      expect(described_class.csv_safe_cell('-1234')).to eq("'-1234")
+      expect(described_class.csv_safe_cell('@SUM(A1)')).to eq("'@SUM(A1)")
+    end
+
+    it 'leaves ordinary values unchanged' do
+      expect(described_class.csv_safe_cell('Alice')).to eq('Alice')
+      expect(described_class.csv_safe_cell('')).to eq('')
+      expect(described_class.csv_safe_cell(nil)).to eq('')
+    end
+  end
+
+  describe '.export_program_students' do
+    before do
+      student.update!(first_name: 'Ada', last_name: 'Lovelace', umid: '12345678')
+    end
+
+    it 'exports student identity fields' do
+      csv = CSV.parse(described_class.export_program_students([ student ], program), headers: true)
+      row = csv.first
+
+      expect(row['Email']).to eq('student@example.com')
+      expect(row['Last Name']).to eq('Lovelace')
+      expect(row['First Name']).to eq('Ada')
+      expect(row['UMID']).to eq('12345678')
+    end
+
+    it 'neutralizes formula-like last names' do
+      student.update!(last_name: '=HYPERLINK("http://evil.example")')
+      csv = CSV.parse(described_class.export_program_students([ student ], program), headers: true)
+
+      expect(csv.first['Last Name']).to eq("'=HYPERLINK(\"http://evil.example\")")
+    end
+  end
+
   describe '.export_students' do
     it 'generates CSV with student data' do
       csv = CsvExportService.export_students(program)
@@ -35,6 +73,14 @@ RSpec.describe CsvExportService, type: :service do
       csv = CsvExportService.export_students(program)
       expect(csv).to include('student@example.com')
       expect(csv).to include('Test Answer')
+    end
+
+    it 'neutralizes student answers that look like spreadsheet formulas' do
+      Answer.create!(question: question, student: student, program: program, content: '=cmd|"/c calc"!A0')
+      csv = CSV.parse(CsvExportService.export_students(program), headers: true)
+      row = csv.find { |r| r['Email'] == 'student@example.com' }
+
+      expect(row['Q: Test Question']).to eq("'=cmd|\"/c calc\"!A0")
     end
 
     it 'includes appointment information' do
@@ -308,6 +354,31 @@ RSpec.describe CsvExportService, type: :service do
       csv = CsvExportService.export_questionnaire_responses(questionnaire, program)
       expect(csv).to include('other@example.com')
       expect(csv).to include('Not answered')
+    end
+
+    it 'neutralizes questionnaire answers that look like spreadsheet formulas' do
+      answer.update!(content: '=HYPERLINK("http://evil.example")')
+
+      csv = CSV.parse(CsvExportService.export_questionnaire_responses(questionnaire, program), headers: true)
+      row = csv.find { |r| r['Student Email'] == 'student@example.com' }
+
+      expect(row["Q1: Test Question"]).to eq("'=HYPERLINK(\"http://evil.example\")")
+    end
+
+    it 'neutralizes formula-like student emails' do
+      student.update!(email_address: '=HYPERLINK("http://evil.example")@example.com')
+
+      csv = CSV.parse(CsvExportService.export_questionnaire_responses(questionnaire, program), headers: true)
+      row = csv.find { |r| r['Student Email']&.start_with?("'=") }
+
+      expect(row['Student Email']).to eq("'=hyperlink(\"http://evil.example\")@example.com")
+    end
+
+    it 'leaves ordinary answers unchanged' do
+      csv = CSV.parse(CsvExportService.export_questionnaire_responses(questionnaire, program), headers: true)
+      row = csv.find { |r| r['Student Email'] == 'student@example.com' }
+
+      expect(row["Q1: Test Question"]).to eq('Test Answer')
     end
 
     context 'with checkbox questions' do
