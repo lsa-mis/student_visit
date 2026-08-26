@@ -34,7 +34,7 @@ RSpec.describe CsvExportService, type: :service do
     end
 
     it 'exports student identity fields' do
-      csv = CSV.parse(described_class.export_program_students([student], program), headers: true)
+      csv = CSV.parse(described_class.export_program_students([ student ], program), headers: true)
       row = csv.first
 
       expect(row['Email']).to eq('student@example.com')
@@ -45,7 +45,7 @@ RSpec.describe CsvExportService, type: :service do
 
     it 'neutralizes formula-like last names' do
       student.update!(last_name: '=HYPERLINK("http://evil.example")')
-      csv = CSV.parse(described_class.export_program_students([student], program), headers: true)
+      csv = CSV.parse(described_class.export_program_students([ student ], program), headers: true)
 
       expect(csv.first['Last Name']).to eq("'=HYPERLINK(\"http://evil.example\")")
     end
