@@ -83,6 +83,25 @@ RSpec.describe CsvExportService, type: :service do
       expect(row['Q: Test Question']).to eq("'=cmd|\"/c calc\"!A0")
     end
 
+    it 'converts ActionText to plain text before formula neutralization' do
+      answer = Answer.create!(
+        question: question,
+        student: student,
+        program: program,
+        content: '=HYPERLINK("http://evil.example")'
+      )
+
+      # ActionText HTML wrappers hide the leading '=' from csv_safe_cell when to_s is used.
+      expect(answer.content.to_s).to include('<')
+      expect(answer.content.to_s).not_to match(/\A[=+\-@]/)
+      expect(answer.content.to_plain_text).to start_with('=')
+
+      csv = CSV.parse(CsvExportService.export_students(program), headers: true)
+      row = csv.find { |r| r['Email'] == 'student@example.com' }
+
+      expect(row['Q: Test Question']).to eq("'=HYPERLINK(\"http://evil.example\")")
+    end
+
     it 'includes appointment information' do
       appointment = Appointment.create!(
         start_time: 1.hour.from_now,
@@ -363,6 +382,18 @@ RSpec.describe CsvExportService, type: :service do
       row = csv.find { |r| r['Student Email'] == 'student@example.com' }
 
       expect(row["Q1: Test Question"]).to eq("'=HYPERLINK(\"http://evil.example\")")
+    end
+
+    it 'neutralizes ActionText formula answers whose HTML would hide the formula prefix' do
+      answer.update!(content: '=cmd|"/c calc"!A0')
+
+      expect(answer.content.to_s).to include('<')
+      expect(answer.content.to_plain_text).to start_with('=')
+
+      csv = CSV.parse(CsvExportService.export_questionnaire_responses(questionnaire, program), headers: true)
+      row = csv.find { |r| r['Student Email'] == 'student@example.com' }
+
+      expect(row["Q1: Test Question"]).to eq("'=cmd|\"/c calc\"!A0")
     end
 
     it 'neutralizes formula-like student emails' do
