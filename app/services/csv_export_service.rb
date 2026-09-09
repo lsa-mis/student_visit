@@ -83,13 +83,13 @@ class CsvExportService
         appointments = appointments.booked if scope == :scheduled
         appointments.each do |appointment|
           csv << [
-            vip.display_name,
+            csv_safe_cell(vip.display_name),
             appointment.start_time.strftime("%Y-%m-%d"),
             appointment.start_time.strftime("%I:%M %p"),
             appointment.end_time.strftime("%I:%M %p"),
-            appointment.office_number.presence || "",
+            csv_safe_cell(appointment.office_number.presence || ""),
             appointment.available? ? "Available" : "Booked",
-            appointment.student&.email_address || ""
+            csv_safe_cell(appointment.student&.email_address || "")
           ]
         end
       end
@@ -103,12 +103,12 @@ class CsvExportService
       program.vips.ordered.each do |vip|
         program.appointments.for_vip(vip).order(:start_time).each do |appointment|
           csv << [
-            vip.display_name,
+            csv_safe_cell(vip.display_name),
             appointment.start_time.strftime("%Y-%m-%d"),
             appointment.start_time.strftime("%I:%M %p"),
             appointment.end_time.strftime("%I:%M %p"),
             appointment.available? ? "Available" : "Booked",
-            appointment.student&.email_address || ""
+            csv_safe_cell(appointment.student&.email_address || "")
           ]
         end
       end
@@ -122,8 +122,8 @@ class CsvExportService
       program.students.order(:email_address).each do |student|
         student.appointments.where(program: program).includes(:vip).order(:start_time).each do |appointment|
           csv << [
-            student.email_address,
-            appointment.vip.display_name,
+            csv_safe_cell(student.email_address),
+            csv_safe_cell(appointment.vip.display_name),
             appointment.start_time.strftime("%Y-%m-%d"),
             appointment.start_time.strftime("%I:%M %p"),
             appointment.end_time.strftime("%I:%M %p")
@@ -147,13 +147,19 @@ class CsvExportService
 
       # Calendar events
       program.calendar_events.where(start_time: start_date..end_date).order(:start_time).each do |event|
+        description = event.description
+        description_text = if description.respond_to?(:to_plain_text)
+          description.to_plain_text
+        else
+          description.to_s
+        end
         csv << [
           "Event",
-          event.title,
+          csv_safe_cell(event.title),
           event.start_time.strftime("%Y-%m-%d"),
           event.start_time.strftime("%I:%M %p"),
           event.end_time.strftime("%I:%M %p"),
-          event.description
+          csv_safe_cell(description_text)
         ]
       end
 
@@ -162,7 +168,7 @@ class CsvExportService
              .includes(:vip).order(:start_time).each do |appointment|
         csv << [
           "Appointment",
-          appointment.vip.display_name,
+          csv_safe_cell(appointment.vip.display_name),
           appointment.start_time.strftime("%Y-%m-%d"),
           appointment.start_time.strftime("%I:%M %p"),
           appointment.end_time.strftime("%I:%M %p"),

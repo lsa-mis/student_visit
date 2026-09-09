@@ -83,6 +83,25 @@ RSpec.describe CsvExportService, type: :service do
       expect(row['Q: Test Question']).to eq("'=cmd|\"/c calc\"!A0")
     end
 
+    it 'converts ActionText to plain text before formula neutralization' do
+      answer = Answer.create!(
+        question: question,
+        student: student,
+        program: program,
+        content: '=HYPERLINK("http://evil.example")'
+      )
+
+      # ActionText HTML wrappers hide the leading '=' from csv_safe_cell when to_s is used.
+      expect(answer.content.to_s).to include('<')
+      expect(answer.content.to_s).not_to match(/\A[=+\-@]/)
+      expect(answer.content.to_plain_text).to start_with('=')
+
+      csv = CSV.parse(CsvExportService.export_students(program), headers: true)
+      row = csv.find { |r| r['Email'] == 'student@example.com' }
+
+      expect(row['Q: Test Question']).to eq("'=HYPERLINK(\"http://evil.example\")")
+    end
+
     it 'includes appointment information' do
       appointment = Appointment.create!(
         start_time: 1.hour.from_now,
@@ -200,6 +219,33 @@ RSpec.describe CsvExportService, type: :service do
       expect(csv).to include("Faculty")
       expect(csv.lines.count).to eq(1)
     end
+
+    it 'neutralizes formula-like faculty names, office numbers, and student emails' do
+      formula_vip = Vip.create!(
+        name: '=HYPERLINK("http://evil.example")',
+        office_number: '+1-800-CMD',
+        program: program
+      )
+      formula_student = User.create!(email_address: '@SUM(A1)@example.com', password: 'password123')
+      formula_student.add_role('student')
+      StudentProgram.create!(user: formula_student, program: program)
+      Appointment.create!(
+        start_time: 8.hours.from_now,
+        end_time: 9.hours.from_now,
+        program: program,
+        vip: formula_vip,
+        student: formula_student,
+        office_number: '+1-800-CMD'
+      )
+
+      csv = CSV.parse(CsvExportService.export_program_appointments(program, scope: :all), headers: true)
+      row = csv.find { |r| r['Status'] == 'Booked' && r['Faculty'].to_s.include?('HYPERLINK') }
+
+      expect(row['Faculty']).to eq("'=HYPERLINK(\"http://evil.example\")")
+      expect(row['Office Number']).to eq("'+1-800-CMD")
+      # User#email_address is normalized to lowercase
+      expect(row['Student']).to eq("'@sum(a1)@example.com")
+    end
   end
 
   describe '.export_appointments_by_faculty' do
@@ -245,6 +291,26 @@ RSpec.describe CsvExportService, type: :service do
       # Check that appointments are included
       expect(csv).to include('Dr. Smith')
     end
+
+    it 'neutralizes formula-like faculty names and student emails' do
+      formula_vip = Vip.create!(name: '=1+1', office_number: 'LSA 999', program: program)
+      formula_student = User.create!(email_address: '+formula@example.com', password: 'password123')
+      formula_student.add_role('student')
+      StudentProgram.create!(user: formula_student, program: program)
+      Appointment.create!(
+        start_time: 5.hours.from_now,
+        end_time: 6.hours.from_now,
+        program: program,
+        vip: formula_vip,
+        student: formula_student
+      )
+
+      csv = CSV.parse(CsvExportService.export_appointments_by_faculty(program), headers: true)
+      row = csv.find { |r| r['Faculty'].to_s.include?('1+1') }
+
+      expect(row['Faculty']).to eq("'=1+1")
+      expect(row['Student']).to eq("'+formula@example.com")
+    end
   end
 
   describe '.export_appointments_by_student' do
@@ -272,6 +338,26 @@ RSpec.describe CsvExportService, type: :service do
       csv = CsvExportService.export_appointments_by_student(program)
       expect(csv).to include('student@example.com')
       expect(csv).to include('Dr. Smith')
+    end
+
+    it 'neutralizes formula-like student emails and faculty names' do
+      formula_vip = Vip.create!(name: '@SUM(A1)', office_number: 'LSA 888', program: program)
+      formula_student = User.create!(email_address: '=cmd@example.com', password: 'password123')
+      formula_student.add_role('student')
+      StudentProgram.create!(user: formula_student, program: program)
+      Appointment.create!(
+        start_time: 5.hours.from_now,
+        end_time: 6.hours.from_now,
+        program: program,
+        vip: formula_vip,
+        student: formula_student
+      )
+
+      csv = CSV.parse(CsvExportService.export_appointments_by_student(program), headers: true)
+      row = csv.find { |r| r['Student Email'].to_s.include?('cmd@example.com') }
+
+      expect(row['Student Email']).to eq("'=cmd@example.com")
+      expect(row['Faculty']).to eq("'@SUM(A1)")
     end
   end
 
@@ -329,6 +415,32 @@ RSpec.describe CsvExportService, type: :service do
       csv = CsvExportService.export_calendar(student, program, nil)
       expect(csv).to include('Test Event')
     end
+
+    it 'neutralizes formula-like event titles, descriptions, and faculty names' do
+      CalendarEvent.create!(
+        title: '=HYPERLINK("http://evil.example")',
+        description: '+cmd|"/c calc"',
+        start_time: date.beginning_of_day + 12.hours,
+        end_time: date.beginning_of_day + 13.hours,
+        program: program
+      )
+      formula_vip = Vip.create!(name: '-1+1', office_number: 'LSA 777', program: program)
+      Appointment.create!(
+        start_time: date.beginning_of_day + 16.hours,
+        end_time: date.beginning_of_day + 17.hours,
+        program: program,
+        vip: formula_vip,
+        student: student
+      )
+
+      csv = CSV.parse(CsvExportService.export_calendar(student, program, date), headers: true)
+      event_row = csv.find { |r| r['Type'] == 'Event' && r['Title'].to_s.include?('HYPERLINK') }
+      appointment_row = csv.find { |r| r['Type'] == 'Appointment' && r['Title'].to_s.include?('1+1') }
+
+      expect(event_row['Title']).to eq("'=HYPERLINK(\"http://evil.example\")")
+      expect(event_row['Details']).to eq("'+cmd|\"/c calc\"")
+      expect(appointment_row['Title']).to eq("'-1+1")
+    end
   end
 
   describe '.export_questionnaire_responses' do
@@ -363,6 +475,18 @@ RSpec.describe CsvExportService, type: :service do
       row = csv.find { |r| r['Student Email'] == 'student@example.com' }
 
       expect(row["Q1: Test Question"]).to eq("'=HYPERLINK(\"http://evil.example\")")
+    end
+
+    it 'neutralizes ActionText formula answers whose HTML would hide the formula prefix' do
+      answer.update!(content: '=cmd|"/c calc"!A0')
+
+      expect(answer.content.to_s).to include('<')
+      expect(answer.content.to_plain_text).to start_with('=')
+
+      csv = CSV.parse(CsvExportService.export_questionnaire_responses(questionnaire, program), headers: true)
+      row = csv.find { |r| r['Student Email'] == 'student@example.com' }
+
+      expect(row["Q1: Test Question"]).to eq("'=cmd|\"/c calc\"!A0")
     end
 
     it 'neutralizes formula-like student emails' do
