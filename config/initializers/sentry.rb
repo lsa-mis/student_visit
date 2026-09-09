@@ -45,8 +45,16 @@ Sentry.init do |config|
     end
   end
 
+  # sentry-rails 7+ structured ActionController logs include the raw request
+  # path. Password reset tokens live in that path, not in query params.
+  config.before_send_log = lambda do |log|
+    SentrySensitivePathFilter.redact_log(log)
+  end
+
   # Add additional context to errors
   config.before_send = lambda do |event, _hint|
+    SentrySensitivePathFilter.redact_event(event)
+
     # Add request context
     if event.request
       event.request.data = {
@@ -99,6 +107,8 @@ Sentry.init do |config|
 
   # Configure error filtering
   config.before_send_transaction = lambda do |event, _hint|
+    SentrySensitivePathFilter.redact_event(event)
+
     # Filter out health check transactions
     return nil if event.transaction&.include?("health_check")
 
