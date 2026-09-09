@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../../lib/sentry_sensitive_path_filter"
+
 Sentry.init do |config|
   # Use credentials instead of ENV or hardcoded value
   config.dsn = Rails.application.credentials.dig(:sentry, :dsn)
@@ -85,10 +87,17 @@ Sentry.init do |config|
         exception.value.gsub!(/password[=:]\s*[^\s&]+/i, "password=[FILTERED]")
         exception.value.gsub!(/token[=:]\s*[^\s&]+/i, "token=[FILTERED]")
         exception.value.gsub!(/secret[=:]\s*[^\s&]+/i, "secret=[FILTERED]")
+        exception.value.replace(SentrySensitivePathFilter.redact(exception.value))
       end
     end
 
-    event
+    SentrySensitivePathFilter.apply_to_event(event)
+  end
+
+  # Structured logs (enabled by default in sentry-rails 7) include request
+  # path. Rails filtered_path does not redact path-segment secrets.
+  config.before_send_log = lambda do |log|
+    SentrySensitivePathFilter.apply_to_log(log)
   end
 
   # Configure backtrace cleanup
@@ -106,12 +115,12 @@ Sentry.init do |config|
     # Filter out static asset requests
     return nil if event.transaction&.match?(/\.(css|js|png|jpg|jpeg|gif|ico|svg)$/)
 
-    event
+    SentrySensitivePathFilter.apply_to_event(event)
   end
 
   # Configure breadcrumb filtering
   config.before_breadcrumb = lambda do |breadcrumb, _hint|
-    SentrySensitivePathFilter.redact_breadcrumb(breadcrumb)
+    SentrySensitivePathFilter.apply_to_breadcrumb(breadcrumb)
 
     # Filter out sensitive breadcrumbs
     return nil if breadcrumb.message&.match?(/password|token|secret/i)

@@ -1,72 +1,124 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe SentrySensitivePathFilter do
-  describe ".redact_path" do
-    it "redacts tokens in password reset show paths" do
-      expect(described_class.redact_path("/passwords/live-reset-token")).to eq("/passwords/[FILTERED]")
+  let(:token) { "abc123--signed-password-reset-token" }
+
+  describe ".redact" do
+    it "redacts password reset tokens in edit paths" do
+      expect(described_class.redact("/passwords/#{token}/edit"))
+        .to eq("/passwords/[FILTERED]/edit")
     end
 
-    it "redacts tokens in password reset edit paths" do
-      expect(described_class.redact_path("/passwords/live-reset-token/edit")).to eq("/passwords/[FILTERED]/edit")
+    it "redacts password reset tokens in update paths" do
+      expect(described_class.redact("/passwords/#{token}"))
+        .to eq("/passwords/[FILTERED]")
     end
 
     it "redacts tokens in absolute URLs" do
-      url = "https://example.test/passwords/live-reset-token/edit"
-      expect(described_class.redact_path(url)).to eq("https://example.test/passwords/[FILTERED]/edit")
+      expect(described_class.redact("https://example.test/passwords/#{token}/edit"))
+        .to eq("https://example.test/passwords/[FILTERED]/edit")
     end
 
-    it "leaves the new password form path unchanged" do
-      expect(described_class.redact_path("/passwords/new")).to eq("/passwords/new")
+    it "redacts the path segment when a query string is present" do
+      expect(described_class.redact("/passwords/#{token}/edit?foo=bar"))
+        .to eq("/passwords/[FILTERED]/edit?foo=bar")
+    end
+
+    it "leaves the new-password collection path unchanged" do
+      expect(described_class.redact("/passwords/new")).to eq("/passwords/new")
+      expect(described_class.redact("/passwords/new?foo=bar")).to eq("/passwords/new?foo=bar")
     end
 
     it "leaves unrelated paths unchanged" do
-      expect(described_class.redact_path("/session/new")).to eq("/session/new")
+      expect(described_class.redact("/departments/1/programs")).to eq("/departments/1/programs")
     end
 
-    it "returns non-strings unchanged" do
-      expect(described_class.redact_path(nil)).to be_nil
+    it "returns non-string values unchanged" do
+      expect(described_class.redact(nil)).to be_nil
+      expect(described_class.redact(404)).to eq(404)
     end
   end
 
-  describe ".redact_log" do
-    it "redacts path attributes on structured logs" do
-      log = Struct.new(:attributes).new({ path: "/passwords/live-reset-token/edit", controller: "PasswordsController" })
+  describe ".apply_to_log" do
+    it "redacts path attributes used by ActionController structured logs" do
+      log = Sentry::LogEvent.new(
+        level: :info,
+        body: "PasswordsController#edit",
+        attributes: { path: "/passwords/#{token}/edit", controller: "PasswordsController" }
+      )
 
-      described_class.redact_log(log)
+      described_class.apply_to_log(log)
 
       expect(log.attributes[:path]).to eq("/passwords/[FILTERED]/edit")
       expect(log.attributes[:controller]).to eq("PasswordsController")
+      expect(log.body).to eq("PasswordsController#edit")
     end
 
-    it "redacts token params that bypass filter_parameters" do
-      log = Struct.new(:attributes).new({ path: "/home", params: { token: "live-reset-token" } })
+    it "redacts string-keyed path attributes" do
+      log = Sentry::LogEvent.new(
+        level: :info,
+        body: "PasswordsController#update",
+        attributes: { "path" => "/passwords/#{token}" }
+      )
 
-      described_class.redact_log(log)
+      described_class.apply_to_log(log)
 
-      expect(log.attributes[:params][:token]).to eq("[FILTERED]")
+      expect(log.attributes["path"]).to eq("/passwords/[FILTERED]")
+    end
+  end
+
+  describe ".apply_to_breadcrumb" do
+    it "redacts tokens in breadcrumb messages and data" do
+      breadcrumb = Sentry::Breadcrumb.new(
+        message: "GET /passwords/#{token}/edit",
+        data: { url: "https://example.test/passwords/#{token}/edit" }
+      )
+
+      described_class.apply_to_breadcrumb(breadcrumb)
+
+      expect(breadcrumb.message).to eq("GET /passwords/[FILTERED]/edit")
+      expect(breadcrumb.data[:url]).to eq("https://example.test/passwords/[FILTERED]/edit")
     end
   end
 
-  describe ".redact_event" do
-    it "redacts request urls on error events" do
-      request = Struct.new(:url, :path, :env).new("https://example.test/passwords/live-reset-token", "/passwords/live-reset-token", { "PATH_INFO" => "/passwords/live-reset-token" })
-      event = Struct.new(:request).new(request)
+  describe ".apply_to_event" do
+    it "returns the event unchanged when there is no request" do
+      event = instance_double(Sentry::ErrorEvent, request: nil)
 
-      described_class.redact_event(event)
+      expect(described_class.apply_to_event(event)).to eq(event)
+    end
 
-      expect(event.request.url).to eq("https://example.test/passwords/[FILTERED]")
-      expect(event.request.path).to eq("/passwords/[FILTERED]")
-      expect(event.request.env["PATH_INFO"]).to eq("/passwords/[FILTERED]")
+    it "redacts request URLs on error events" do
+      request = instance_double(
+        Sentry::RequestInterface,
+        url: "https://example.test/passwords/#{token}/edit",
+        headers: { "Referer" => "https://example.test/passwords/#{token}/edit" },
+        data: { referer: "https://example.test/passwords/#{token}/edit" }
+      )
+      allow(request).to receive(:url=)
+      event = instance_double(Sentry::ErrorEvent, request: request)
+
+      described_class.apply_to_event(event)
+
+      expect(request).to have_received(:url=).with("https://example.test/passwords/[FILTERED]/edit")
+      expect(request.headers["Referer"]).to eq("https://example.test/passwords/[FILTERED]/edit")
+      expect(request.data[:referer]).to eq("https://example.test/passwords/[FILTERED]/edit")
     end
   end
-end
 
-RSpec.describe "Sentry sensitive path hooks" do
-  it "redacts password reset tokens from structured logs before send" do
-    log = Struct.new(:attributes).new({ path: "/passwords/live-reset-token/edit" })
+  describe "Sentry hooks" do
+    it "filters structured logs with before_send_log" do
+      log = Sentry::LogEvent.new(
+        level: :info,
+        body: "PasswordsController#edit",
+        attributes: { path: "/passwords/#{token}/edit" }
+      )
 
-    result = Sentry.configuration.before_send_log.call(log)
+      result = Sentry.configuration.before_send_log.call(log)
 
-    expect(result.attributes[:path]).to eq("/passwords/[FILTERED]/edit")
+      expect(result.attributes[:path]).to eq("/passwords/[FILTERED]/edit")
+    end
   end
 end
