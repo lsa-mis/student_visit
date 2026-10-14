@@ -4,7 +4,7 @@ ruby "4.0.6"
 gem "bcrypt", "~> 3.1"
 gem "bootsnap", require: false
 gem "google-cloud-storage"
-gem "image_processing", "~> 2.1"
+gem "image_processing", "~> 2.2"
 gem "importmap-rails"
 gem "jbuilder"
 gem "kamal", require: false
@@ -12,7 +12,7 @@ gem 'lsa_tdx_feedback', '>= 2.0.2'
 gem "propshaft"
 gem "puma", ">= 5.0"
 gem "pundit"
-gem "rails", "~> 8.1.3"
+gem "rails", "~> 8.1.4"
 gem "roo"
 gem "ruby-vips", ">= 2.2.1"
 gem "sentry-ruby"
