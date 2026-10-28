@@ -1,6 +1,6 @@
 # Student Visit Application
 
-![Ruby Version](https://img.shields.io/badge/ruby-4.0.6-red.svg)
+![Ruby Version](https://img.shields.io/badge/ruby-4.0.9-red.svg)
 ![Rails Version](https://img.shields.io/badge/rails-8.1.1-red.svg)
 ![PostgreSQL](https://img.shields.io/badge/postgresql-supported-blue.svg)
 
@@ -19,7 +19,7 @@ A comprehensive web application for managing student visits, appointments, and q
 
 ## Technology Stack
 
-- **Ruby**: 4.0.6
+- **Ruby**: 4.0.9
 - **Rails**: 8.1.1
 - **Database**: PostgreSQL (staging/production), SQLite3 (development/test)
 - **Frontend**: Tailwind CSS, Stimulus.js, Turbo
@@ -33,7 +33,7 @@ A comprehensive web application for managing student visits, appointments, and q
 
 ### System Dependencies
 
-- Ruby 4.0.6
+- Ruby 4.0.9
 - PostgreSQL (for staging/production environments)
 - Node.js and npm/yarn (for asset compilation)
 - ImageMagick (for image processing)
@@ -71,9 +71,9 @@ echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
 echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 source ~/.bashrc
 
-# Install Ruby 4.0.6
-rbenv install 4.0.6
-rbenv global 4.0.6
+# Install Ruby 4.0.9
+rbenv install 4.0.9
+rbenv global 4.0.9
 
 # Verify installation
 ruby -v
@@ -295,7 +295,7 @@ sudo certbot --nginx -d your-domain.com
 
 ### Prerequisites
 
-- Ruby 4.0.6
+- Ruby 4.0.9
 - SQLite3 (for development)
 - Node.js 20+
 
