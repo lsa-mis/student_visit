@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_09_150951) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_10_220000) do
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.text "body"
     t.datetime "created_at", null: false
@@ -185,6 +185,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_150951) do
     t.integer "department_id", null: false
     t.text "google_map_url"
     t.json "held_on_dates"
+    t.string "image_alt"
+    t.boolean "image_decorative", default: false, null: false
     t.string "information_email_address"
     t.string "name", null: false
     t.datetime "open_date"
@@ -193,6 +195,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_09_150951) do
     t.index ["department_id", "active"], name: "index_programs_on_department_id_and_active"
     t.index ["department_id"], name: "index_programs_on_department_id"
   end
+
 
   create_table "questionnaires", force: :cascade do |t|
     t.datetime "created_at", null: false

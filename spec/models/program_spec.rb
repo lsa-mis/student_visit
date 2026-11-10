@@ -23,6 +23,61 @@ RSpec.describe Program, type: :model do
       expect(program.errors[:name]).to be_present
     end
 
+    describe 'image alt text' do
+      let(:program) do
+        Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com")
+      end
+
+      def attach_program_image(record)
+        record.image.attach(
+          io: File.open(Rails.root.join("spec/fixtures/files/program_image.png")),
+          filename: "program_image.png",
+          content_type: "image/png"
+        )
+      end
+
+      it 'requires alt text or decorative when attaching a new image' do
+        attach_program_image(program)
+        program.image_alt = ""
+        program.image_decorative = false
+        expect(program).not_to be_valid
+        expect(program.errors[:image_alt]).to be_present
+      end
+
+      it 'is valid with alt text when attaching a new image' do
+        attach_program_image(program)
+        program.image_alt = "Students touring the department"
+        program.image_decorative = false
+        expect(program).to be_valid
+      end
+
+      it 'is valid when the new image is marked decorative' do
+        attach_program_image(program)
+        program.image_alt = "ignored"
+        program.image_decorative = true
+        expect(program).to be_valid
+        expect(program.image_alt).to eq("")
+      end
+    end
+
+    describe '#dashboard_image_alt' do
+      let(:program) do
+        Program.create!(name: "Cosmology", department: department, default_appointment_length: 30, information_email_address: "test@example.com")
+      end
+
+      it 'returns empty string when decorative' do
+        program.image_decorative = true
+        program.image_alt = "Should be cleared visually"
+        expect(program.dashboard_image_alt).to eq("")
+      end
+
+      it 'returns the author-provided alt text' do
+        program.image_decorative = false
+        program.image_alt = "Cosmology program banner"
+        expect(program.dashboard_image_alt).to eq("Cosmology program banner")
+      end
+    end
+
     it 'requires default_appointment_length to be present' do
       # Schema has default of 30, so we need to explicitly set nil to test validation
       program = Program.new(name: "Test Program", department: department, information_email_address: "test@example.com")

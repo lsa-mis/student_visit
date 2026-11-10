@@ -75,6 +75,35 @@ RSpec.describe "Student::Dashboard", type: :request do
           get student_dashboard_path
           expect(response.body).not_to include("Back to Dashboard")
         end
+
+        it "exposes an accessible name on modal close buttons" do
+          get student_dashboard_path
+          expect(response.body).to include('aria-label="Close"')
+        end
+
+        it "renders the program dashboard image with author alt text" do
+          program.image.attach(
+            io: File.open(Rails.root.join("spec/fixtures/files/program_image.png")),
+            filename: "program_image.png",
+            content_type: "image/png"
+          )
+          program.update!(image_alt: "Cosmology program banner", image_decorative: false)
+
+          get student_dashboard_path
+          expect(response.body).to include('alt="Cosmology program banner"')
+        end
+
+        it "renders decorative program images with empty alt" do
+          program.image.attach(
+            io: File.open(Rails.root.join("spec/fixtures/files/program_image.png")),
+            filename: "program_image.png",
+            content_type: "image/png"
+          )
+          program.update!(image_decorative: true, image_alt: "")
+
+          get student_dashboard_path
+          expect(response.body).to match(/alt=""/)
+        end
       end
 
       context "with department but no active program" do
