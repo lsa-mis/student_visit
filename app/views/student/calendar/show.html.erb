@@ -51,19 +51,24 @@
       </div>
       <div class="flex gap-2 flex-wrap">
         <% first_held_on_date = @program.held_on_dates_list.first || Date.current %>
+        <% filter_focus = "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900" %>
         <%= link_to "Filter by Date",
             student_department_program_calendar_path(@department, @program, date: first_held_on_date, view: "single", filter: "date"),
-            class: "btn-responsive bg-green-600 text-white rounded hover:bg-green-700 #{@filter_mode == 'date' ? 'opacity-75 cursor-not-allowed' : ''}" %>
+            class: "btn-responsive text-white rounded #{filter_focus} #{@filter_mode == 'date' ? 'bg-green-800 cursor-default' : 'bg-green-600 hover:bg-green-700'}",
+            aria: { current: (@filter_mode == "date" ? "page" : nil) } %>
         <%= link_to "Show All Events",
             student_department_program_calendar_path(@department, @program, filter: "all"),
-            class: "btn-responsive bg-green-600 text-white rounded hover:bg-green-700 #{@filter_mode == 'all' ? 'opacity-75 cursor-not-allowed' : ''}" %>
+            class: "btn-responsive text-white rounded #{filter_focus} #{@filter_mode == 'all' ? 'bg-green-800 cursor-default' : 'bg-green-600 hover:bg-green-700'}",
+            aria: { current: (@filter_mode == "all" ? "page" : nil) } %>
         <% if @filter_mode == "date" %>
           <%= link_to "Single Day",
               student_department_program_calendar_path(@department, @program, date: @date, view: "single", filter: @filter_mode),
-              class: "btn-responsive bg-purple-600 text-white rounded hover:bg-purple-700 #{@view_mode == 'single' ? 'opacity-75 cursor-not-allowed' : ''}" %>
+              class: "btn-responsive text-white rounded #{filter_focus} #{@view_mode == 'single' ? 'bg-purple-800 cursor-default' : 'bg-purple-600 hover:bg-purple-700'}",
+              aria: { current: (@view_mode == "single" ? "true" : nil) } %>
           <%= link_to "Week View",
               student_department_program_calendar_path(@department, @program, date: @date, view: "multi", filter: @filter_mode),
-              class: "btn-responsive bg-purple-600 text-white rounded hover:bg-purple-700 #{@view_mode == 'multi' ? 'opacity-75 cursor-not-allowed' : ''}" %>
+              class: "btn-responsive text-white rounded #{filter_focus} #{@view_mode == 'multi' ? 'bg-purple-800 cursor-default' : 'bg-purple-600 hover:bg-purple-700'}",
+              aria: { current: (@view_mode == "multi" ? "true" : nil) } %>
         <% end %>
       </div>
     </div>
