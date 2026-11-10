@@ -45,7 +45,7 @@
 
     <fieldset class="mb-4">
       <legend class="block text-sm font-medium text-gray-700 mb-2">Program Held-On Dates (dates when the program events occur)</legend>
-      <div id="held-on-dates-container" class="space-y-2">
+      <div id="held-on-dates-container" class="space-y-2" data-held-on-date-count="0">
         <div id="add-date-row" class="flex gap-2 items-end">
           <div>
             <label for="program_held_on_date_new" class="block text-xs font-medium text-gray-700 mb-1">Date</label>
@@ -102,7 +102,20 @@
       .replace(/'/g, "&#39;");
   }
 
-  let heldOnDateCount = 0;
+  function nextHeldOnDateFieldId(container) {
+    let max = 0;
+    container.querySelectorAll('input[type="date"][id^="program_held_on_date_"]').forEach(function(input) {
+      const match = input.id.match(/^program_held_on_date_(\d+)$/);
+      if (match) {
+        max = Math.max(max, parseInt(match[1], 10));
+      }
+    });
+    const stored = parseInt(container.dataset.heldOnDateCount || '0', 10);
+    max = Math.max(max, stored);
+    const next = max + 1;
+    container.dataset.heldOnDateCount = String(next);
+    return 'program_held_on_date_' + next;
+  }
 
   function addHeldOnDateField() {
     const container = document.getElementById('held-on-dates-container');
@@ -112,8 +125,7 @@
 
     // Only add if there's a date value
     if (dateValue) {
-      heldOnDateCount += 1;
-      const fieldId = `program_held_on_date_${heldOnDateCount}`;
+      const fieldId = nextHeldOnDateFieldId(container);
       // Create a new row with the date and Remove button
       const newField = document.createElement('div');
       newField.className = 'flex gap-2 items-end';
