@@ -52,6 +52,11 @@ trix-toolbar .trix-button {
   border-bottom: 1px solid #ddd;
   border-radius: 0;
   background: transparent; }
+  /* Visible keyboard focus indicator (WCAG 2.4.7) for LRA-1475 */
+  trix-toolbar .trix-button:focus-visible {
+    outline: 2px solid #005499;
+    outline-offset: 2px;
+    z-index: 1; }
   trix-toolbar .trix-button:not(:first-child) {
     border-left: 1px solid #ccc; }
   trix-toolbar .trix-button.trix-active {

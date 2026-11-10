@@ -159,4 +159,17 @@
       font-size: 1rem;
     }
   }
+
+  /* LRA-1475: visible focus for Trix toolbar controls (loaded via Tailwind build) */
+  trix-toolbar .trix-button:focus-visible {
+    outline: 2px solid var(--color-michigan-summer-blue);
+    outline-offset: 2px;
+    z-index: 1;
+  }
+
+  trix-toolbar .trix-button--dialog:focus-visible,
+  trix-toolbar .trix-input--dialog:focus-visible {
+    outline: 2px solid var(--color-michigan-summer-blue);
+    outline-offset: 2px;
+  }
 }
