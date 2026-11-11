@@ -70,10 +70,11 @@
           <% if @active_program&.image&.attached? %>
             <div class="p-4 flex justify-center">
               <%# LRA-1412: Program dashboard image — Student Dashboard, right column under Active Program %>
+              <% dashboard_alt = @active_program.dashboard_image_alt %>
               <%= image_tag @active_program.image,
-                  alt: @active_program.dashboard_image_alt,
                   class: "h-auto rounded-lg object-cover",
-                  style: "max-width: 400px; max-height: 200px; height: auto;" %>
+                  style: "max-width: 400px; max-height: 200px; height: auto;",
+                  **(dashboard_alt.nil? ? {} : { alt: dashboard_alt }) %>
             </div>
           <% end %>
 

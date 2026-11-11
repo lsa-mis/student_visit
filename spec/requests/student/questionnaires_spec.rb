@@ -106,6 +106,16 @@ RSpec.describe "Student::Questionnaires", type: :request do
         expect(response.body).to include(question.text)
       end
 
+      it "renders each question as an h2 under the questionnaire h1" do
+        question = create(:question, questionnaire: questionnaire, text: "Heading Question")
+        get student_department_program_questionnaire_path(department, program, questionnaire)
+
+        doc = Nokogiri::HTML(response.body)
+        expect(doc.at_css("h1")&.text).to include(questionnaire.name)
+        question_heading = doc.css("h2").find { |node| node.text.include?(question.text) }
+        expect(question_heading).to be_present
+      end
+
       it "displays navigation buttons" do
         get student_department_program_questionnaire_path(department, program, questionnaire)
         expect(response.body).to include("Questionnaires")

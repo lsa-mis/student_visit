@@ -1,20 +1,23 @@
 import { Controller } from "@hotwired/stimulus"
 
 // Prompts for alternative text (or decorative) when images are attached in Trix,
-// and lets authors edit alt text later via double-click on an image attachment.
+// and lets authors edit alt text later via double-click or keyboard on a selected image.
 export default class extends Controller {
   static targets = ["dialog", "altInput", "decorativeCheckbox", "error"]
 
   connect() {
     this.pendingAttachment = null
+    this.pendingQueue = []
     this.removingOnCancel = false
     this.boundAttachmentAdd = this.attachmentAdd.bind(this)
     this.boundAttachmentClick = this.attachmentClick.bind(this)
+    this.boundAttachmentKeydown = this.attachmentKeydown.bind(this)
     this.boundDialogCancel = this.dialogCancel.bind(this)
     this.editor = this.element.querySelector("trix-editor")
     if (this.editor) {
       this.editor.addEventListener("trix-attachment-add", this.boundAttachmentAdd)
       this.editor.addEventListener("dblclick", this.boundAttachmentClick)
+      this.editor.addEventListener("keydown", this.boundAttachmentKeydown)
     }
     if (this.hasDialogTarget) {
       this.dialogTarget.addEventListener("cancel", this.boundDialogCancel)
@@ -25,6 +28,7 @@ export default class extends Controller {
     if (this.editor) {
       this.editor.removeEventListener("trix-attachment-add", this.boundAttachmentAdd)
       this.editor.removeEventListener("dblclick", this.boundAttachmentClick)
+      this.editor.removeEventListener("keydown", this.boundAttachmentKeydown)
     }
     if (this.hasDialogTarget) {
       this.dialogTarget.removeEventListener("cancel", this.boundDialogCancel)
@@ -52,7 +56,24 @@ export default class extends Controller {
     this.openDialog(attachment, { removeOnCancel: false })
   }
 
+  // Keyboard-operable edit for a selected image attachment (Enter / Space).
+  attachmentKeydown(event) {
+    if (event.key !== "Enter" && event.key !== " ") return
+    if (this.hasDialogTarget && this.dialogTarget.open) return
+
+    const attachment = this.findSelectedAttachment()
+    if (!attachment || !this.isImageAttachment(attachment)) return
+
+    event.preventDefault()
+    this.openDialog(attachment, { removeOnCancel: false })
+  }
+
   openDialog(attachment, { removeOnCancel }) {
+    if (this.hasDialogTarget && this.dialogTarget.open) {
+      this.pendingQueue.push({ attachment, removeOnCancel })
+      return
+    }
+
     this.pendingAttachment = attachment
     this.removingOnCancel = removeOnCancel
 
@@ -78,8 +99,17 @@ export default class extends Controller {
   }
 
   findSelectedAttachment() {
-    const piece = this.editor?.editor?.composition?.getSelectedAttachment?.()
-    return piece || null
+    const composition = this.editor?.editor?.composition
+    if (!composition) return null
+
+    // Trix 2.1.x exposes getSelectedAttachments() (plural), not getSelectedAttachment().
+    const selected = composition.getSelectedAttachments?.()
+    if (Array.isArray(selected) && selected.length === 1) return selected[0]
+
+    const fromDocument = this.editor?.editor?.getSelectedDocument?.()?.getAttachments?.()
+    if (Array.isArray(fromDocument) && fromDocument.length === 1) return fromDocument[0]
+
+    return null
   }
 
   decorativeChanged() {
@@ -103,6 +133,7 @@ export default class extends Controller {
     event.preventDefault()
     if (!this.pendingAttachment) {
       this.dialogTarget.close()
+      this.promptNextQueuedAttachment()
       return
     }
 
@@ -118,16 +149,19 @@ export default class extends Controller {
     this.pendingAttachment = null
     this.removingOnCancel = false
     this.dialogTarget.close()
+    this.promptNextQueuedAttachment()
   }
 
   cancel(event) {
     event.preventDefault()
     this.discardPendingAttachment()
     this.dialogTarget.close()
+    this.promptNextQueuedAttachment()
   }
 
   dialogCancel() {
     this.discardPendingAttachment()
+    this.promptNextQueuedAttachment()
   }
 
   discardPendingAttachment() {
@@ -136,6 +170,13 @@ export default class extends Controller {
     }
     this.pendingAttachment = null
     this.removingOnCancel = false
+  }
+
+  promptNextQueuedAttachment() {
+    const next = this.pendingQueue.shift()
+    if (!next) return
+    // Defer so the previous dialog finishes closing before the next opens.
+    queueMicrotask(() => this.openDialog(next.attachment, { removeOnCancel: next.removeOnCancel }))
   }
 
   showError() {

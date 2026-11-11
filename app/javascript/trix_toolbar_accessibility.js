@@ -1,9 +1,15 @@
-// Make Action Text / Trix toolbar controls keyboard operable (LRA-1475).
+// Make ActionText / Trix toolbar controls keyboard operable (LRA-1475).
 // Trix ships toolbar buttons with tabindex="-1" and activates them on mousedown,
 // so keyboard users cannot Tab to them or activate them with Enter/Space by default.
 
 const TOOLBAR_BUTTON_SELECTOR =
   "button[data-trix-attribute], button[data-trix-action]"
+
+// Turbo caches pages by cloning the DOM: dataset flags survive on the clone, but
+// listeners and MutationObservers do not. Track init with non-serialized state so
+// restored pages are enhanced again.
+const enhancedButtons = new WeakSet()
+const observedToolbars = new WeakSet()
 
 function accessibleNameFor(button) {
   return button.getAttribute("aria-label") ||
@@ -35,8 +41,8 @@ function activateToolbarButton(button) {
 }
 
 function enhanceButton(button) {
-  if (button.dataset.trixA11yEnhanced === "true") return
-  button.dataset.trixA11yEnhanced = "true"
+  if (enhancedButtons.has(button)) return
+  enhancedButtons.add(button)
 
   if (button.getAttribute("tabindex") === "-1") {
     button.removeAttribute("tabindex")
@@ -64,8 +70,8 @@ function enhanceToolbar(toolbar) {
 
   toolbar.querySelectorAll(TOOLBAR_BUTTON_SELECTOR).forEach(enhanceButton)
 
-  if (toolbar.dataset.trixA11yObserver === "true") return
-  toolbar.dataset.trixA11yObserver = "true"
+  if (observedToolbars.has(toolbar)) return
+  observedToolbars.add(toolbar)
 
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
