@@ -2,38 +2,107 @@
   <h1 class="text-3xl font-bold mb-6">Edit Program Content</h1>
   <p class="text-gray-600 mb-6">Program: <%= link_to @program.name, department_program_path(@department, @program), class: "text-blue-600 hover:text-blue-800" %></p>
 
-  <%= form_with model: [@department, @program], url: update_content_department_program_path(@department, @program), method: :patch, multipart: true, class: "bg-white shadow rounded-lg p-6" do |form| %>
-    <% if @program.errors.any? %>
-      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-        <h2 class="font-bold"><%= pluralize(@program.errors.count, "error") %> prohibited this program from being saved:</h2>
-        <ul class="list-disc list-inside mt-2">
-          <% @program.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-          <% end %>
-        </ul>
+  <div data-controller="trix-alt-text">
+    <%= form_with model: [@department, @program], url: update_content_department_program_path(@department, @program), method: :patch, multipart: true, class: "bg-white shadow rounded-lg p-6" do |form| %>
+      <% if @program.errors.any? %>
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+          <h2 class="font-bold"><%= pluralize(@program.errors.count, "error") %> prohibited this program from being saved:</h2>
+          <ul class="list-disc list-inside mt-2">
+            <% @program.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="mb-4">
+        <%= form.label :description, "Description", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <p class="text-sm text-gray-500 mb-2">Write about the department and the program. This content will be displayed on the student dashboard. When you insert an image, you will be asked for alternative text (or to mark it decorative). Double-click an image in the editor to edit its alternative text.</p>
+        <%= form.rich_text_area :description, class: "w-full" %>
+      </div>
+
+      <div class="mb-4" data-controller="image-alt-fields">
+        <%= form.label :image, "Dashboard Image", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <p class="text-sm text-gray-500 mb-2">Upload an image to display on the student dashboard (recommended size: 600x400).</p>
+        <% if @program.image.attached? %>
+          <div class="mb-2">
+            <%= image_tag @program.image, alt: @program.dashboard_image_alt, class: "max-w-xs h-auto rounded" %>
+          </div>
+        <% end %>
+        <%= form.file_field :image,
+            accept: "image/*",
+            data: { image_alt_fields_target: "fileInput", action: "change->image-alt-fields#fileChanged" },
+            class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
+
+        <div class="mt-3 space-y-3" data-image-alt-fields-target="fields">
+          <div>
+            <%= form.label :image_alt, "Image alternative text", class: "block text-sm font-medium text-gray-700 mb-1" %>
+            <p class="text-sm text-gray-500 mb-1">Describe what the image shows for people who cannot see it.</p>
+            <%= form.text_field :image_alt,
+                data: { image_alt_fields_target: "altInput", action: "input->image-alt-fields#altInputChanged" },
+                disabled: @program.image_decorative?,
+                class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-500" %>
+          </div>
+
+          <div class="flex items-start gap-2">
+            <%= form.check_box :image_decorative,
+                { data: { image_alt_fields_target: "decorativeCheckbox", action: "change->image-alt-fields#decorativeChanged" },
+                  class: "mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" },
+                true, false %>
+            <%= form.label :image_decorative, "Decorative image (no alternative text needed)", class: "text-sm text-gray-700" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-4">
+        <%= form.submit "Update Content", class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700" %>
+        <%= link_to "Cancel", department_program_path(@department, @program), class: "bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700" %>
       </div>
     <% end %>
 
-    <div class="mb-4">
-      <%= form.label :description, "Description", class: "block text-sm font-medium text-gray-700 mb-2" %>
-      <p class="text-sm text-gray-500 mb-2">Write about the department and the program. This content will be displayed on the student dashboard.</p>
-      <%= form.rich_text_area :description, class: "w-full" %>
-    </div>
+    <dialog data-trix-alt-text-target="dialog"
+            class="rounded-lg shadow-xl p-0 backdrop:bg-black/40 max-w-md w-[calc(100%-2rem)]"
+            aria-labelledby="trix-alt-text-title">
+      <div class="p-6 space-y-4">
+        <h2 id="trix-alt-text-title" class="text-lg font-semibold text-gray-900">Image alternative text</h2>
+        <p class="text-sm text-gray-600">Describe the image for screen reader users, or mark it as decorative if it adds no information beyond nearby text.</p>
 
-    <div class="mb-4">
-      <%= form.label :image, "Dashboard Image", class: "block text-sm font-medium text-gray-700 mb-2" %>
-      <p class="text-sm text-gray-500 mb-2">Upload an image to display on the student dashboard (recommended size: 600x400).</p>
-      <% if @program.image.attached? %>
-        <div class="mb-2">
-          <%= image_tag @program.image, class: "max-w-xs h-auto rounded" %>
+        <div>
+          <label for="trix-alt-text-input" class="block text-sm font-medium text-gray-700 mb-1">Alternative text</label>
+          <input id="trix-alt-text-input"
+                 type="text"
+                 data-trix-alt-text-target="altInput"
+                 data-action="input->trix-alt-text#altInputChanged"
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                 autocomplete="off">
         </div>
-      <% end %>
-      <%= form.file_field :image, accept: "image/*", class: "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" %>
-    </div>
 
-    <div class="flex justify-end space-x-4">
-      <%= form.submit "Update Content", class: "bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700" %>
-      <%= link_to "Cancel", department_program_path(@department, @program), class: "bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700" %>
-    </div>
-  <% end %>
+        <div class="flex items-start gap-2">
+          <input id="trix-alt-decorative"
+                 type="checkbox"
+                 data-trix-alt-text-target="decorativeCheckbox"
+                 data-action="change->trix-alt-text#decorativeChanged"
+                 class="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+          <label for="trix-alt-decorative" class="text-sm text-gray-700">Decorative image (produces empty alt text)</label>
+        </div>
+
+        <p data-trix-alt-text-target="error" class="hidden text-sm text-red-600" role="alert">
+          Enter alternative text, or mark the image as decorative.
+        </p>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button"
+                  data-action="click->trix-alt-text#cancel"
+                  class="bg-gray-600 text-white btn-responsive rounded hover:bg-gray-700">
+            Cancel
+          </button>
+          <button type="button"
+                  data-action="click->trix-alt-text#save"
+                  class="bg-blue-600 text-white btn-responsive rounded hover:bg-blue-700">
+            Save alt text
+          </button>
+        </div>
+      </div>
+    </dialog>
+  </div>
 </div>

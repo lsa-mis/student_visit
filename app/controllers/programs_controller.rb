@@ -76,6 +76,6 @@ class ProgramsController < ApplicationController
   end
 
   def program_content_params
-    params.require(:program).permit(:description, :image)
+    params.require(:program).permit(:description, :image, :image_alt, :image_decorative)
   end
 end

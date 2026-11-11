@@ -152,4 +152,68 @@ RSpec.describe "Programs", type: :request do
       end
     end
   end
+
+  describe "GET /departments/:department_id/programs/:id/edit_content" do
+    context "when authenticated as super admin" do
+      before { sign_in_as_super_admin }
+
+      it "includes author-facing alt text controls" do
+        get edit_content_department_program_path(department, program)
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include("Image alternative text")
+        expect(response.body).to include("Decorative image")
+        expect(response.body).to include('data-controller="trix-alt-text"')
+      end
+    end
+  end
+
+  describe "PATCH /departments/:department_id/programs/:id/update_content" do
+    context "when authenticated as super admin" do
+      before { sign_in_as_super_admin }
+
+      it "saves dashboard image alt text" do
+        image = fixture_file_upload(Rails.root.join("spec/fixtures/files/program_image.png"), "image/png")
+        patch update_content_department_program_path(department, program), params: {
+          program: {
+            image: image,
+            image_alt: "Department open house photo",
+            image_decorative: "0"
+          }
+        }
+        expect(response).to redirect_to(department_program_path(department, program))
+        program.reload
+        expect(program.image).to be_attached
+        expect(program.image_alt).to eq("Department open house photo")
+        expect(program.image_decorative).to be false
+      end
+
+      it "allows decorative dashboard images with empty alt" do
+        image = fixture_file_upload(Rails.root.join("spec/fixtures/files/program_image.png"), "image/png")
+        patch update_content_department_program_path(department, program), params: {
+          program: {
+            image: image,
+            image_alt: "",
+            image_decorative: "1"
+          }
+        }
+        expect(response).to redirect_to(department_program_path(department, program))
+        program.reload
+        expect(program.image_decorative).to be true
+        expect(program.dashboard_image_alt).to eq("")
+      end
+
+      it "rejects a new informative image without alt text" do
+        image = fixture_file_upload(Rails.root.join("spec/fixtures/files/program_image.png"), "image/png")
+        patch update_content_department_program_path(department, program), params: {
+          program: {
+            image: image,
+            image_alt: "",
+            image_decorative: "0"
+          }
+        }
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(program.reload.image).not_to be_attached
+      end
+    end
+  end
 end

@@ -15,12 +15,21 @@ class Program < ApplicationRecord
   validates :name, presence: true
   validates :default_appointment_length, presence: true, numericality: { greater_than: 0 }
   validates :information_email_address, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validate :image_alt_or_decorative_required, if: :new_or_changed_image?
 
   scope :active, -> { where(active: true) }
   scope :inactive, -> { where(active: false) }
 
   after_save :ensure_single_active_program
   before_save :normalize_held_on_dates
+  before_validation :normalize_image_alt_for_decorative
+
+  # Alt text for the dashboard image. Decorative images use an empty string so
+  # assistive technology skips them; otherwise prefer the author-provided text.
+  def dashboard_image_alt
+    return "" if image_decorative?
+    image_alt.to_s
+  end
 
   def open?
     return false unless open_date && close_date
@@ -76,5 +85,21 @@ class Program < ApplicationRecord
 
     department.programs.where.not(id: id).update_all(active: false)
     department.update(active_program_id: id)
+  end
+
+  def normalize_image_alt_for_decorative
+    self.image_alt = "" if image_decorative?
+  end
+
+  def new_or_changed_image?
+    return false unless image.attached?
+    attachment_changes.key?("image")
+  end
+
+  def image_alt_or_decorative_required
+    return if image_decorative?
+    return if image_alt.present?
+
+    errors.add(:image_alt, "must be provided, or mark the image as decorative")
   end
 end
