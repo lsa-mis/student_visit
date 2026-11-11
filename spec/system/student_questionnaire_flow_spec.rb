@@ -24,7 +24,7 @@ RSpec.describe "Student Questionnaire Flow", type: :system do
     visit student_department_program_questionnaires_path(department, program)
     expect(page).to have_current_path(student_department_program_questionnaires_path(department, program))
     expect(page).to have_content(questionnaire.name, wait: 5)
-    within(:xpath, "//li[.//h3[contains(text(), '#{questionnaire.name}')]]") do
+    within(:xpath, "//li[.//h2[contains(text(), '#{questionnaire.name}')]]") do
       click_link "View/Edit"
     end
 
