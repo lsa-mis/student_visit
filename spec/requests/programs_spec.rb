@@ -12,6 +12,19 @@ RSpec.describe "Programs", type: :request do
         get department_programs_path(department)
         expect(response).to have_http_status(:success)
       end
+
+      # LRA-1471: shared footer text must keep ≥4.5:1 contrast (gray-700 on white ≈10.3:1)
+      it "renders the shared footer with sufficient text contrast classes" do
+        get department_programs_path(department)
+
+        footer_html = response.body[/<footer\b[\s\S]*?<\/footer>/]
+        expect(footer_html).to be_present
+        expect(footer_html).to include("Privacy Notice")
+        expect(footer_html).to include("734.615.0100")
+        expect(footer_html).to include("The Regents of the University of Michigan")
+        expect(footer_html).to include("text-gray-700")
+        expect(footer_html).not_to include("text-gray-400")
+      end
     end
 
     context "when authenticated as department admin" do
