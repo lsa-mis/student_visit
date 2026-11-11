@@ -4,6 +4,13 @@
 @source '../../../app/components/**/*.{erb,haml,html,slim,rb}';
 @source '../../../config/initializers/**/*.rb';
 
+/* WCAG 1.4.3: white text on default green-600 is ~3.3:1.
+   Remap to brand success green so primary action buttons clear 4.5:1. */
+@theme {
+  --color-green-600: #00664d; /* ~6.98:1 with white */
+  --color-green-700: #004d3a; /* ~9.89:1 with white (hover) */
+}
+
 @utility btn-primary {
   /* Optimized button using Tailwind utilities */
   @apply py-2 px-4;
