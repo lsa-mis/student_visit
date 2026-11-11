@@ -25,8 +25,13 @@ RSpec.describe "Student::Map", type: :request do
 
       it "marks the department inline link as underlined (LRA-1417)" do
         get student_department_map_path(department)
+
+        dashboard_path = Regexp.escape(student_dashboard_path)
+        # Attribute order from link_to is not guaranteed (class may precede href).
         expect(response.body).to match(
-          /href="#{Regexp.escape(student_dashboard_path)}"[^>]*class="[^"]*\bunderline\b/
+          %r{
+            <a\b(?=[^>]*\bhref="#{dashboard_path}")(?=[^>]*\bclass="[^"]*\bunderline\b)[^>]*>
+          }x
         )
       end
 

@@ -126,6 +126,11 @@ export default class extends Controller {
   renderEmbed(mapElement, embed) {
     mapElement.replaceChildren()
 
+    if (!this.isSafeHttpUrl(embed.src)) {
+      mapElement.innerHTML = "<p class='p-4 text-red-500'>Error: invalid map embed URL</p>"
+      return
+    }
+
     const iframe = document.createElement("iframe")
     iframe.width = "100%"
     iframe.height = "100%"
@@ -138,8 +143,21 @@ export default class extends Controller {
     this.renderCreateYourOwnLink(mapElement, embed)
   }
 
+  // Reject javascript:/data:/etc. before assigning iframe.src or attribution href.
+  isSafeHttpUrl(value) {
+    if (!value || typeof value !== "string") return false
+
+    try {
+      const resolved = new URL(value, window.location.origin)
+      return resolved.protocol === "http:" || resolved.protocol === "https:"
+    } catch (e) {
+      return false
+    }
+  }
+
   renderCreateYourOwnLink(mapElement, embed) {
     if (!embed.createYourOwnHref) return
+    if (!this.isSafeHttpUrl(embed.createYourOwnHref)) return
 
     // Remove a prior attribution if the controller reconnects
     mapElement.parentElement
