@@ -15,20 +15,22 @@ class Program < ApplicationRecord
   validates :name, presence: true
   validates :default_appointment_length, presence: true, numericality: { greater_than: 0 }
   validates :information_email_address, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validate :image_alt_or_decorative_required, if: :new_or_changed_image?
+  validate :image_alt_or_decorative_required, if: :should_validate_image_alt?
 
   scope :active, -> { where(active: true) }
   scope :inactive, -> { where(active: false) }
 
   after_save :ensure_single_active_program
   before_save :normalize_held_on_dates
+  before_validation :preserve_unset_legacy_image_alt
   before_validation :normalize_image_alt_for_decorative
 
   # Alt text for the dashboard image. Decorative images use an empty string so
-  # assistive technology skips them; otherwise prefer the author-provided text.
+  # assistive technology skips them. Unset legacy alts stay nil so callers can
+  # omit empty alt="" (which would hide the image from screen readers).
   def dashboard_image_alt
     return "" if image_decorative?
-    image_alt.to_s
+    image_alt
   end
 
   # True when the dashboard image can be rendered (e.g. with image_tag). After a
@@ -36,6 +38,22 @@ class Program < ApplicationRecord
   # but unpersisted blob that cannot produce a signed_id.
   def displayable_dashboard_image?
     image.attached? && image.blob.persisted?
+  end
+
+  # Signed id for a newly assigned dashboard image that has not been saved yet
+  # (e.g. after a failed alt-text validation). Used to preserve the upload across
+  # the re-rendered edit form.
+  def pending_dashboard_image_signed_id
+    change = attachment_changes["image"]
+    return unless change
+
+    blob = change.respond_to?(:blob) ? change.blob : image.blob
+    return unless blob
+
+    blob.save! unless blob.persisted?
+    blob.signed_id
+  rescue ActiveRecord::RecordInvalid, ActiveStorage::Error
+    nil
   end
 
   def open?
@@ -98,9 +116,25 @@ class Program < ApplicationRecord
     self.image_alt = "" if image_decorative?
   end
 
-  def new_or_changed_image?
+  # Form fields submit "" for blank inputs. Do not treat that as clearing an
+  # unset legacy alt when the author is not changing image metadata.
+  def preserve_unset_legacy_image_alt
+    return if image_decorative?
+    return if attachment_changes.key?("image")
+    return if image_decorative_changed?
+    return unless image_alt_changed?
+    return unless image_alt_was.nil? && image_alt == ""
+
+    self.image_alt = nil
+  end
+
+  def should_validate_image_alt?
     return false unless image.attached?
-    attachment_changes.key?("image")
+    return true if attachment_changes.key?("image")
+    return true if image_decorative_changed?
+    return true if image_alt_changed?
+
+    false
   end
 
   def image_alt_or_decorative_required

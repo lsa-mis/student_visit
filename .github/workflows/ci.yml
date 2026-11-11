@@ -29,11 +29,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libvips
-
       - name: Checkout code
         uses: actions/checkout@v7
 
@@ -43,8 +38,11 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      # importmap audit boots the Rails app (which requires ruby-vips). Skip the
+      # apt libvips install so transient Ubuntu mirror/DNS failures cannot fail
+      # this job; allow_missing_vips soft-fails the native load for audit only.
       - name: Scan for security vulnerabilities in JavaScript dependencies
-        run: bin/importmap audit
+        run: RUBYOPT="-r./script/ci/allow_missing_vips" bin/importmap audit
 
   lint:
     runs-on: ubuntu-latest

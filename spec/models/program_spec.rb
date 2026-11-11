@@ -58,6 +58,45 @@ RSpec.describe Program, type: :model do
         expect(program).to be_valid
         expect(program.image_alt).to eq("")
       end
+
+      it 'allows untouched legacy images with unset alt to remain valid' do
+        attach_program_image(program)
+        program.update!(image_alt: "Legacy banner", image_decorative: false)
+        program.update_columns(image_alt: nil, image_decorative: false)
+
+        program.name = "Renamed without touching image alt"
+        expect(program).to be_valid
+      end
+
+      it 'does not treat a blank form alt as clearing an unset legacy alt' do
+        attach_program_image(program)
+        program.update!(image_alt: "Legacy banner", image_decorative: false)
+        program.update_columns(image_alt: nil, image_decorative: false)
+
+        program.assign_attributes(image_alt: "", image_decorative: false, name: "Still legacy")
+        expect(program).to be_valid
+        expect(program.image_alt).to be_nil
+      end
+
+      it 'requires alt text when clearing alt on an existing informative image' do
+        attach_program_image(program)
+        program.update!(image_alt: "Existing banner", image_decorative: false)
+
+        program.image_alt = ""
+        program.image_decorative = false
+        expect(program).not_to be_valid
+        expect(program.errors[:image_alt]).to be_present
+      end
+
+      it 'requires alt text when unchecking decorative on an existing image' do
+        attach_program_image(program)
+        program.update!(image_alt: "", image_decorative: true)
+
+        program.image_decorative = false
+        program.image_alt = ""
+        expect(program).not_to be_valid
+        expect(program.errors[:image_alt]).to be_present
+      end
     end
 
     describe '#dashboard_image_alt' do
@@ -75,6 +114,35 @@ RSpec.describe Program, type: :model do
         program.image_decorative = false
         program.image_alt = "Cosmology program banner"
         expect(program.dashboard_image_alt).to eq("Cosmology program banner")
+      end
+
+      it 'returns nil when informative alt has not been set' do
+        program.image_decorative = false
+        program.image_alt = nil
+        expect(program.dashboard_image_alt).to be_nil
+      end
+    end
+
+    describe '#pending_dashboard_image_signed_id' do
+      let(:program) do
+        Program.create!(name: "Cosmology", department: department, default_appointment_length: 30, information_email_address: "test@example.com")
+      end
+
+      def attach_program_image(record)
+        record.image.attach(
+          io: File.open(Rails.root.join("spec/fixtures/files/program_image.png")),
+          filename: "program_image.png",
+          content_type: "image/png"
+        )
+      end
+
+      it 'returns a signed id for a newly assigned image' do
+        attach_program_image(program)
+        expect(program.pending_dashboard_image_signed_id).to be_present
+      end
+
+      it 'returns nil when there is no pending image change' do
+        expect(program.pending_dashboard_image_signed_id).to be_nil
       end
     end
 

@@ -226,7 +226,38 @@ RSpec.describe "Programs", type: :request do
         }
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to include("must be provided, or mark the image as decorative")
+        expect(response.body).to include("program[image_signed_id]")
         expect(program.reload.image).not_to be_attached
+      end
+
+      it "preserves a rejected upload via signed id when alt text is supplied on retry" do
+        image = fixture_file_upload(Rails.root.join("spec/fixtures/files/program_image.png"), "image/png")
+        patch update_content_department_program_path(department, program), params: {
+          program: {
+            image: image,
+            image_alt: "",
+            image_decorative: "0"
+          }
+        }
+        expect(response).to have_http_status(:unprocessable_entity)
+
+        signed_id = Nokogiri::HTML(response.body)
+          .at_css('input[name="program[image_signed_id]"]')
+          &.[]("value")
+        expect(signed_id).to be_present
+
+        patch update_content_department_program_path(department, program), params: {
+          program: {
+            image_signed_id: signed_id,
+            image_alt: "Retained upload banner",
+            image_decorative: "0"
+          }
+        }
+
+        expect(response).to redirect_to(department_program_path(department, program))
+        program.reload
+        expect(program.image).to be_attached
+        expect(program.image_alt).to eq("Retained upload banner")
       end
 
       it "re-renders safely when replacing a persisted image without alt text" do
@@ -252,8 +283,32 @@ RSpec.describe "Programs", type: :request do
 
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to include("must be provided, or mark the image as decorative")
+        expect(response.body).to include("program[image_signed_id]")
         expect(program.reload.image).to be_attached
         expect(program.image_alt).to eq("Existing banner")
+      end
+
+      it "rejects clearing alt text on an existing informative image" do
+        image = fixture_file_upload(Rails.root.join("spec/fixtures/files/program_image.png"), "image/png")
+        patch update_content_department_program_path(department, program), params: {
+          program: {
+            image: image,
+            image_alt: "Existing banner",
+            image_decorative: "0"
+          }
+        }
+        expect(response).to redirect_to(department_program_path(department, program))
+
+        patch update_content_department_program_path(department, program), params: {
+          program: {
+            image_alt: "",
+            image_decorative: "0"
+          }
+        }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("must be provided, or mark the image as decorative")
+        expect(program.reload.image_alt).to eq("Existing banner")
       end
     end
   end

@@ -17,7 +17,7 @@
 
       <div class="mb-4">
         <%= form.label :description, "Description", class: "block text-sm font-medium text-gray-700 mb-2" %>
-        <p class="text-sm text-gray-500 mb-2">Write about the department and the program. This content will be displayed on the student dashboard. When you insert an image, you will be asked for alternative text (or to mark it decorative). Double-click an image in the editor to edit its alternative text.</p>
+        <p class="text-sm text-gray-500 mb-2">Write about the department and the program. This content will be displayed on the student dashboard. When you insert an image, you will be asked for alternative text (or to mark it decorative). Double-click a selected image, or press Enter or Space, to edit its alternative text.</p>
         <%= form.rich_text_area :description, class: "w-full" %>
       </div>
 
@@ -26,8 +26,16 @@
         <p class="text-sm text-gray-500 mb-2">Upload an image to display on the student dashboard (recommended size: 600x400).</p>
         <% if @program.displayable_dashboard_image? %>
           <div class="mb-2">
-            <%= image_tag @program.image, alt: @program.dashboard_image_alt, class: "max-w-xs h-auto rounded" %>
+            <% dashboard_alt = @program.dashboard_image_alt %>
+            <%= image_tag @program.image,
+                class: "max-w-xs h-auto rounded",
+                **(dashboard_alt.nil? ? {} : { alt: dashboard_alt }) %>
           </div>
+        <% end %>
+        <% pending_image_signed_id = @program.pending_dashboard_image_signed_id %>
+        <% if pending_image_signed_id.present? %>
+          <%= form.hidden_field :image_signed_id, value: pending_image_signed_id %>
+          <p class="text-sm text-amber-700 mb-2">Your selected image was kept after the previous error. Choose a different file only if you want to replace it.</p>
         <% end %>
         <%= form.file_field :image,
             accept: "image/*",

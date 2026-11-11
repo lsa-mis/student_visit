@@ -104,6 +104,25 @@ RSpec.describe "Student::Dashboard", type: :request do
           get student_dashboard_path
           expect(response.body).to match(/alt=""/)
         end
+
+        it "does not force empty alt on legacy images with unset alternative text" do
+          program.image.attach(
+            io: File.open(Rails.root.join("spec/fixtures/files/program_image.png")),
+            filename: "program_image.png",
+            content_type: "image/png"
+          )
+          program.update!(image_alt: "Temporary", image_decorative: false)
+          program.update_columns(image_alt: nil, image_decorative: false)
+
+          get student_dashboard_path
+          program_imgs = Nokogiri::HTML(response.body).css("img").select { |node|
+            node["class"].to_s.include?("rounded-lg")
+          }
+          expect(program_imgs).not_to be_empty
+          program_imgs.each do |node|
+            expect(node["alt"]).not_to eq("")
+          end
+        end
       end
 
       context "with department but no active program" do
