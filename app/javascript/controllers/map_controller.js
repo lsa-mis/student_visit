@@ -30,9 +30,9 @@ export default class extends Controller {
     const mapElement = this.element
 
     if (this.customUrlValue && this.customUrlValue.trim() !== "") {
-      // Check if it's already an embed URL
-      if (this.customUrlValue.includes('/maps/embed')) {
-        mapElement.innerHTML = `<iframe width="100%" height="100%" frameborder="0" style="border:0" src="${this.customUrlValue}" allowfullscreen></iframe>`
+      const embed = this.parseMapEmbed(this.customUrlValue)
+      if (embed?.src) {
+        this.renderEmbed(mapElement, embed)
         return
       }
 
@@ -56,7 +56,7 @@ export default class extends Controller {
       }
 
       // If we can't parse it, try to use as embed URL (might work for some formats)
-      mapElement.innerHTML = `<iframe width="100%" height="100%" frameborder="0" style="border:0" src="${this.customUrlValue}" allowfullscreen></iframe>`
+      this.renderEmbed(mapElement, { src: this.customUrlValue.trim() })
       return
     }
 
@@ -88,6 +88,77 @@ export default class extends Controller {
         mapElement.innerHTML = `<p class='p-4 text-red-500'>Error loading map: ${status}</p>`
       }
     })
+  }
+
+  // Parse a bare embed URL or a full Google My Maps HTML snippet
+  // (iframe + optional "Create your own" link) without HTML attribute breakout.
+  parseMapEmbed(value) {
+    const trimmed = value.trim()
+    if (!trimmed) return null
+
+    if (trimmed.includes("<")) {
+      const doc = new DOMParser().parseFromString(trimmed, "text/html")
+      const iframe = doc.querySelector("iframe")
+      const src = iframe?.getAttribute("src")?.trim()
+      if (!src) return null
+
+      const createLink =
+        doc.querySelector('a[href*="support.google.com/mymaps"]') ||
+        Array.from(doc.querySelectorAll("a")).find((anchor) =>
+          /create your own/i.test(anchor.textContent || "")
+        )
+
+      return {
+        src,
+        createYourOwnHref: createLink?.getAttribute("href") || null,
+        createYourOwnText: createLink?.textContent?.trim() || null
+      }
+    }
+
+    // Bare embed URLs only — share/place URLs fall through to coordinate parsing.
+    if (trimmed.includes("/maps/embed") || trimmed.includes("/maps/d/embed")) {
+      return { src: trimmed }
+    }
+
+    return null
+  }
+
+  renderEmbed(mapElement, embed) {
+    mapElement.replaceChildren()
+
+    const iframe = document.createElement("iframe")
+    iframe.width = "100%"
+    iframe.height = "100%"
+    iframe.frameBorder = "0"
+    iframe.style.border = "0"
+    iframe.src = embed.src
+    iframe.allowFullscreen = true
+    mapElement.appendChild(iframe)
+
+    this.renderCreateYourOwnLink(mapElement, embed)
+  }
+
+  renderCreateYourOwnLink(mapElement, embed) {
+    if (!embed.createYourOwnHref) return
+
+    // Remove a prior attribution if the controller reconnects
+    mapElement.parentElement
+      ?.querySelectorAll(":scope > .map-embed-attribution")
+      .forEach((node) => node.remove())
+
+    const footer = document.createElement("p")
+    footer.className = "map-embed-attribution mt-2 text-sm"
+
+    const link = document.createElement("a")
+    link.href = embed.createYourOwnHref
+    link.target = "_blank"
+    link.rel = "noopener noreferrer"
+    link.className = "text-blue-600 hover:text-blue-800"
+    link.textContent = embed.createYourOwnText || "Create your own."
+
+    footer.appendChild(link)
+    // Place below the height-constrained map box so the link stays visible
+    mapElement.insertAdjacentElement("afterend", footer)
   }
 
   extractCoordinates(url) {
