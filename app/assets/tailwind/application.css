@@ -179,4 +179,42 @@
     outline: 2px solid var(--color-michigan-summer-blue);
     outline-offset: 2px;
   }
+
+  /*
+   * WCAG 1.4.1 Use of Color (LRA-1472, LRA-1417):
+   * Inline text links must be distinguishable without relying on color alone.
+   * Tailwind Preflight removes default underlines; restore a persistent cue.
+   * Navigation / button-styled links (bg-*, btn-*) are out of scope.
+   */
+  a.text-blue-600 {
+    text-decoration-line: underline;
+    text-underline-offset: 0.12em;
+  }
+
+  a.text-blue-600:hover,
+  a.text-blue-600:focus-visible {
+    text-decoration-line: underline;
+  }
+
+  a.text-blue-600:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  /* Unclassed My Maps "Create your own" attribution below the student map */
+  .map-embed-attribution a {
+    color: #2563eb; /* Tailwind blue-600 ≈ 4.6:1 on white */
+    text-decoration-line: underline;
+    text-underline-offset: 0.12em;
+  }
+
+  .map-embed-attribution a:hover,
+  .map-embed-attribution a:focus-visible {
+    color: #1e40af; /* Tailwind blue-800 */
+  }
+
+  .map-embed-attribution a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
 }
