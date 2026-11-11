@@ -78,6 +78,37 @@ RSpec.describe Program, type: :model do
       end
     end
 
+    describe '#displayable_dashboard_image?' do
+      let(:program) do
+        Program.create!(name: "Cosmology", department: department, default_appointment_length: 30, information_email_address: "test@example.com")
+      end
+
+      def attach_program_image(record)
+        record.image.attach(
+          io: File.open(Rails.root.join("spec/fixtures/files/program_image.png")),
+          filename: "program_image.png",
+          content_type: "image/png"
+        )
+      end
+
+      it 'is false when no image is attached' do
+        expect(program.displayable_dashboard_image?).to be false
+      end
+
+      it 'is false when a newly assigned image blob is not yet persisted' do
+        attach_program_image(program)
+        expect(program.image).to be_attached
+        expect(program.image.blob).not_to be_persisted
+        expect(program.displayable_dashboard_image?).to be false
+      end
+
+      it 'is true when the attached image blob is persisted' do
+        attach_program_image(program)
+        program.update!(image_alt: "Persisted banner", image_decorative: false)
+        expect(program.displayable_dashboard_image?).to be true
+      end
+    end
+
     it 'requires default_appointment_length to be present' do
       # Schema has default of 30, so we need to explicitly set nil to test validation
       program = Program.new(name: "Test Program", department: department, information_email_address: "test@example.com")

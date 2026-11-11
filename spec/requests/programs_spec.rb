@@ -225,7 +225,35 @@ RSpec.describe "Programs", type: :request do
           }
         }
         expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("must be provided, or mark the image as decorative")
         expect(program.reload.image).not_to be_attached
+      end
+
+      it "re-renders safely when replacing a persisted image without alt text" do
+        existing = fixture_file_upload(Rails.root.join("spec/fixtures/files/program_image.png"), "image/png")
+        patch update_content_department_program_path(department, program), params: {
+          program: {
+            image: existing,
+            image_alt: "Existing banner",
+            image_decorative: "0"
+          }
+        }
+        expect(response).to redirect_to(department_program_path(department, program))
+        expect(program.reload.image).to be_attached
+
+        replacement = fixture_file_upload(Rails.root.join("spec/fixtures/files/program_image.png"), "image/png")
+        patch update_content_department_program_path(department, program), params: {
+          program: {
+            image: replacement,
+            image_alt: "",
+            image_decorative: "0"
+          }
+        }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("must be provided, or mark the image as decorative")
+        expect(program.reload.image).to be_attached
+        expect(program.image_alt).to eq("Existing banner")
       end
     end
   end
