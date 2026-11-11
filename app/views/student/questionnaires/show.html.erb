@@ -24,7 +24,7 @@
 
     <% @questions.each do |question| %>
       <div class="mb-6 pb-6 border-b border-gray-200">
-        <p class="text-lg font-semibold mb-2"><%= question.text %></p>
+        <p class="font-[family-name:Roboto] text-lg font-semibold mb-2"><%= question.text %></p>
         <% answer = @answers[question.id] %>
         <% if answer %>
           <div class="text-gray-700">
