@@ -76,6 +76,16 @@ class ProgramsController < ApplicationController
   end
 
   def program_content_params
-    params.require(:program).permit(:description, :image)
+    permitted = params.require(:program).permit(
+      :description, :image, :image_alt, :image_decorative, :image_signed_id
+    )
+
+    # Preserve a previously selected (but unsaved) upload across validation
+    # failures without colliding with an empty file input in the form.
+    if permitted[:image].blank? && permitted[:image_signed_id].present?
+      permitted[:image] = permitted[:image_signed_id]
+    end
+    permitted.delete(:image_signed_id)
+    permitted
   end
 end

@@ -26,14 +26,14 @@
           <li class="py-4">
             <div class="flex justify-between items-center">
               <div>
-                <h3 class="text-lg font-semibold"><%= questionnaire.name %></h3>
+                <h2 class="text-lg font-semibold"><%= questionnaire.name %></h2>
                 <p class="text-sm text-gray-500">
                   <%= questionnaire.questions.count %> question(s)
                 </p>
               </div>
               <%= link_to "View/Edit",
                   student_department_program_questionnaire_path(@department, @program, questionnaire),
-                  class: "btn-responsive bg-blue-600 text-white rounded hover:bg-blue-700" %>
+                  class: "btn-responsive bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-900" %>
             </div>
           </li>
         <% end %>

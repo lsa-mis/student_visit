@@ -4,6 +4,7 @@ import "controllers"
 
 import "trix"
 import "@rails/actiontext"
+import "trix_toolbar_accessibility"
 
 // Destroy questionnaire Chart.js instances before Turbo navigates away to prevent memory leaks
 document.addEventListener("turbo:before-render", function () {

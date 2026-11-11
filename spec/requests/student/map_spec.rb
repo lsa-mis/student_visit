@@ -23,6 +23,34 @@ RSpec.describe "Student::Map", type: :request do
         expect(response.body).to include(department.name)
       end
 
+      it "marks the department inline link as underlined (LRA-1417)" do
+        get student_department_map_path(department)
+
+        dashboard_path = Regexp.escape(student_dashboard_path)
+        # Attribute order from link_to is not guaranteed (class may precede href).
+        expect(response.body).to match(
+          %r{
+            <a\b(?=[^>]*\bhref="#{dashboard_path}")(?=[^>]*\bclass="[^"]*\bunderline\b)[^>]*>
+          }x
+        )
+      end
+
+      it "preserves Create your own link text when embed HTML is stored (LRA-1417)" do
+        program.update!(
+          google_map_url: <<~HTML.squish
+            <iframe src="https://www.google.com/maps/d/embed?mid=abc123" width="640" height="480"></iframe>
+            <br /><a href="//support.google.com/mymaps/answer/3024454?hl=en&ref_topic=3188329" target="_blank">Create your own.</a>
+          HTML
+        )
+
+        get student_department_map_path(department)
+
+        # Stimulus data attribute carries the embed; JS renders the attribution link client-side.
+        expect(response.body).to include("support.google.com/mymaps/answer/3024454")
+        expect(response.body).to include("Create your own.")
+        expect(response.body).to include("maps/d/embed?mid=abc123")
+      end
+
       it "displays the department address information" do
         get student_department_map_path(department)
         expect(response.body).to include(department.street_address) if department.street_address.present?

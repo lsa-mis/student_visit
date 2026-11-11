@@ -42,4 +42,23 @@ module ApplicationHelper
 
     url_string
   end
+
+  # Visible required-field marker (asterisk). Pair with #required_fields_note so the
+  # meaning is explained on the form. Hidden from screen readers via aria-hidden because
+  # the control itself should expose required via the required attribute.
+  def required_asterisk
+    tag.span(" *", class: "text-red-600 font-semibold", "aria-hidden": "true")
+  end
+
+  # Short explanation of the asterisk required-field indicator.
+  def required_fields_note(html_options = {})
+    classes = [ "text-sm text-gray-600 mb-4", html_options.delete(:class) ].compact.join(" ")
+    tag.p(**html_options, class: classes) do
+      safe_join([
+        "Required fields are marked with an asterisk (",
+        tag.span("*", class: "text-red-600 font-semibold", "aria-hidden": "true"),
+        ")."
+      ])
+    end
+  end
 end

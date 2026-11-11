@@ -4,6 +4,13 @@
 @source '../../../app/components/**/*.{erb,haml,html,slim,rb}';
 @source '../../../config/initializers/**/*.rb';
 
+/* WCAG 1.4.3: white text on default green-600 is ~3.3:1.
+   Remap to brand success green so primary action buttons clear 4.5:1. */
+@theme {
+  --color-green-600: #00664d; /* ~6.98:1 with white */
+  --color-green-700: #004d3a; /* ~9.89:1 with white (hover) */
+}
+
 @utility btn-primary {
   /* Optimized button using Tailwind utilities */
   @apply py-2 px-4;
@@ -158,5 +165,56 @@
       padding: 0.5rem 1rem;
       font-size: 1rem;
     }
+  }
+
+  /* LRA-1475: visible focus for Trix toolbar controls (loaded via Tailwind build) */
+  trix-toolbar .trix-button:focus-visible {
+    outline: 2px solid var(--color-michigan-summer-blue);
+    outline-offset: 2px;
+    z-index: 1;
+  }
+
+  trix-toolbar .trix-button--dialog:focus-visible,
+  trix-toolbar .trix-input--dialog:focus-visible {
+    outline: 2px solid var(--color-michigan-summer-blue);
+    outline-offset: 2px;
+  }
+
+  /*
+   * WCAG 1.4.1 Use of Color (LRA-1472, LRA-1417):
+   * Inline text links must be distinguishable without relying on color alone.
+   * Tailwind Preflight removes default underlines; restore a persistent cue.
+   * Navigation / button-styled links (bg-*, btn-*) are out of scope.
+   */
+  a.text-blue-600 {
+    text-decoration-line: underline;
+    text-underline-offset: 0.12em;
+  }
+
+  a.text-blue-600:hover,
+  a.text-blue-600:focus-visible {
+    text-decoration-line: underline;
+  }
+
+  a.text-blue-600:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  /* Unclassed My Maps "Create your own" attribution below the student map */
+  .map-embed-attribution a {
+    color: #2563eb; /* Tailwind blue-600 ≈ 4.6:1 on white */
+    text-decoration-line: underline;
+    text-underline-offset: 0.12em;
+  }
+
+  .map-embed-attribution a:hover,
+  .map-embed-attribution a:focus-visible {
+    color: #1e40af; /* Tailwind blue-800 */
+  }
+
+  .map-embed-attribution a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
   }
 }

@@ -31,6 +31,26 @@ RSpec.describe "Student::Questionnaires", type: :request do
         expect(response.body).not_to include(other_questionnaire.name)
       end
 
+      # LRA-1414: keyboard focus indicator must remain visible on View/Edit
+      it "renders View/Edit with a visible keyboard focus indicator" do
+        create(:questionnaire, program: program, name: "Focus Questionnaire")
+
+        get student_department_program_questionnaires_path(department, program)
+
+        view_edit_links = Nokogiri::HTML(response.body).css("a").select { |a| a.text.strip == "View/Edit" }
+        expect(view_edit_links).not_to be_empty
+
+        view_edit_links.each do |link|
+          classes = link["class"].to_s.split
+          expect(classes).to include(
+            "focus:outline-hidden",
+            "focus-visible:ring-2",
+            "focus-visible:ring-offset-2",
+            "focus-visible:ring-gray-900"
+          )
+        end
+      end
+
       it "displays navigation buttons" do
         get student_department_program_questionnaires_path(department, program)
         expect(response.body).to include("Questionnaires")
@@ -84,6 +104,16 @@ RSpec.describe "Student::Questionnaires", type: :request do
         question = create(:question, questionnaire: questionnaire, text: "Test Question")
         get student_department_program_questionnaire_path(department, program, questionnaire)
         expect(response.body).to include(question.text)
+      end
+
+      it "renders each question as an h2 under the questionnaire h1" do
+        question = create(:question, questionnaire: questionnaire, text: "Heading Question")
+        get student_department_program_questionnaire_path(department, program, questionnaire)
+
+        doc = Nokogiri::HTML(response.body)
+        expect(doc.at_css("h1")&.text).to include(questionnaire.name)
+        question_heading = doc.css("h2").find { |node| node.text.include?(question.text) }
+        expect(question_heading).to be_present
       end
 
       it "displays navigation buttons" do

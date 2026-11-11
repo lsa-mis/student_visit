@@ -69,9 +69,12 @@
           <!-- Program Image -->
           <% if @active_program&.image&.attached? %>
             <div class="p-4 flex justify-center">
+              <%# LRA-1412: Program dashboard image — Student Dashboard, right column under Active Program %>
+              <% dashboard_alt = @active_program.dashboard_image_alt %>
               <%= image_tag @active_program.image,
                   class: "h-auto rounded-lg object-cover",
-                  style: "max-width: 400px; max-height: 200px; height: auto;" %>
+                  style: "max-width: 400px; max-height: 200px; height: auto;",
+                  **(dashboard_alt.nil? ? {} : { alt: dashboard_alt }) %>
             </div>
           <% end %>
 
@@ -158,8 +161,9 @@
               <h3 class="text-2xl font-bold text-gray-900"><%= @selected_department.name %></h3>
               <button type="button"
                       data-action="click->modal#close"
+                      aria-label="Close"
                       class="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-6 h-6" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
               </button>
@@ -231,8 +235,9 @@
               <h3 class="text-2xl font-bold text-gray-900"><%= @selected_department.name %></h3>
               <button type="button"
                       data-action="click->modal#close"
+                      aria-label="Close"
                       class="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-6 h-6" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
               </button>

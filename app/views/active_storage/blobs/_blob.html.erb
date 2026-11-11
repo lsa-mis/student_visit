@@ -1,6 +1,12 @@
 <figure class="attachment attachment--<%= blob.representable? ? "preview" : "file" %> attachment--<%= blob.filename.extension %>">
   <% if blob.representable? %>
-    <%= image_tag blob.representation(resize_to_limit: local_assigns[:in_gallery] ? [ 800, 600 ] : [ 1024, 768 ]) %>
+    <%# Prefer author-provided alt (including empty string for decorative). Omit only when unset. %>
+    <% attachment_attrs = blob.try(:full_attributes) || {} %>
+    <% if attachment_attrs.key?("alt") %>
+      <%= image_tag blob.representation(resize_to_limit: local_assigns[:in_gallery] ? [ 800, 600 ] : [ 1024, 768 ]), alt: attachment_attrs["alt"].to_s %>
+    <% else %>
+      <%= image_tag blob.representation(resize_to_limit: local_assigns[:in_gallery] ? [ 800, 600 ] : [ 1024, 768 ]) %>
+    <% end %>
   <% end %>
 
   <figcaption class="attachment__caption">

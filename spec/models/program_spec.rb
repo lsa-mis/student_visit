@@ -23,6 +23,160 @@ RSpec.describe Program, type: :model do
       expect(program.errors[:name]).to be_present
     end
 
+    describe 'image alt text' do
+      let(:program) do
+        Program.create!(name: "Test Program", department: department, default_appointment_length: 30, information_email_address: "test@example.com")
+      end
+
+      def attach_program_image(record)
+        record.image.attach(
+          io: File.open(Rails.root.join("spec/fixtures/files/program_image.png")),
+          filename: "program_image.png",
+          content_type: "image/png"
+        )
+      end
+
+      it 'requires alt text or decorative when attaching a new image' do
+        attach_program_image(program)
+        program.image_alt = ""
+        program.image_decorative = false
+        expect(program).not_to be_valid
+        expect(program.errors[:image_alt]).to be_present
+      end
+
+      it 'is valid with alt text when attaching a new image' do
+        attach_program_image(program)
+        program.image_alt = "Students touring the department"
+        program.image_decorative = false
+        expect(program).to be_valid
+      end
+
+      it 'is valid when the new image is marked decorative' do
+        attach_program_image(program)
+        program.image_alt = "ignored"
+        program.image_decorative = true
+        expect(program).to be_valid
+        expect(program.image_alt).to eq("")
+      end
+
+      it 'allows untouched legacy images with unset alt to remain valid' do
+        attach_program_image(program)
+        program.update!(image_alt: "Legacy banner", image_decorative: false)
+        program.update_columns(image_alt: nil, image_decorative: false)
+
+        program.name = "Renamed without touching image alt"
+        expect(program).to be_valid
+      end
+
+      it 'does not treat a blank form alt as clearing an unset legacy alt' do
+        attach_program_image(program)
+        program.update!(image_alt: "Legacy banner", image_decorative: false)
+        program.update_columns(image_alt: nil, image_decorative: false)
+
+        program.assign_attributes(image_alt: "", image_decorative: false, name: "Still legacy")
+        expect(program).to be_valid
+        expect(program.image_alt).to be_nil
+      end
+
+      it 'requires alt text when clearing alt on an existing informative image' do
+        attach_program_image(program)
+        program.update!(image_alt: "Existing banner", image_decorative: false)
+
+        program.image_alt = ""
+        program.image_decorative = false
+        expect(program).not_to be_valid
+        expect(program.errors[:image_alt]).to be_present
+      end
+
+      it 'requires alt text when unchecking decorative on an existing image' do
+        attach_program_image(program)
+        program.update!(image_alt: "", image_decorative: true)
+
+        program.image_decorative = false
+        program.image_alt = ""
+        expect(program).not_to be_valid
+        expect(program.errors[:image_alt]).to be_present
+      end
+    end
+
+    describe '#dashboard_image_alt' do
+      let(:program) do
+        Program.create!(name: "Cosmology", department: department, default_appointment_length: 30, information_email_address: "test@example.com")
+      end
+
+      it 'returns empty string when decorative' do
+        program.image_decorative = true
+        program.image_alt = "Should be cleared visually"
+        expect(program.dashboard_image_alt).to eq("")
+      end
+
+      it 'returns the author-provided alt text' do
+        program.image_decorative = false
+        program.image_alt = "Cosmology program banner"
+        expect(program.dashboard_image_alt).to eq("Cosmology program banner")
+      end
+
+      it 'returns nil when informative alt has not been set' do
+        program.image_decorative = false
+        program.image_alt = nil
+        expect(program.dashboard_image_alt).to be_nil
+      end
+    end
+
+    describe '#pending_dashboard_image_signed_id' do
+      let(:program) do
+        Program.create!(name: "Cosmology", department: department, default_appointment_length: 30, information_email_address: "test@example.com")
+      end
+
+      def attach_program_image(record)
+        record.image.attach(
+          io: File.open(Rails.root.join("spec/fixtures/files/program_image.png")),
+          filename: "program_image.png",
+          content_type: "image/png"
+        )
+      end
+
+      it 'returns a signed id for a newly assigned image' do
+        attach_program_image(program)
+        expect(program.pending_dashboard_image_signed_id).to be_present
+      end
+
+      it 'returns nil when there is no pending image change' do
+        expect(program.pending_dashboard_image_signed_id).to be_nil
+      end
+    end
+
+    describe '#displayable_dashboard_image?' do
+      let(:program) do
+        Program.create!(name: "Cosmology", department: department, default_appointment_length: 30, information_email_address: "test@example.com")
+      end
+
+      def attach_program_image(record)
+        record.image.attach(
+          io: File.open(Rails.root.join("spec/fixtures/files/program_image.png")),
+          filename: "program_image.png",
+          content_type: "image/png"
+        )
+      end
+
+      it 'is false when no image is attached' do
+        expect(program.displayable_dashboard_image?).to be false
+      end
+
+      it 'is false when a newly assigned image blob is not yet persisted' do
+        attach_program_image(program)
+        expect(program.image).to be_attached
+        expect(program.image.blob).not_to be_persisted
+        expect(program.displayable_dashboard_image?).to be false
+      end
+
+      it 'is true when the attached image blob is persisted' do
+        attach_program_image(program)
+        program.update!(image_alt: "Persisted banner", image_decorative: false)
+        expect(program.displayable_dashboard_image?).to be true
+      end
+    end
+
     it 'requires default_appointment_length to be present' do
       # Schema has default of 30, so we need to explicitly set nil to test validation
       program = Program.new(name: "Test Program", department: department, information_email_address: "test@example.com")
