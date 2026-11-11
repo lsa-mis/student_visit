@@ -31,6 +31,13 @@ class Program < ApplicationRecord
     image_alt.to_s
   end
 
+  # True when the dashboard image can be rendered (e.g. with image_tag). After a
+  # failed update that assigns a new upload, ActiveStorage may leave an attached
+  # but unpersisted blob that cannot produce a signed_id.
+  def displayable_dashboard_image?
+    image.attached? && image.blob.persisted?
+  end
+
   def open?
     return false unless open_date && close_date
     now = Time.current
